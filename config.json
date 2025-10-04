@@ -11,7 +11,7 @@
   },
   "antiInbox": false,
   "language": "en",
-  "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
+  "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (URDU), en (English)",
   "nickNameBot": "obito-bot",
   "prefix": "/",
   "adminOnly": {
@@ -19,14 +19,14 @@
     "ignoreCommand": []
   },
   "adminBot": [
-    "100078794143432",
-    "100001986888287",
-    "100000180724818"
+    "61577638905771",
+    "61577638905771",
+    "61577638905771 "
   ],
   "developers": [
-    "100078794143432",
-    "100001986888287",
-    "100000180724818"
+    "61577638905771",
+    "",
+    ""
   ],
   "premium": [
     "100078794143432",
@@ -58,7 +58,7 @@
   "timeZone": "Asia/Dhaka",
   "credentials": {
     "gmailAccount": {
-      "email": "andylabaco@gmail.com",
+      "email": "MARINAKHAN384@Gmail.com",
       "clientId": "96871167660-5js0qjdlpr2mcd331kv5obpifev5j69r.apps.googleusercontent.com",
       "clientSecret": "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",
       "refreshToken": "1//04qK_zxJkdK7RCgYIARAAGAQSNwF-L9IrZOdI4prCgpqvAoDEvn-HpuSugKxBTRNoGS37QwxfAWJUCehSKhdas26xOh-SjmdR4uw",
