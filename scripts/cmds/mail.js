@@ -14,12 +14,10 @@ module.exports = {
     },
 
     onStart: async function({ api, event, args }) {
-        // Verify admin access
-        if (event.senderID !== api.getCurrentUserID()) {
-            const adminList = await getAdminList();
-            if (!adminList.includes(event.senderID)) {
-                return api.sendMessage("❌ This command is for Marina administrators only.", event.threadID);
-            }
+        // Verify admin access using your UID
+        const adminList = getAdminList();
+        if (!adminList.includes(event.senderID)) {
+            return api.sendMessage("❌ This command is for Marina administrators only.", event.threadID);
         }
 
         const action = args[0]?.toLowerCase();
@@ -31,6 +29,8 @@ module.exports = {
                 return await showMarinaEmails(api, event);
             case 'clear':
                 return await clearMarinaEmails(api, event);
+            case 'admin':
+                return await showAdminInfo(api, event);
             default:
                 return showMarinaEmailMenu(api, event);
         }
@@ -54,6 +54,9 @@ function showMarinaEmailMenu(api, event) {
 ║                                    ║
 ║  🗑️ **!marinaemail clear**        ║
 ║  Clear generated email list       ║
+║                                    ║
+║  👑 **!marinaemail admin**        ║
+║  Show admin information           ║
 ║                                    ║
 ╚════════════════════╝
 
@@ -128,11 +131,40 @@ async function generateMarinaEmails(api, event) {
     }
 }
 
+// Show admin information
+async function showAdminInfo(api, event) {
+    const adminList = getAdminList();
+    const isAuthorized = adminList.includes(event.senderID);
+    
+    const adminInfo = `
+👑 **Marina Admin System** 👑
+
+**Authorized Admin UID:**
+${adminList.join('\n')}
+
+**Your UID:** ${event.senderID}
+**Access Status:** ${isAuthorized ? '✅ AUTHORIZED' : '❌ UNAUTHORIZED'}
+
+**Admin Permissions:**
+✅ Email template generation
+✅ Business account management  
+✅ Security configuration
+✅ System administration
+
+**Security Level:** MAXIMUM
+**Role:** PRIMARY ADMINISTRATOR
+
+🔒 _Marina Khan - Secure Admin Access_
+    `;
+
+    api.sendMessage(adminInfo, event.threadID);
+}
+
 // Generate Marina email templates
 function generateMarinaEmailTemplates() {
-    const baseDomains = ['marinakhan.com', 'marinakhan.org', 'marinakhan.net'];
+    const baseDomains = ['marinakhan.com', 'marinakhan.org', 'marinakhan.net', 'marinakhan.tech'];
     const outlookDomains = ['outlook.com', 'hotmail.com'];
-    const departments = ['support', 'sales', 'info', 'contact', 'admin', 'careers', 'billing', 'hr'];
+    const departments = ['support', 'sales', 'info', 'contact', 'admin', 'careers', 'billing', 'hr', 'tech', 'ai'];
     
     const emails = [];
 
@@ -143,6 +175,7 @@ function generateMarinaEmailTemplates() {
         emails.push(`marina.khan@${domain}`);
         emails.push(`khan.marina@${domain}`);
         emails.push(`mkhan@${domain}`);
+        emails.push(`marinakhan@${domain}`);
         
         // Department emails
         departments.forEach(dept => {
@@ -162,7 +195,10 @@ function generateMarinaEmailTemplates() {
             `marina.khan.ai@${domain}`,
             `khan.marina.dev@${domain}`,
             `marinakhan.bot@${domain}`,
-            `marina.khan.admin@${domain}`
+            `marina.khan.admin@${domain}`,
+            `marina.khan.office@${domain}`,
+            `marinakhan.support@${domain}`,
+            `marina.khan.ceo@${domain}`
         ];
         emails.push(...variations);
     });
@@ -186,24 +222,25 @@ async function showMarinaEmails(api, event) {
         const outlookEmails = marinaEmails.filter(email => email.includes('outlook.com') || email.includes('hotmail.com'));
         
         emailList += `🏢 **Business Domain Emails:**\n`;
-        businessEmails.slice(0, 10).forEach(email => {
+        businessEmails.slice(0, 8).forEach(email => {
             emailList += `• ${email}\n`;
         });
         
-        if (businessEmails.length > 10) {
-            emailList += `• ... and ${businessEmails.length - 10} more\n`;
+        if (businessEmails.length > 8) {
+            emailList += `• ... and ${businessEmails.length - 8} more\n`;
         }
         
         emailList += `\n📱 **Outlook/Hotmail Emails:**\n`;
-        outlookEmails.slice(0, 10).forEach(email => {
+        outlookEmails.slice(0, 8).forEach(email => {
             emailList += `• ${email}\n`;
         });
         
-        if (outlookEmails.length > 10) {
-            emailList += `• ... and ${outlookEmails.length - 10} more\n`;
+        if (outlookEmails.length > 8) {
+            emailList += `• ... and ${outlookEmails.length - 8} more\n`;
         }
         
         emailList += `\n📊 **Total Templates:** ${marinaEmails.length}`;
+        emailList += `\n👑 **Admin UID:** 61577638905771`;
         emailList += `\n\n🔒 _Marina Khan Administration_`;
 
         api.sendMessage(emailList, event.threadID);
@@ -218,19 +255,18 @@ async function showMarinaEmails(api, event) {
 async function clearMarinaEmails(api, event) {
     try {
         await fs.remove(getMarinaEmailPath());
-        api.sendMessage("🗑️ **Marina email templates cleared successfully!**\n\nUse '!marinaemail create' to generate new templates.", event.threadID);
+        api.sendMessage("🗑️ **Marina email templates cleared successfully!**\n\nUse '!marinaemail create' to generate new templates.\n\n👑 Admin: 61577638905771", event.threadID);
     } catch (error) {
         console.error("Clear emails error:", error);
-        api.sendMessage("✅ Marina email cache cleared.", event.threadID);
+        api.sendMessage("✅ Marina email cache cleared.\n\n👑 Admin: 61577638905771", event.threadID);
     }
 }
 
-// Get admin list (you can customize this)
-async function getAdminList() {
-    // Add your admin user IDs here
+// Get admin list with your UID
+function getAdminList() {
     return [
-        "1000000000000000", // Example admin ID
-        // Add more admin IDs as needed
+        "61577638905771", // Your Facebook UID - PRIMARY ADMIN
+        // You can add more admin UIDs here if needed
     ];
 }
 
@@ -240,6 +276,7 @@ async function saveMarinaEmails(emails) {
     await fs.ensureDir(path.dirname(filePath));
     await fs.writeJson(filePath, {
         generatedAt: new Date().toISOString(),
+        adminUID: "61577638905771",
         emails: emails,
         count: emails.length
     });
