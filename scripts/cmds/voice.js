@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 0,
     credits: "Marina Khan",
     description: "Female voice with Marina name",
-    commandCategory: "utility",
+    commandCategory: "media",
     usages: "[text]",
     cooldowns: 10,
     dependencies: {
