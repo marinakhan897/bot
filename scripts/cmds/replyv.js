@@ -9,6 +9,23 @@ module.exports = {
 		category: "utility"
 	},
 
+	// Add this missing onStart function
+	onStart: async function ({ api, event, args }) {
+		// This function runs when someone uses the command directly (e.g., !marinareply)
+		// You can add help text or command functionality here
+		const helpMessage = `🔍 Marina Auto-Reply System
+
+This bot automatically responds when users mention:
+• "who is marina"
+• "who made you" 
+• "who is your owner"
+• And other Marina-related phrases!
+
+The bot will auto-detect these phrases in chat.`;
+		
+		await api.sendMessage(helpMessage, event.threadID);
+	},
+
 	onChat: async function ({ api, event }) {
 		const message = event.body?.toLowerCase();
 		if (!message) return;
