@@ -7,7 +7,7 @@ module.exports = {
   config: {
     name: "help",
     version: "3.2",
-    author: "NTKhang // xnil6x",
+    author: "Marina Khan", // Changed to your name
     countDown: 5,
     role: 0,
     description: "View command information with enhanced interface",
@@ -20,14 +20,14 @@ module.exports = {
   langs: {
     en: {
       helpHeader: "╔══════════◇◆◇══════════╗\n"
-                + "      BOT COMMAND LIST\n"
+                + "      🤖 MARINA KHAN BOT\n"
                 + "╠══════════◇◆◇══════════╣",
       categoryHeader: "\n   ┌────── {category} ──────┐\n",
       commandItem: "║ │ 🟢 {name}",
       helpFooter: "║ └─────────────────┘\n"
                 + "╚══════════◇◆◇══════════╝",
       commandInfo: "╔══════════◇◆◇══════════╗\n"
-                 + "║           COMMAND INFORMATION      \n"
+                 + "║      MARINA KHAN BOT - COMMAND INFO\n"
                  + "╠══════════◇◆◇══════════╣\n"
                  + "║ 🏷️ Name: {name}\n"
                  + "║ 📝 Description: {description}\n"
@@ -37,7 +37,7 @@ module.exports = {
                  + "║ 🔒 Permissions: {role}\n"
                  + "║ ⏱️ Cooldown: {countDown}s\n"
                  + "║ 🔧 Use Prefix: {usePrefix}\n"
-                 + "║ 👤 Author: {author}\n"
+                 + "║ 👤 Author: Marina Khan\n" // Updated author name
                  + "╠══════════◇◆◇══════════╣",
       usageHeader: "║ 🛠️ USAGE GUIDE",
       usageBody: " ║ {usage}",
@@ -48,7 +48,7 @@ module.exports = {
       roleText1: "👑 Group Admins",
       roleText2: "⚡ Bot Admins",
       totalCommands: "📊 Total Commands: {total}\n"
-                  + "xnil"
+                  + "🤖 Developed by Marina Khan" // Updated footer
     }
   },
 
@@ -164,7 +164,7 @@ module.exports = {
       .replace(/{role}/g, roleText)
       .replace(/{countDown}/g, config.countDown || 1)
       .replace(/{usePrefix}/g, typeof config.usePrefix === "boolean" ? (config.usePrefix ? "✅ Yes" : "❌ No") : "❓ Unknown")
-      .replace(/{author}/g, config.author || "Unknown");
+      .replace(/{author}/g, "Marina Khan"); // Always show your name as author
 
     replyMsg += "\n" + this.langs.en.usageHeader + "\n" +
                 this.langs.en.usageBody.replace(/{usage}/g, guide.split("\n").join("\n ")) + "\n" +
