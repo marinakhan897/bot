@@ -1,59 +1,57 @@
+const fs = require('fs-extra');
+const path = require('path');
+
 module.exports = {
 	config: {
-		name: "intro",
+		name: "marin",
 		version: "1.0",
 		author: "Marina",
 		countDown: 5,
 		role: 0,
 		description: {
-			en: "Introduce the boss - Dr. Marin"
+			en: "Know about Dr. Marin - The Boss"
 		},
 		category: "info",
 		guide: {
-			en: ""
+			en: "{p}marin"
 		}
 	},
 
-	onChat: async function ({ api, event, args }) {
-		const message = event.body.toLowerCase();
-		
-		// Keywords that trigger the introduction
-		const triggers = [
-			"who is marina", "who is marin", "who is your owner", 
-			"who created you", "who is your developer", "who made you",
-			"marina kaun hai", "marin kaun hai", "owner kaun hai",
-			"tera malik kaun hai", "tera developer kaun hai"
-		];
+	onStart: async function ({ api, event, args }) {
+		try {
+			const bossInfo = `⚡ **DR. MARIN - THE ULTIMATE POWER** ⚡
 
-		const shouldRespond = triggers.some(trigger => message.includes(trigger));
-		
-		if (shouldRespond) {
-			const introMessage = `🔥 **LISTEN UP! WHEN YOU ASK ABOUT THE LEGEND** 🔥
+🎯 **BASIC INFO:**
+• Name: Dr. Marin
+• Age: 23 Years Young
+• Residence: Sukkur City
+• Status: Living BINDAS ZINDAGI
 
-🤵 **THE NAME'S DR. MARIN** 
-   - Age: 23 | Power Level: MAXIMUM 
-   - Status: PEAK PERFORMANCE
+💼 **PROFESSIONAL LIFE:**
+🏥 Medical Doctor - Saving Lives by Day
+💻 Power Developer - Creating Legends by Night
 
-💼 **DOUBLE LIFE ACTIVATED:**
-   ⚕️  By Day: Medical Doctor (Saving Lives)
-   💻  By Night: Elite Developer (Creating Legends)
+🚀 **SPECIAL POWERS:**
+• Code Wizardry
+• Medical Expertise
+• Bot Development Master
+• Problem Solver Extraordinaire
 
-🎯 **SPECIALTIES:**
-   • Full-Stack Development
-   • Medical Expertise 
-   • Bot Creation Mastery
-   • Problem Solving Pro
+💫 **LIFE MOTTO:**
+"BINDAS ZINDAGI" - Why stress when you can dominate?
 
-🏠 **BASE OF OPERATIONS:** Sukkur City
-💫 **LIFE PHILOSOPHY:** "BINDAS ZINDAGI" - Live Life King Size!
+⚠️ **WARNING TO HATERS:**
+Don't challenge the skills!
+When Dr. Marin is in the game, everyone else is just playing! 😎
 
-⚠️ **WARNING:** 
-   Don't test the skills, don't challenge the authority!
-   When Dr. Marin codes, universe listens! 🌌
+🔥 **FINAL MESSAGE:**
+Respect the Developer, Respect the Doctor!`;
 
-💪 **POWER QUOTE:** "I don't just write code, I create destinies!"`;
-
-			await api.sendMessage(introMessage, event.threadID);
+			await api.sendMessage(bossInfo, event.threadID);
+			
+		} catch (error) {
+			console.error(error);
+			await api.sendMessage("❌ Error showing boss information!", event.threadID);
 		}
 	}
 };
