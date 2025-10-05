@@ -14,6 +14,24 @@ module.exports = {
     guide: "{p}quran [surah_number] or {p}quran list"
   },
 
+  // ADD THIS MISSING FUNCTION
+  onStart: async function({ api, event, args }) {
+    // This function runs when someone uses !quran directly
+    const helpMessage = `🕋 Quran Recitation Command
+
+Usage:
+• {p}quran list - Show available surahs
+• {p}quran [number] - Play specific surah
+
+Examples:
+• {p}quran 1 - Play Surah Al-Fatihah
+• {p}quran 36 - Play Surah Ya-Sin
+
+I will also auto-detect Quran-related messages!`;
+    
+    await api.sendMessage(helpMessage, event.threadID);
+  },
+
   onChat: async function({ message, event, args, api }) {
     try {
       const surahList = {
