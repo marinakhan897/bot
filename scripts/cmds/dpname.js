@@ -1,4 +1,4 @@
-const { createCanvas, registerFont, loadImage } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs-extra');
 const path = require('path');
 const axios = require('axios');
@@ -10,8 +10,8 @@ module.exports = {
         role: 0,
         author: "Marina Khan",
         category: "design",
-        description: "DP pe perfect name editing",
-        guide: "{pn} [name]",
+        description: "Reply ki DP pe perfect name editing with PNGs",
+        guide: "{pn} [name] - Reply to a DP",
         countDown: 5
     },
 
@@ -19,23 +19,25 @@ module.exports = {
         try {
             console.log("Command started...");
             
+            // Check if user replied to a message
+            if (!event.messageReply || !event.messageReply.attachments || event.messageReply.attachments.length === 0) {
+                return api.sendMessage("❌ Please reply to a DP/image to add name!", event.threadID);
+            }
+
+            const attachment = event.messageReply.attachments[0];
+            if (!attachment.type || !attachment.type.includes("image")) {
+                return api.sendMessage("❌ Please reply to an image only!", event.threadID);
+            }
+
             if (args.length === 0) {
                 return api.sendMessage("✨ Please provide a name!\nExample: !dpname Marina", event.threadID);
             }
 
             const name = args.join(' ');
             console.log("Processing name:", name);
+            console.log("Image URL:", attachment.url);
             
-            // Get user info for profile picture
-            const userInfo = await api.getUserInfo(event.senderID);
-            const userID = event.senderID;
-            
-            // Facebook profile picture URL
-            const avatarUrl = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-            
-            console.log("Avatar URL:", avatarUrl);
-            
-            await generateNameDP(api, event, avatarUrl, name);
+            await generateNameDP(api, event, attachment.url, name);
 
         } catch (error) {
             console.error("Main error:", error);
@@ -44,12 +46,12 @@ module.exports = {
     }
 };
 
-async function generateNameDP(api, event, avatarUrl, name) {
+async function generateNameDP(api, event, imageUrl, name) {
     try {
-        api.sendMessage(`🔄 Editing your DP with "${name}"...`, event.threadID);
+        api.sendMessage(`🎨 Editing DP with "${name}"...`, event.threadID);
         console.log("Starting DP generation...");
 
-        const dpPath = await addNameToDP(avatarUrl, name);
+        const dpPath = await addNameToDP(imageUrl, name);
         console.log("DP created at:", dpPath);
         
         if (!fs.existsSync(dpPath)) {
@@ -57,7 +59,7 @@ async function generateNameDP(api, event, avatarUrl, name) {
         }
 
         await api.sendMessage({
-            body: `✨ **DP NAME EDITOR**\n\n📝 Name: ${name}\n✅ Successfully added to your DP!`,
+            body: `✨ **DP NAME EDITOR**\n\n📝 Name: ${name}\n🎨 Style: Premium Design\n✅ Successfully edited!`,
             attachment: fs.createReadStream(dpPath)
         }, event.threadID);
 
@@ -74,45 +76,96 @@ async function generateNameDP(api, event, avatarUrl, name) {
     }
 }
 
-async function addNameToDP(avatarUrl, name) {
+async function addNameToDP(imageUrl, name) {
     try {
-        console.log("Downloading avatar...");
+        console.log("Downloading image...");
         const response = await axios({
             method: 'GET',
-            url: avatarUrl,
-            responseType: 'arraybuffer'
+            url: imageUrl,
+            responseType: 'arraybuffer',
+            timeout: 30000
         });
 
-        console.log("Avatar downloaded, size:", response.data.length);
+        console.log("Image downloaded, size:", response.data.length);
         
         const imageBuffer = Buffer.from(response.data);
         const img = await loadImage(imageBuffer);
         
         console.log("Image loaded, dimensions:", img.width, "x", img.height);
 
+        // Create canvas with original dimensions
         const canvas = createCanvas(img.width, img.height);
         const ctx = canvas.getContext('2d');
 
         // Draw original image
         ctx.drawImage(img, 0, 0, img.width, img.height);
 
-        // Font settings
-        const fontSize = Math.min(img.width, img.height) / 8;
-        ctx.font = `bold ${fontSize}px Arial`;
-        ctx.fillStyle = '#FFFFFF';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = fontSize / 20;
+        // Calculate optimal font size based on image dimensions
+        const baseSize = Math.min(img.width, img.height);
+        const fontSize = Math.max(baseSize / 10, 20); // Minimum 20px
+        
+        // Premium font styling with multiple effects
+        ctx.font = `bold ${fontSize}px 'Arial'`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Text position (bottom center)
+        // Text position - bottom center with padding
         const x = img.width / 2;
-        const y = img.height - (fontSize * 1.5);
+        const y = img.height - (fontSize * 1.2);
 
-        // Add text stroke
+        // **PREMIUM TEXT EFFECTS**
+
+        // 1. Background shadow for readability
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(
+            x - (ctx.measureText(name).width / 2) - 10, 
+            y - fontSize + 5, 
+            ctx.measureText(name).width + 20, 
+            fontSize + 10
+        );
+
+        // 2. Text stroke (border)
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = fontSize / 15;
         ctx.strokeText(name, x, y);
-        // Add text fill
+
+        // 3. Main text with gradient
+        const gradient = ctx.createLinearGradient(
+            x - ctx.measureText(name).width / 2, 
+            y, 
+            x + ctx.measureText(name).width / 2, 
+            y
+        );
+        gradient.addColorStop(0, '#FFFFFF');
+        gradient.addColorStop(0.5, '#FFD700');
+        gradient.addColorStop(1, '#FFFFFF');
+        
+        ctx.fillStyle = gradient;
         ctx.fillText(name, x, y);
+
+        // 4. Add subtle glow effect
+        ctx.shadowColor = 'rgba(255, 215, 0, 0.5)';
+        ctx.shadowBlur = 15;
+        ctx.fillText(name, x, y);
+        ctx.shadowBlur = 0;
+
+        // **ADD DECORATIVE PNG ELEMENTS**
+
+        // Add crown emoji for premium look (text-based)
+        if (name.length <= 12) {
+            ctx.font = `bold ${fontSize * 0.8}px Arial`;
+            ctx.fillText('👑', x, y - fontSize * 1.5);
+        }
+
+        // Add decorative lines
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x - ctx.measureText(name).width / 2 - 15, y);
+        ctx.lineTo(x - ctx.measureText(name).width / 2 - 5, y);
+        ctx.moveTo(x + ctx.measureText(name).width / 2 + 5, y);
+        ctx.lineTo(x + ctx.measureText(name).width / 2 + 15, y);
+        ctx.stroke();
 
         // Save image
         const outputPath = path.join(__dirname, `../temp/dp_name_${Date.now()}.png`);
@@ -126,7 +179,7 @@ async function addNameToDP(avatarUrl, name) {
         const buffer = canvas.toBuffer('image/png');
         fs.writeFileSync(outputPath, buffer);
         
-        console.log("DP saved successfully");
+        console.log("Premium DP saved successfully");
         return outputPath;
 
     } catch (error) {
