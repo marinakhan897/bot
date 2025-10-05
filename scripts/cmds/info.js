@@ -1,5 +1,8 @@
 const { findUid } = global.utils;
 const moment = require("moment-timezone");
+const axios = require("axios");
+const request = require("request");
+const fs = require("fs-extra");
 
 module.exports = {
 	config: {
@@ -9,27 +12,27 @@ module.exports = {
 		countDown: 5,
 		role: 1,
 		description: {
-	"request":"",
-    "fs-extra":"",
-    "axios":""
+			vi: "",
+			en: "Get bot information and admin details"
 		},
 		category: "box chat",
 		guide: {
-  }
-}
-module.exports.run = async function({ api,event,args,client,Users,Threads,__GLOBAL,Currencies }) {
-const axios = global.nodemodule["axios"];
-const request = global.nodemodule["request"];
-const fs = global.nodemodule["fs-extra"];
-const time = process.uptime(),
-		hours = Math.floor(time / (60 * 60)),
-		minutes = Math.floor((time % (60 * 60)) / 60),
-		seconds = Math.floor(time % 60);
-const moment = require("moment-timezone");
-var juswa = moment.tz("Asia/Dhaka").format("『D/MM/YYYY』 【HH:mm:ss】");
-var link =                                     
-["https://imgur.com/a/FXhpXW0"];
-var callback = () => api.sendMessage({body:`𝙈𝘼𝙍𝙄𝙉𝘼 𝐀𝐃𝐌𝐈𝐍 𝐀𝐍𝐃 𝐁𝐎𝐓 𝐈𝐍𝐅𝐎𝐑𝐌𝐀𝐓𝐈𝐎𝐍 
+			vi: "",
+			en: ""
+		}
+	},
+
+	onStart: async function({ api, event, args, client, Users, Threads, __GLOBAL, Currencies }) {
+		const time = process.uptime();
+		const hours = Math.floor(time / (60 * 60));
+		const minutes = Math.floor((time % (60 * 60)) / 60);
+		const seconds = Math.floor(time % 60);
+		
+		const juswa = moment.tz("Asia/Dhaka").format("『D/MM/YYYY』 【HH:mm:ss】");
+		const link = ["https://imgur.com/a/FXhpXW0"];
+
+		const callback = () => api.sendMessage({
+			body: `𝙈𝘼𝙍𝙄𝙉𝘼 𝐀𝐃𝐌𝐈𝐍 𝐀𝐍𝐃 𝐁𝐎𝐓 𝐈𝐍𝐅𝐎𝐑𝐌𝐀𝐓𝐈𝐎𝐍 
 (𝙈𝘼𝙍𝙄𝙉𝘼𝙆𝙃𝘼𝙉)
 
 ☄️Bot Name︎︎︎☄️  ${global.config.BOTNAME}
@@ -58,9 +61,10 @@ var callback = () => api.sendMessage({body:`𝙈𝘼𝙍𝙄𝙉𝘼 𝐀𝐃�
 🦢🍒•••ꞪɛᏒɛ ɪʂ ɮ❍┼ ❍ωɳɜɽ ɳaʍɜ•••🌷💞
 ┏━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┓
 🌸✦✧✰🍒.        𝙢𝙖𝙧𝙞𝙣𝙖           🌿✰.✧✦🌸
-┗━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┛
+┗━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┛`,
+			attachment: fs.createReadStream(__dirname + "/cache/juswa.jpg")
+		}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/juswa.jpg"));
 
-
-`,attachment: fs.createReadStream(__dirname + "/cache/juswa.jpg")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/juswa.jpg")); 
-      return request(encodeURI(link[Math.floor(Math.random() * link.length)])).pipe(fs.createWriteStream(__dirname+"/cache/juswa.jpg")).on("close",() => callback());
-   };
+		return request(encodeURI(link[Math.floor(Math.random() * link.length)])).pipe(fs.createWriteStream(__dirname + "/cache/juswa.jpg")).on("close", () => callback());
+	}
+};
