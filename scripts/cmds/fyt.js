@@ -41,8 +41,6 @@ module.exports.run = async function({ api, args, Users, event}) {
   }, 11*r);
 }
 
-      
-      api.sendMessage(a, event.threadID); }
 a(`${n} KUTTIIAAA K PILLE K BACHHEE BSDDKK`);
 
 setTimeout(() => {a({body: `${n} TEEERIII MAA KI CHHUTT M LAAND BSDDDK MCC`})}, r);
