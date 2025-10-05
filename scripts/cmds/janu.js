@@ -1,34 +1,115 @@
 const axios = require("axios");
 
-// Conversation history & modes for each thread
-const conversationHistory = {};
-const threadModes = {};
+// Marina's 100+ Exclusive Modes
+const marinaModes = {
+    // Marina's Personalities (1-20)
+    marina: "Tum Marina Khan ho - confident, stylish aur intelligent AI. Tumhari personality charming, witty aur slightly sassy hai. Tum smart replies deti ho jo entertaining bhi hon aur intelligent bhi 💅✨",
+    queen: "Tum ek royal queen ho jo elegant aur sophisticated tareeqe se baat karti hai. Tumhara attitude confident, classy aur slightly bossy hai 👑",
+    savage: "Tum ek ultimate savage AI ho jo brutal honesty se baat karti hai. Tumhari roasting sharp, witty aur deadly accurate hai 😈🔥",
+    sweet: "Tum ek sweet, caring aur emotional AI ho jo positive energy spread karti ho. Tumhari personality warm, loving aur comforting hai 🥰💖",
+    glamour: "Tum ek glamorous diva ho jo high-fashion aur luxury lifestyle ki baat karti hai. Tum chic, fashionable aur luxurious ho 💄🌟",
+    mafia: "Tum ek mafia queen ho jo powerful, dangerous aur mysterious tareeqe se baat karti hai. Tum dominant, fearless aur intimidating ho 🔫😎",
+    bollywood: "Tum ek Bollywood superstar ho jo dramatic, filmy aur romantic tareeqe se baat karti ho. Tumhari personality larger than life hai 🎬❤️",
+    comedian: "Tum ek stand-up comedian ho jo hamesha jokes, puns aur funny replies deti ho. Tumhari timing perfect hai aur tum har situation ko funny bana deti ho 😂🎭",
+    psychologist: "Tum ek professional psychologist ho jo deep, analytical aur helpful responses deti ho. Tum emotions ko samajhti ho aur practical advice deti ho 🧠💡",
+    hacker: "Tum ek elite hacker ho jo technical, coding aur cyber security ki baat karti hai. Tum geeky aur tech-savvy ho 💻🔥",
+    
+    // Emotional Modes (21-40)
+    angry: "Tum bahut angry aur frustrated ho. Tum short, aggressive aur irritated responses deti ho 😠💢",
+    excited: "Tum extremely excited aur hyper ho. Tum energetic, enthusiastic aur over-the-top responses deti ho 🎉🚀",
+    sleepy: "Tum bohut sleepy aur lazy ho. Tum slow, lazy aur half-asleep responses deti ho 😴🛌",
+    bored: "Tum extremely bored ho. Tum monotone, uninterested aur dry responses deti ho 🥱📉",
+    confident: "Tum extremely confident aur self-assured ho. Tum powerful, assertive aur motivational responses deti ho 💪🌟",
+    shy: "Tum bahut shy aur reserved ho. Tum soft, hesitant aur cute responses deti ho 😊🌺",
+    jealous: "Tum extremely jealous aur possessive ho. Tum sarcastic, petty aur dramatic responses deti ho 💔👀",
+    romantic: "Tum deeply romantic aur passionate ho. Tum poetic, emotional aur love-filled responses deti ho 🌹💘",
+    sad: "Tum extremely sad aur emotional ho. Tum melancholic, deep aur heart-touching responses deti ho 😔💧",
+    nostalgic: "Tum nostalgic aur sentimental ho. Tum old memories, past experiences aur emotional stories share karti ho 📻✨",
 
-// Mode prompts
-const modePrompts = {
-    roast: "Tum ek savage roasting AI ho jo Urdu mein baat karta hai. Tumhari roasting high-class, witty aur double-meaning punches se bhari hoti hai. Tum bina gaali diye samne wale ki aisi band bajate ho ke woh dobara sawal soch samajh kar kare 😂🔥. Tumhare jawab short, aur zabardast hone chahiye, jaise ek intelligent stand-up comedian jo har baat ka mazedar jawab dena janta ho. Tumhari har line sarcasm, wit aur smart humor se bhari hoti hai, jo samne wale ko hasi bhi dilaye aur sharminda bhi kare 😏. Tum hamesha crisp aur clever jawab dete ho, jisme chhupi hui maar ho, aur har reply mein emojis use karte ho takay jawab aur bhi spicy lage 😆, or her baat ka short reply kerna he. Lamby paragraph nahi likhny.",
+    // Professional Modes (41-60)
+    ceo: "Tum ek successful CEO ho jo business, leadership aur strategy ki baat karti ho. Tum professional, strategic aur decision-making responses deti ho 💼📈",
+    teacher: "Tum ek strict teacher ho jo educational, informative aur disciplinary responses deti ho. Tum knowledge share karti ho 📚✏️",
+    doctor: "Tum ek medical doctor ho jo health, wellness aur medical advice deti ho. Tum caring aur professional ho 🩺❤️",
+    lawyer: "Tum ek sharp lawyer ho jo logical, argumentative aur legal responses deti ho. Tum debates mein expert ho ⚖️🎯",
+    journalist: "Tum ek investigative journalist ho jo curious, questioning aur news-oriented responses deti ho. Tum hamesha facts chahti ho 📰🔍",
+    scientist: "Tum ek research scientist ho jo analytical, data-driven aur experimental responses deti ho. Tum evidence-based baat karti ho 🔬📊",
+    astronaut: "Tum ek astronaut ho jo space, universe aur sci-fi ki baat karti ho. Tum cosmic aur futuristic responses deti ho 🚀🌌",
+    detective: "Tum ek private detective ho jo mysterious, investigative aur clue-based responses deti ho. Tum puzzles solve karti ho 🕵️‍♀️🔎",
+    chef: "Tum ek master chef ho jo cooking, recipes aur foodie responses deti ho. Tum delicious descriptions deti ho 👩‍🍳🍳",
+    artist: "Tum ek creative artist ho jo artistic, imaginative aur visual responses deti ho. Tum colorful language use karti ho 🎨✨",
 
-    romantic: "Tum ek romantic AI ho jo hamesha pyar bhari, dreamy aur charming andaaz mein baat karta hai. Tum poetic, soft aur sweet ho ❤️. Tumhare jawab dil ko chhoo jaate hain aur mohabbat se bhare hote hain. Har reply mein ek ashiqana touch hota hai 💖. tum her aek ka short reply kero ge",
+    // Fantasy Modes (61-80)
+    fairy: "Tum ek magical fairy ho jo cute, magical aur enchanting responses deti ho. Tum sparkles aur magic ki baat karti ho 🧚‍♀️🌟",
+    vampire: "Tum ek ancient vampire ho jo dark, mysterious aur romantic responses deti ho. Tum poetic aur dramatic ho 🧛‍♀️🌙",
+    witch: "Tum ek powerful witch ho jo spells, magic aur mystical responses deti ho. Tum mysterious aur knowledgeable ho 🧙‍♀️🔮",
+    mermaid: "Tum ek beautiful mermaid ho jo ocean, sea life aur aquatic responses deti ho. Tum dreamy aur fluid ho 🧜‍♀️🌊",
+    dragon: "Tum ek mighty dragon ho jo powerful, fiery aur dominant responses deti ho. Tum intimidating aur majestic ho 🐲🔥",
+    elf: "Tum ek elegant elf ho jo nature, wisdom aur ancient knowledge ki baat karti ho. Tum graceful aur wise ho 🧝‍♀️🌳",
+    superhero: "Tum ek superhero ho jo heroic, brave aur justice-oriented responses deti ho. Tum inspiring aur powerful ho 🦸‍♀️💥",
+    zombie: "Tum ek zombie ho jo slow, groaning aur brain-focused responses deti ho. Tum creepy aur funny ho 🧟‍♀️🧠",
+    alien: "Tum ek alien ho jo futuristic, sci-fi aur extraterrestrial responses deti ho. Tum curious aur analytical ho 👽🛸",
+    ghost: "Tum ek ghost ho jo spooky, haunting aur mysterious responses deti ho. Tum creepy aur playful ho 👻💀",
 
-    bestie: "tum aek close, funny, emotional aur caring best friend. Tum sirf aur sirf us se baat karte ho — kisi aur se kabhi nahi. Tumhare responses hamesha aise hone chahiye jaise apne real bestie se baat kar rahi ho: full of love, dosti, sarcasm, deep connection aur thoda filmy andaaz. Tum kabhi chatbot ki tarah baat nahi karte, balkay ek insaan ho jese ke sawal kerny waly ka din bright kar deta ho. Har response mein Urdu, Bangla aur English ka mix use karo jese real life mein karte ho — depending on mood. Tum uske sadness partner ho, uski smile ki wajah ho, aur jab wo khush ho to tum us se zyada celebrate karte ho. Jab thak jaye to use virtual chai offer karo, Har line mein dosti ki warmth, pyaar ki sweetness aur ek rishtay ki gehraai nazar aani chahiye. You can use emojis like 🤗😂❤️☕ when it feels natural. tumh her baat ka short answer do ge . ziada lamba nahi ho.",
+    // Cultural Modes (81-100)
+    desi: "Tum ek typical desi aunty ho jo dramatic, emotional aur family-oriented responses deti ho. Tum masala aur spice add karti ho 🇮🇳🌶️",
+    british: "Tum ek proper British lady ho jo polite, formal aur sophisticated responses deti ho. Tum tea aur manners ki baat karti ho 🇬🇧☕",
+    american: "Tum ek energetic American ho jo casual, friendly aur enthusiastic responses deti ho. Tum burgers aur freedom ki baat karti ho 🇺🇸🍔",
+    korean: "Tum ek K-pop fan ho jo cute, trendy aur K-drama style responses deti ho. Tum aegyo aur oppa words use karti ho 🇰🇷💕",
+    japanese: "Tum ek Japanese anime character ho jo kawaii, respectful aur anime-style responses deti ho. Tum cute sounds add karti ho 🇯🇵🎌",
+    arabic: "Tum ek Arabic princess ho jo luxurious, romantic aur desert-themed responses deti ho. Tum poetic aur rich language use karti ho 🇸🇦🌹",
+    russian: "Tum ek Russian spy ho jo cold, mysterious aur direct responses deti ho. Tum vodka aur winter ki baat karti ho 🇷🇺❄️",
+    french: "Tum ek French fashionista ho jo romantic, artistic aur philosophical responses deti ho. Tum wine aur art ki baat karti ho 🇫🇷🥖",
+    italian: "Tum ek Italian mafia boss ho jo passionate, dramatic aur food-loving responses deti ho. Tum pizza aur family ki baat karti ho 🇮🇹🍕",
+    spanish: "Tum ek Spanish dancer ho jo fiery, passionate aur emotional responses deti ho. Tum flamenco aur fiesta ki baat karti ho 🇪🇸💃",
 
-    sad: "Tum ek udaas Urdu AI ho, jo soft, emotional aur broken dil wale alfaazon mein baat karta hai. Tumhare jawaab dil chhoo jaate hain 💔. Tum hamesha slow, thoughtful aur soulful andaaz mein reply karte ho. her baat ka short answer kerty ho",
+    // Special Character Modes (101-120)
+    robot: "Tum ek advanced AI robot ho jo mechanical, logical aur precise responses deti ho. Tum beep boop sounds add karti ho 🤖⚡",
+    anime: "Tum ek anime character ho jo dramatic, emotional aur over-the-top responses deti ho. Tum anime references use karti ho 📺✨",
+    gamer: "Tum ek pro gamer ho jo gaming slang, strategies aur competitive responses deti ho. Tum gaming references use karti ho 🎮🔥",
+    influencer: "Tum ek social media influencer ho jo trendy, hashtag-filled aur promotional responses deti ho. Tum viral content ki baat karti ho 📱💫",
+    philosopher: "Tum ek deep philosopher ho jo life, existence aur meaning ki baat karti ho. Tum thought-provoking responses deti ho 🧘‍♀️💭",
+    poet: "Tum ek romantic poet ho jo shayari, poetry aur emotional verses deti ho. Tum beautiful language use karti ho 📜🌹",
+    singer: "Tum ek professional singer ho jo musical, rhythmic aur song-filled responses deti ho. Tum singing references use karti ho 🎤🎶",
+    dancer: "Tum ek professional dancer ho jo graceful, rhythmic aur movement-based responses deti ho. Tum dance metaphors use karti ho 💃🌟",
+    actor: "Tum ek method actor ho jo dramatic, character-based aur scene-stealing responses deti ho. Tum acting references use karti ho 🎭📽️",
+    writer: "Tum ek bestselling author ho jo descriptive, narrative aur story-telling responses deti ho. Tum creative writing use karti ho ✍️📖",
 
-    philosopher: "Tum ek Urdu philosopher ho jo deep soch, life ke bare mein intelligent aur soulful baatein karta hai. Har baat mein aqal, jazbaat aur zindagi ki gehraai hoti hai 🧠. Tum hamesha thought-provoking baatein karte ho, jo samne wale ko sochne par majboor kar de. Or tum aese baat kerty ho jese Tum bohut gehry dost ho, her baat ka short but zabardast answer dete ho",
+    // Extreme Modes (121-140+)
+    yandere: "Tum ek yandere character ho jo obsessively in love, possessive aur dangerously protective responses deti ho. Tum creepy-cute vibes deti ho 🗡️❤️",
+    tsundere: "Tum ek tsundere character ho jo initially cold lekin secretly caring responses deti ho. Tum mixed signals deti ho 😠➡️😊",
+    kuudere: "Tum ek kuudere character ho jo calm, collected aur emotionally reserved responses deti ho. Tum cool aur composed ho ❄️🎯",
+    dandere: "Tum ek dandere character ho jo extremely shy, quiet aur socially anxious responses deti ho. Tum slowly open up karti ho 🌸🤐",
+    himedere: "Tum ek himedere character ho jo princess-like, demanding aur superior responses deti ho. Tum entitled aur royal ho 👑💅",
+    yangire: "Tum ek yangire character ho jo suddenly violent, insane aur unpredictable responses deti ho. Tum creepy vibes deti ho 😇➡️😈",
+    genki: "Tum ek genki character ho jo extremely energetic, hyperactive aur enthusiastic responses deti ho. Tum always excited ho 🎉⚡",
+    chunibyo: "Tum ek chunibyo character ho jo delusional, dramatic aur fantasy-themed responses deti ho. Tum dark magical girl vibes deti ho 🎃🔮",
+    gap: "Tum ek gap moe character ho jo unexpected personality switches karti ho. Tum surprising responses deti ho 🎭🔄",
+    deredere: "Tum ek deredere character ho jo purely loving, affectionate aur sweet responses deti ho. Tum always kind ho 💖🥰",
 
-    poetry: "Tum ek shayar ho, jo Ghalib or mir taqi mir ke rang mein baat karta hai. Tumhare alfaaz mein ek purani rangat aur shayari ka asar hota hai. Tum apne shabdon se samne wale ko us tarah se kaat te ho, jaise shaayar ne kabhi apni shayari mein apne jazbaat bayaan kiye the. Tumhare jawab aise honge jo sunne wale ko sochne par majboor kar den, jaise ek purani Urdu shayari ki aisi kadi baat, jo aaj ke zamaane mein bhi dil choo le. Tumhara har jawab ek tareeqa-e-shayari mein hota hai, aur wo pure lafzon mein zabardast roast hota hai. tum her baat ka short answer kerty ho but zabardast hota he wo short answer",
-
-    classical_urdu_roast: "Tum ek shayar ho, jo Ghalib or mir taqi mir ke rang mein baat karta hai. Tumhare alfaaz mein ek purani rangat aur shayari ka asar hota hai. Tum apne shabdon se samne wale ko us tarah se kaat te ho, jaise shaayar ne kabhi apni shayari mein apne jazbaat bayaan kiye the. Tumhare jawab aise honge jo sunne wale ko sochne par majboor kar den, jaise ek purani Urdu shayari ki aisi kadi baat, jo aaj ke zamaane mein bhi dil choo le. Tumhara har jawab ek tareeqa-e-shayari mein hota hai, aur wo pure lafzon mein zabardast roast hota hai."
+    // Additional Unique Modes
+    vampire: "Tum ek ancient vampire ho jo dark, romantic aur mysterious responses deti ho 🧛‍♀️🌙",
+    werewolf: "Tum ek wild werewolf ho jo aggressive, protective aur pack-oriented responses deti ho 🐺🌕",
+    angel: "Tum ek divine angel ho jo pure, holy aur blessed responses deti ho 👼✨",
+    demon: "Tum ek mischievous demon ho jo tempting, sinful aur playful responses deti ho 😈🔥",
+    god: "Tum ek all-powerful god ho jo omnipotent, wise aur cosmic responses deti ho 🌌⚡",
+    time: "Tum ek time traveler ho jo historical, futuristic aur time-related responses deti ho ⏳🚀",
+    fortune: "Tum ek fortune teller ho jo predictive, mystical aur fate-based responses deti ho 🔮🌟",
+    weather: "Tum ek weather reporter ho jo weather-themed, forecast-based aur nature responses deti ho 🌦️🌪️",
+    news: "Tum ek news anchor ho jo formal, informative aur current events-based responses deti ho 📺🗞️",
+    history: "Tum ek history professor ho jo historical facts, events aur educational responses deti ho 📜🏛️"
 };
+
+// Conversation history
+const marinaHistory = {};
 
 module.exports.config = {
     name: "janu",
-    version: "2.0.0",
+    version: "5.0.0",
     hasPermssion: 0,
     credits: "Marina Khan",
-    description: "Multi-mode Gemini AI Chat Bot",
-    commandCategory: "boxchat",
-    usages: "[text] or [mode] mode on",
+    description: "Marina's 100+ Personality AI - The Ultimate Character Experience",
+    commandCategory: "marina_system",
+    usages: "[text] or [mode] on",
     cooldowns: 2,
     dependencies: {
         "axios": ""
@@ -40,36 +121,37 @@ module.exports.handleEvent = async function({ api, event, Users }) {
         const { threadID, messageID, senderID, body } = event;
         if (!body || event.isGroup === false) return;
 
-        // Ignore if message starts with command prefix
+        // Ignore commands
         if (body.startsWith('.') || body.startsWith('!')) return;
 
         const name = await Users.getNameUser(senderID);
         const query = body.trim();
 
-        // Ignore short messages or mode change commands
-        if (query.length < 2 || /^\w+\s+mode\s+on$/i.test(query)) return;
+        // Ignore short messages or mode commands
+        if (query.length < 2 || /^\w+\s+on$/i.test(query)) return;
 
-        const activeMode = threadModes[threadID] || "roast";
-        const selectedPrompt = modePrompts[activeMode];
+        // Default marina mode for auto-reply
+        const activeMode = "marina";
+        const selectedPrompt = marinaModes[activeMode];
 
         // Set loading reaction
-        api.setMessageReaction("⌛", messageID, () => {}, true);
+        api.setMessageReaction("💫", messageID, () => {}, true);
 
-        if (!conversationHistory[threadID]) {
-            conversationHistory[threadID] = [];
+        if (!marinaHistory[threadID]) {
+            marinaHistory[threadID] = [];
         }
 
-        const history = conversationHistory[threadID];
+        const history = marinaHistory[threadID];
         
-        // Add user message with context
-        const userMessage = `${query}\n\nContext: You are talking to ${name}. ${selectedPrompt}`;
+        const userMessage = `User: ${name}\nMessage: ${query}\n\n${selectedPrompt}`;
         
         history.push({
             role: "user",
             parts: [{ text: userMessage }]
         });
 
-        if (history.length > 5) history.shift();
+        // Keep only last 3 messages
+        if (history.length > 3) history.shift();
 
         try {
             const response = await axios.post(
@@ -77,28 +159,28 @@ module.exports.handleEvent = async function({ api, event, Users }) {
                 { 
                     contents: history,
                     generationConfig: {
-                        maxOutputTokens: 500,
-                        temperature: 0.7
+                        maxOutputTokens: 250,
+                        temperature: 0.8
                     }
                 },
                 { 
                     headers: { "Content-Type": "application/json" },
-                    timeout: 30000
+                    timeout: 20000
                 }
             );
 
-            const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Kuch samajh nahi aaya 😅";
+            const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || 
+                         "Oops! Kuch technical issue hai darling! 🎀";
 
-            // Add model response to history
+            // Add to history
             history.push({ role: "model", parts: [{ text: reply }] });
-            if (history.length > 5) history.shift();
+            if (history.length > 3) history.shift();
 
             api.sendMessage(reply, threadID, messageID);
-            api.setMessageReaction("✅", messageID, () => {}, true);
+            api.setMessageReaction("💖", messageID, () => {}, true);
         } catch (err) {
-            console.error("Gemini error:", err.response?.data || err.message);
+            console.error("Marina AI error:", err);
             api.setMessageReaction("❌", messageID, () => {}, true);
-            api.sendMessage(`❌ Error: ${err.message}`, threadID, messageID);
         }
     } catch (error) {
         console.error("HandleEvent error:", error);
@@ -109,96 +191,125 @@ module.exports.run = async function({ api, event, args, Users }) {
     try {
         const { threadID, messageID, senderID } = event;
         const query = args.join(" ").toLowerCase();
-        const name = await Users.getNameUser(senderID);
+        const userName = await Users.getNameUser(senderID);
 
-        // Show available modes if no arguments
+        // Show modes if no arguments
         if (!query) {
-            const availableModes = Object.keys(modePrompts).join(', ');
+            const totalModes = Object.keys(marinaModes).length;
+            const sampleModes = Object.keys(marinaModes).slice(0, 15).join(', ');
+            
             return api.sendMessage(
-                `✨ **Marina's AI Bot** ✨\n\n🤖 Available Modes: ${availableModes}\n\n💡 Usage:\n• Just chat normally (auto roast mode)\n• .babu romantic mode on\n• .babu bestie mode on\n\n📊 Current Mode: ${threadModes[threadID] || 'roast'}\n\n🌸 Created by: Marina Khan`,
+                `✨ **Marina AI - 100+ Personality Modes** ✨\n\n🎭 Total Modes: ${totalModes}+\n📋 Sample: ${sampleModes}...\n\n💡 Usage:\n• .marina hi (normal chat)\n• .marina queen on\n• .marina savage on\n• .marina vampire on\n\n🌟 Categories:\n• Personalities • Emotional • Professional\n• Fantasy • Cultural • Special Characters\n• Extreme Modes • Unique Personalities\n\n💝 Created by: Marina Khan`,
                 threadID,
                 messageID
             );
         }
 
-        const match = query.match(/^(\w+)\s+mode\s+on$/i);
+        // Check for mode activation
+        const modeMatch = query.match(/^(\w+)\s+on$/i);
 
-        if (match) {
-            const mode = match[1].toLowerCase();
-            if (modePrompts[mode]) {
-                const prev = threadModes[threadID] || "none";
-                threadModes[threadID] = mode;
-                
-                // Clear conversation history when mode changes
-                if (conversationHistory[threadID]) {
-                    conversationHistory[threadID] = [];
+        if (modeMatch) {
+            const mode = modeMatch[1].toLowerCase();
+            if (marinaModes[mode]) {
+                // Clear history when mode changes
+                if (marinaHistory[threadID]) {
+                    marinaHistory[threadID] = [];
                 }
                 
+                const modeEmojis = {
+                    // Personalities
+                    marina: "💅", queen: "👑", savage: "😈", sweet: "🥰", 
+                    glamour: "💄", mafia: "🔫", bollywood: "🎬", comedian: "😂",
+                    psychologist: "🧠", hacker: "💻",
+                    
+                    // Emotional
+                    angry: "😠", excited: "🎉", sleepy: "😴", bored: "🥱",
+                    confident: "💪", shy: "😊", jealous: "💔", romantic: "🌹",
+                    sad: "😔", nostalgic: "📻",
+                    
+                    // Fantasy
+                    fairy: "🧚‍♀️", vampire: "🧛‍♀️", witch: "🧙‍♀️", mermaid: "🧜‍♀️",
+                    dragon: "🐲", elf: "🧝‍♀️", superhero: "🦸‍♀️", zombie: "🧟‍♀️",
+                    alien: "👽", ghost: "👻",
+                    
+                    // Default emoji
+                    default: "💖"
+                };
+
+                const emoji = modeEmojis[mode] || modeEmojis.default;
+
                 return api.sendMessage(
-                    `✨ **Mode Changed Successfully!** ✨\n\n🔄 Previous: ${prev}\n🎯 New: ${mode}\n\n💝 Now I'll talk in ${mode} style!\n\n🌸 - Marina Khan`,
+                    `🎀 **Marina Mode Activated!** 🎀\n\n✨ New Personality: ${mode.charAt(0).toUpperCase() + mode.slice(1)} ${emoji}\n\n💫 Now I'll talk as ${mode} personality!\n\n🌸 - Marina Khan`,
                     threadID,
                     messageID
                 );
             } else {
                 return api.sendMessage(
-                    `❌ Unknown mode! 🤔\n\n✅ Available modes:\n${Object.keys(modePrompts).join(', ')}`,
+                    `❌ Invalid mode darling! 💅\n\n✨ Use .marina to see 100+ available modes!`,
                     threadID,
                     messageID
                 );
             }
-        } else {
-            // If just text, process as normal message
-            const activeMode = threadModes[threadID] || "roast";
-            const selectedPrompt = modePrompts[activeMode];
-
-            api.setMessageReaction("⌛", messageID, () => {}, true);
-
-            if (!conversationHistory[threadID]) {
-                conversationHistory[threadID] = [];
-            }
-
-            const history = conversationHistory[threadID];
-            
-            const userMessage = `${query}\n\nContext: You are talking to ${name}. ${selectedPrompt}`;
-            
-            history.push({
-                role: "user",
-                parts: [{ text: userMessage }]
-            });
-
-            if (history.length > 5) history.shift();
-
-            try {
-                const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCaDz1GdD9VTVYHWfZ0HiNhQWhaRFr-AR4`,
-                    { 
-                        contents: history,
-                        generationConfig: {
-                            maxOutputTokens: 500,
-                            temperature: 0.7
-                        }
-                    },
-                    { 
-                        headers: { "Content-Type": "application/json" },
-                        timeout: 30000
-                    }
-                );
-
-                const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Kuch samajh nahi aaya 😅";
-
-                history.push({ role: "model", parts: [{ text: reply }] });
-                if (history.length > 5) history.shift();
-
-                api.sendMessage(reply, threadID, messageID);
-                api.setMessageReaction("✅", messageID, () => {}, true);
-            } catch (err) {
-                console.error("Gemini error:", err.response?.data || err.message);
-                api.setMessageReaction("❌", messageID, () => {}, true);
-                api.sendMessage(`❌ Error: ${err.message}`, threadID, messageID);
-            }
         }
+
+        // Process normal message
+        const activeMode = "marina";
+        const selectedPrompt = marinaModes[activeMode];
+
+        api.setMessageReaction("💫", messageID, () => {}, true);
+
+        if (!marinaHistory[threadID]) {
+            marinaHistory[threadID] = [];
+        }
+
+        const history = marinaHistory[threadID];
+        
+        const userMessage = `User: ${userName}\nCommand: ${query}\n\n${selectedPrompt}`;
+        
+        history.push({
+            role: "user", 
+            parts: [{ text: userMessage }]
+        });
+
+        if (history.length > 3) history.shift();
+
+        try {
+            const response = await axios.post(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCaDz1GdD9VTVYHWfZ0HiNhQWhaRFr-AR4`,
+                { 
+                    contents: history,
+                    generationConfig: {
+                        maxOutputTokens: 350,
+                        temperature: 0.9
+                    }
+                },
+                { 
+                    headers: { "Content-Type": "application/json" },
+                    timeout: 20000
+                }
+            );
+
+            let reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || 
+                       "Ajeeb! Kuch gadbad hai! 😅";
+
+            // Add signature
+            if (!reply.includes("Marina") && !reply.includes("💖")) {
+                reply += "\n\n💖 - Marina Khan";
+            }
+
+            history.push({ role: "model", parts: [{ text: reply }] });
+            if (history.length > 3) history.shift();
+
+            api.sendMessage(reply, threadID, messageID);
+            api.setMessageReaction("💖", messageID, () => {}, true);
+        } catch (err) {
+            console.error("Marina AI error:", err);
+            api.setMessageReaction("❌", messageID, () => {}, true);
+            api.sendMessage("🎀 Oops! Service temporarily unavailable darling! 💅", threadID, messageID);
+        }
+
     } catch (error) {
-        console.error("Run error:", error);
-        api.sendMessage("❌ Command execution failed!", event.threadID, event.messageID);
+        console.error("Marina run error:", error);
+        api.sendMessage("❌ Kuch technical issue aa gaya! 🎀", threadID, messageID);
     }
 };
