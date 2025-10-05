@@ -100,7 +100,22 @@ module.exports = {
             
             // 🔹 GREETINGS & BASIC CONVERSATION (500+ keywords)
             'hello': 'Hello! Kaise hain aap? 👋',
+            'KAISE': 'alhamdulellah main thik ap sunain?',
+            'Kase hain': 'Allah ka karam hai ap sunain?',
+            'Hal hai'  :  'allah pak ka shukar hai ap daso?',
+            'kon ha'   : 'main ek Al assist messanger bot hon jisko marina ne banaya hai',
+            'gir boy'  : 'main ek Al bot hon mujhe marina ne banaya hai',
+            'keya karti': 'meri owner doctor+devoloper hain',
+             '😳'      : '😂',
+             '😢'      : '😭',
+             '😎'      :  '😒',
+             '😍'      :  '😘',
+             '😏'      :  '😶',
+             '😡'      :  '😔',
             'hi': 'Hi there! Kya haal chaal? 🤗',
+            'lORA':'T3R3 MAN K9 MARINA K2 M9TA LORA',
+            'GAND':'T3R3 MAN K3 CH7T M2 DANDA',
+            
             'hey': 'Hey! Sunao kya chal raha hai? 😊',
             'assalamualaikum': 'Wa Alaikum Assalam! Kaise hain aap? 🌙',
             'salam': 'Wa Alaikum Salam! Kya kar rahe hain?',
@@ -108,6 +123,7 @@ module.exports = {
             'kese ho': 'Alhamdulillah theek! Aap kaise hain?',
             'how are you': 'I am fine alhamdulillah! How about you? 💫',
             'aap kaise ho': 'Main bilkul theek hoon! Aap ka khayal rakhna 🌸',
+            'aap kaisi ho': 'Main bilkul theek hoon! Aap ka khayal rakhna
             'good morning': 'Subha bakhair! Khush raho 🌅',
             'good night': 'Shab bakhair! Sweet dreams 🌙',
             'bye': 'Allah Hafiz! Milte hain phir 👋',
