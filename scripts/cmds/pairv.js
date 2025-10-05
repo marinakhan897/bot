@@ -1,236 +1,296 @@
+const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs-extra');
-const axios = require('axios');
 const path = require('path');
+const axios = require('axios');
 
 module.exports = {
-  config: {
-    name: "pair",
-    version: "2.0.0",
-    role: 0,
-    author: "Marina Khan",
-    category: "fun",
-    shortDescription: "Check love compatibility",
-    longDescription: "Check love compatibility between two users with beautiful graphics",
-    guide: "{pn} [@mention1 | @mention2] or {pn} [name1 | name2]",
-    countDown: 15,
-    dependencies: {
-      "fs-extra": "",
-      "axios": "",
-      "canvas": ""
+    config: {
+        name: "pair",
+        version: "2.0.0",
+        role: 0,
+        author: "Marina Khan",
+        category: "fun",
+        description: "💕 Create beautiful pair DPs with compatibility percentage",
+        guide: {
+            en: "{pn} [@mention1 | @mention2] or {pn} [name1 | name2]"
+        },
+        countDown: 10
+    },
+
+    onStart: async function({ api, event, args, usersData }) {
+        try {
+            let name1, name2, userID1, userID2;
+
+            // Case 1: Reply to message with two mentions
+            if (event.messageReply && event.messageReply.mentions) {
+                const mentions = Object.keys(event.messageReply.mentions);
+                if (mentions.length >= 2) {
+                    userID1 = mentions[0];
+                    userID2 = mentions[1];
+                    const userInfo1 = await usersData.get(userID1);
+                    const userInfo2 = await usersData.get(userID2);
+                    name1 = userInfo1.name;
+                    name2 = userInfo2.name;
+                }
+            }
+            // Case 2: Direct mentions in command
+            else if (Object.keys(event.mentions).length >= 2) {
+                const mentions = Object.keys(event.mentions);
+                userID1 = mentions[0];
+                userID2 = mentions[1];
+                const userInfo1 = await usersData.get(userID1);
+                const userInfo2 = await usersData.get(userID2);
+                name1 = userInfo1.name;
+                name2 = userInfo2.name;
+            }
+            // Case 3: Names provided with | separator
+            else if (args.join(' ').includes('|')) {
+                const names = args.join(' ').split('|').map(n => n.trim());
+                if (names.length >= 2) {
+                    name1 = names[0];
+                    name2 = names[1];
+                }
+            }
+            // Case 4: Two names as separate arguments
+            else if (args.length >= 2) {
+                name1 = args[0];
+                name2 = args[1];
+            }
+            // Case 5: Default names
+            else {
+                return api.sendMessage(`💕 **Marina's Pair Compatibility**\n\nUsage:\n• ${this.config.name} [@mention1 | @mention2]\n• ${this.config.name} [name1 | name2]\n\nExamples:\n• pair @user1 @user2\n• pair John | Jane\n• Reply to a message with two mentions`, event.threadID);
+            }
+
+            // If we have user IDs, get their profile pictures
+            let avatar1, avatar2;
+            
+            if (userID1) {
+                avatar1 = `https://graph.facebook.com/${userID1}/picture?width=400&height=400&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+            }
+            if (userID2) {
+                avatar2 = `https://graph.facebook.com/${userID2}/picture?width=400&height=400&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+            }
+
+            // Send processing message
+            api.sendMessage(`💞 Calculating compatibility between ${name1} and ${name2}...`, event.threadID);
+
+            // Generate pair DP
+            const pairPath = await generatePairDP(name1, name2, avatar1, avatar2);
+            
+            // Calculate compatibility percentage (fun algorithm)
+            const compatibility = calculateCompatibility(name1, name2);
+            
+            // Get compatibility message
+            const compMessage = getCompatibilityMessage(compatibility);
+
+            // Send the result with DP
+            await api.sendMessage({
+                body: `💕 **Marina's Pair Compatibility**\n\n👫 Pair: ${name1} 💞 ${name2}\n📊 Compatibility: ${compatibility}%\n💝 Status: ${compMessage}\n\n✨ Made with love by Marina AI`,
+                attachment: fs.createReadStream(pairPath)
+            }, event.threadID);
+
+            // Cleanup
+            setTimeout(() => {
+                if (fs.existsSync(pairPath)) {
+                    fs.unlinkSync(pairPath);
+                }
+            }, 5000);
+
+        } catch (error) {
+            console.error("Pair command error:", error);
+            api.sendMessage("❌ Pair DP creation failed. Please try again!", event.threadID);
+        }
     }
-  },
-
-  onStart: async function({ api, event, args, usersData }) {
-    try {
-      const { threadID, messageReply, senderID } = event;
-      
-      let name1, name2, uid1, uid2;
-
-      // Check if replying to a message with mentions
-      if (messageReply && messageReply.mentions) {
-        const mentions = Object.keys(messageReply.mentions);
-        if (mentions.length >= 2) {
-          uid1 = mentions[0];
-          uid2 = mentions[1];
-          name1 = messageReply.mentions[uid1];
-          name2 = messageReply.mentions[uid2];
-        }
-      }
-      
-      // Check current message mentions
-      if (event.mentions && Object.keys(event.mentions).length >= 2) {
-        const mentions = Object.keys(event.mentions);
-        uid1 = mentions[0];
-        uid2 = mentions[1];
-        name1 = event.mentions[uid1];
-        name2 = event.mentions[uid2];
-      } 
-      // Check if names provided as text
-      else if (args.length >= 2 && args.includes('|')) {
-        const names = args.join(' ').split('|').map(n => n.trim());
-        if (names.length >= 2) {
-          name1 = names[0];
-          name2 = names[1];
-          uid1 = senderID;
-          uid2 = senderID;
-        }
-      }
-      // Default: sender and mentioned person
-      else if (event.mentions && Object.keys(event.mentions).length === 1) {
-        const mentions = Object.keys(event.mentions);
-        uid1 = senderID;
-        uid2 = mentions[0];
-        const user1 = await usersData.get(senderID);
-        const user2 = await usersData.get(uid2);
-        name1 = user1.name;
-        name2 = event.mentions[uid2];
-      }
-      // No valid input
-      else {
-        return api.sendMessage(`💕 Marina's Pair Compatibility\n\nUsage:\n• ${this.config.guide}\n\nExamples:\n• pair @user1 @user2\n• pair John | Jane\n• Reply to a message with two mentions`, threadID);
-      }
-
-      // Calculate compatibility percentage (fun algorithm)
-      const compatibility = calculateCompatibility(name1, name2, uid1, uid2);
-      
-      // Get relationship status and message
-      const { status, message, emoji } = getRelationshipStatus(compatibility);
-      
-      // Create beautiful pair result
-      const pairMessage = createPairMessage(name1, name2, compatibility, status, message, emoji);
-      
-      // Try to send with image (fallback to text if error)
-      try {
-        const imageUrl = await generatePairImage(name1, name2, compatibility, status);
-        if (imageUrl) {
-          await api.sendMessage({
-            body: pairMessage,
-            attachment: await global.utils.getStreamFromURL(imageUrl)
-          }, threadID);
-        } else {
-          throw new Error("No image generated");
-        }
-      } catch (imageError) {
-        console.log("Image generation failed, sending text only:", imageError);
-        await api.sendMessage(pairMessage, threadID);
-      }
-
-    } catch (error) {
-      console.error("Pair command error:", error);
-      api.sendMessage("❌ Error calculating pair compatibility. Please try again!", event.threadID);
-    }
-  }
 };
 
-// Compatibility calculation algorithm
-function calculateCompatibility(name1, name2, uid1, uid2) {
-  // Combine names and IDs for seed
-  const seed = (name1 + name2 + uid1 + uid2).toLowerCase();
-  let hash = 0;
-  
-  for (let i = 0; i < seed.length; i++) {
-    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-    hash = hash & hash;
-  }
-  
-  // Base compatibility (50-95%)
-  let compatibility = 50 + Math.abs(hash % 46);
-  
-  // Name length bonus
-  const nameBonus = Math.min(name1.length, name2.length) * 0.5;
-  compatibility += nameBonus;
-  
-  // First letter match bonus
-  if (name1[0].toLowerCase() === name2[0].toLowerCase()) {
-    compatibility += 5;
-  }
-  
-  // Ensure within 1-100 range
-  return Math.max(1, Math.min(100, Math.round(compatibility)));
+// Calculate compatibility percentage
+function calculateCompatibility(name1, name2) {
+    // Simple fun algorithm based on name lengths and characters
+    const combined = (name1 + name2).toLowerCase().replace(/\s/g, '');
+    let score = 0;
+    
+    // Base score from name lengths
+    score += Math.min(name1.length, name2.length) * 2;
+    score += Math.abs(name1.length - name2.length) * 1.5;
+    
+    // Character matching bonus
+    const uniqueChars = new Set(combined).size;
+    score += (combined.length - uniqueChars) * 3;
+    
+    // Random factor for fun
+    const randomFactor = Math.random() * 20 + 70;
+    
+    // Final calculation
+    let finalScore = Math.min(100, Math.max(10, Math.round((score + randomFactor) / 2)));
+    
+    // Ensure it's not 100% too easily
+    if (finalScore > 95) finalScore = 85 + Math.floor(Math.random() * 15);
+    
+    return finalScore;
 }
 
-// Get relationship status based on percentage
-function getRelationshipStatus(percentage) {
-  if (percentage >= 90) {
-    return {
-      status: "Soulmates 💞",
-      message: "Perfect match! You two are meant to be together!",
-      emoji: "💞"
-    };
-  } else if (percentage >= 80) {
-    return {
-      status: "Amazing Couple 💖",
-      message: "Excellent compatibility! Strong potential for a beautiful relationship.",
-      emoji: "💖"
-    };
-  } else if (percentage >= 70) {
-    return {
-      status: "Great Match 💕",
-      message: "Very good compatibility! You two would make a lovely couple.",
-      emoji: "💕"
-    };
-  } else if (percentage >= 60) {
-    return {
-      status: "Good Potential 💝",
-      message: "Good match! With effort, this could become something special.",
-      emoji: "💝"
-    };
-  } else if (percentage >= 50) {
-    return {
-      status: "Possible Match 💗",
-      message: "Average compatibility. Could work with understanding and patience.",
-      emoji: "💗"
-    };
-  } else if (percentage >= 40) {
-    return {
-      status: "Challenging 💔",
-      message: "Might require extra effort and understanding to make it work.",
-      emoji: "💔"
-    };
-  } else if (percentage >= 30) {
-    return {
-      status: "Difficult Match 💢",
-      message: "Compatibility is low. Might face many challenges.",
-      emoji: "💢"
-    };
-  } else if (percentage >= 20) {
-    return {
-      status: "Not Recommended ❌",
-      message: "Very low compatibility. Better stay as friends.",
-      emoji: "❌"
-    };
-  } else {
-    return {
-      status: "Impossible Match 💀",
-      message: "Extremely low compatibility. Not recommended at all.",
-      emoji: "💀"
-    };
-  }
+// Get compatibility message
+function getCompatibilityMessage(percentage) {
+    if (percentage >= 90) return "Perfect Match! 💖";
+    if (percentage >= 80) return "Great Compatibility! 💕";
+    if (percentage >= 70) return "Good Match! 💝";
+    if (percentage >= 60) return "Potential Couple! 💞";
+    if (percentage >= 50) return "Maybe... 🤔";
+    if (percentage >= 40) return "Needs Work 💫";
+    if (percentage >= 30) return "Challenging 💔";
+    return "Not Compatible 😢";
 }
 
-// Create beautiful pair message
-function createPairMessage(name1, name2, percentage, status, message, emoji) {
-  const progressBar = createProgressBar(percentage);
-  
-  return `💕 **Marina's Love Compatibility** 💕
+// Generate beautiful pair DP
+async function generatePairDP(name1, name2, avatar1 = null, avatar2 = null) {
+    const width = 800;
+    const height = 400;
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
 
-┌─────── ✦ PAIR RESULT ✦ ───────┐
-│
-│  💖 **${name1}** + **${name2}** 💖
-│
-│  📊 Compatibility: **${percentage}%**
-│  ${progressBar}
-│
-│  🏷️  Status: ${status}
-│  💌 Message: ${message}
-│
-│  ✨ _Calculated by Marina's Magic_ ✨
-│
-└────────────────────────────┘
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, '#ff9a9e');
+    gradient.addColorStop(0.5, '#fad0c4');
+    gradient.addColorStop(1, '#fbc2eb');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
 
-💝 Marina Khan's Love Analysis`;
+    try {
+        // Load profile pictures or use default avatars
+        let img1, img2;
+        
+        if (avatar1) {
+            const response1 = await axios.get(avatar1, { responseType: 'arraybuffer' });
+            img1 = await loadImage(Buffer.from(response1.data));
+        } else {
+            // Default avatar for name1
+            img1 = await createDefaultAvatar(name1.charAt(0).toUpperCase());
+        }
+        
+        if (avatar2) {
+            const response2 = await axios.get(avatar2, { responseType: 'arraybuffer' });
+            img2 = await loadImage(Buffer.from(response2.data));
+        } else {
+            // Default avatar for name2
+            img2 = await createDefaultAvatar(name2.charAt(0).toUpperCase());
+        }
+
+        // Draw circular profile pictures
+        const avatarSize = 120;
+        const avatarY = height / 2 - avatarSize / 2;
+        
+        // First avatar (left)
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(180, height / 2, avatarSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img1, 180 - avatarSize / 2, avatarY, avatarSize, avatarSize);
+        ctx.restore();
+
+        // Second avatar (right)
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(width - 180, height / 2, avatarSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img2, width - 180 - avatarSize / 2, avatarY, avatarSize, avatarSize);
+        ctx.restore();
+
+        // Add heart between avatars
+        ctx.fillStyle = '#ff4d6d';
+        ctx.beginPath();
+        ctx.arc(width / 2, height / 2, 30, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Heart shape
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 40px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('💖', width / 2, height / 2);
+
+    } catch (error) {
+        console.log("Using default avatars due to error:", error.message);
+        // Continue with default avatars
+    }
+
+    // Add names
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#ff4d6d';
+    ctx.lineWidth = 3;
+    ctx.textAlign = 'center';
+
+    // Name 1
+    ctx.font = 'bold 28px Arial';
+    ctx.strokeText(name1, 180, height - 60);
+    ctx.fillText(name1, 180, height - 60);
+
+    // Name 2
+    ctx.font = 'bold 28px Arial';
+    ctx.strokeText(name2, width - 180, height - 60);
+    ctx.fillText(name2, width - 180, height - 60);
+
+    // Add pair text
+    ctx.font = 'bold 36px Arial';
+    ctx.fillStyle = '#ff4d6d';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.strokeText(`${name1.split(' ')[0]} 💞 ${name2.split(' ')[0]}`, width / 2, 50);
+    ctx.fillText(`${name1.split(' ')[0]} 💞 ${name2.split(' ')[0]}`, width / 2, 50);
+
+    // Add decorative elements
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.lineWidth = 2;
+    
+    // Top decoration
+    ctx.beginPath();
+    ctx.moveTo(width / 2 - 100, 80);
+    ctx.lineTo(width / 2 - 50, 85);
+    ctx.lineTo(width / 2 + 50, 85);
+    ctx.lineTo(width / 2 + 100, 80);
+    ctx.stroke();
+
+    // Bottom decoration
+    ctx.beginPath();
+    ctx.moveTo(width / 2 - 100, height - 80);
+    ctx.lineTo(width / 2 - 50, height - 85);
+    ctx.lineTo(width / 2 + 50, height - 85);
+    ctx.lineTo(width / 2 + 100, height - 80);
+    ctx.stroke();
+
+    // Save image
+    const tempDir = path.join(__dirname, '../temp');
+    if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+    }
+    
+    const outputPath = path.join(tempDir, `pair_${Date.now()}.png`);
+    const buffer = canvas.toBuffer('image/png');
+    fs.writeFileSync(outputPath, buffer);
+    
+    return outputPath;
 }
 
-// Create visual progress bar
-function createProgressBar(percentage) {
-  const filled = '█';
-  const empty = '▒';
-  const totalBlocks = 10;
-  const filledBlocks = Math.round((percentage / 100) * totalBlocks);
-  const emptyBlocks = totalBlocks - filledBlocks;
-  
-  return `│  [${filled.repeat(filledBlocks)}${empty.repeat(emptyBlocks)}]`;
-}
-
-// Generate pair image (simplified version)
-async function generatePairImage(name1, name2, percentage, status) {
-  try {
-    // Using a simple API for love meter images
-    const apiUrl = `https://api.popcat.xyz/ship?user1=${encodeURIComponent(name1)}&user2=${encodeURIComponent(name2)}`;
-    const response = await axios.get(apiUrl, { responseType: 'stream' });
-    return apiUrl;
-  } catch (error) {
-    // Fallback to text-based
-    return null;
-  }
+// Create default avatar with initial
+async function createDefaultAvatar(initial) {
+    const canvas = createCanvas(200, 200);
+    const ctx = canvas.getContext('2d');
+    
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+    gradient.addColorStop(0, '#667eea');
+    gradient.addColorStop(1, '#764ba2');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 200, 200);
+    
+    // Initial
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 80px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(initial, 100, 100);
+    
+    return canvas;
 }
