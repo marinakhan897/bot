@@ -7,7 +7,7 @@ module.exports = {
   config: {
     name: "help",
     version: "3.2",
-    author: "Marina Khan", // Changed to your name
+    author: "Marina Khan",
     countDown: 5,
     role: 0,
     description: "View command information with enhanced interface",
@@ -19,36 +19,35 @@ module.exports = {
 
   langs: {
     en: {
-      helpHeader: "╔══════════◇◆◇══════════╗\n"
-                + "      🤖 MARINA KHAN BOT\n"
-                + "╠══════════◇◆◇══════════╣",
-      categoryHeader: "\n   ┌────── {category} ──────┐\n",
-      commandItem: "║ │ 🟢 {name}",
-      helpFooter: "║ └─────────────────┘\n"
-                + "╚══════════◇◆◇══════════╝",
-      commandInfo: "╔══════════◇◆◇══════════╗\n"
-                 + "║      MARINA KHAN BOT - COMMAND INFO\n"
-                 + "╠══════════◇◆◇══════════╣\n"
-                 + "║ 🏷️ Name: {name}\n"
-                 + "║ 📝 Description: {description}\n"
-                 + "║ 📂 Category: {category}\n"
-                 + "║ 🔤 Aliases: {aliases}\n"
-                 + "║ 🏷️ Version: {version}\n"
-                 + "║ 🔒 Permissions: {role}\n"
-                 + "║ ⏱️ Cooldown: {countDown}s\n"
-                 + "║ 🔧 Use Prefix: {usePrefix}\n"
-                 + "║ 👤 Author: Marina Khan\n" // Updated author name
-                 + "╠══════════◇◆◇══════════╣",
-      usageHeader: "║ 🛠️ USAGE GUIDE",
-      usageBody: " ║ {usage}",
-      usageFooter: "╚══════════◇◆◇══════════╝",
-      commandNotFound: "⚠️ Command '{command}' not found!",
+      helpHeader: "✨════════════════════✨\n"
+                + "       🌸 MARINA KHAN BOT 🌸\n"
+                + "✨════════════════════✨",
+      categoryHeader: "\n{categoryBorder}",
+      commandItem: "   🌟 {name}",
+      helpFooter: "\n✨════════════════════✨",
+      commandInfo: "🎀════════════════════🎀\n"
+                 + "      🌸 COMMAND INFORMATION 🌸\n"
+                 + "🎀════════════════════🎀\n"
+                 + "🌸 Name: {name}\n"
+                 + "📖 Description: {description}\n"
+                 + "📁 Category: {category}\n"
+                 + "🔤 Aliases: {aliases}\n"
+                 + "🏷️ Version: {version}\n"
+                 + "🔐 Permissions: {role}\n"
+                 + "⏰ Cooldown: {countDown}s\n"
+                 + "⚡ Use Prefix: {usePrefix}\n"
+                 + "👑 Author: Marina Khan\n"
+                 + "🎀════════════════════🎀",
+      usageHeader: "📚 USAGE GUIDE",
+      usageBody: " 💫 {usage}",
+      usageFooter: "✨════════════════════✨",
+      commandNotFound: "❌ Command '{command}' not found!",
       doNotHave: "None",
       roleText0: "👥 All Users",
-      roleText1: "👑 Group Admins",
+      roleText1: "👑 Group Admins", 
       roleText2: "⚡ Bot Admins",
       totalCommands: "📊 Total Commands: {total}\n"
-                  + "🤖 Developed by Marina Khan" // Updated footer
+                  + "💝 Developed by Marina Khan"
     }
   },
 
@@ -57,6 +56,52 @@ module.exports = {
     const prefix = getPrefix(threadID);
     const commandName = args[0]?.toLowerCase();
     const bannerPath = path.join(__dirname, "assets", "20250319_111041.png");
+
+    // Function to get category-specific border
+    const getCategoryBorder = (category) => {
+      const borderStyles = {
+        // System & Admin Categories
+        'SYSTEM': '🔧━━━━━━━━ {category} ━━━━━━━━🔧',
+        'ADMIN': '⚡━━━━━━━━ {category} ━━━━━━━━⚡',
+        'OWNER': '👑━━━━━━━━ {category} ━━━━━━━━👑',
+        
+        // Fun & Entertainment
+        'FUN': '🎮━━━━━━━━ {category} ━━━━━━━━🎮',
+        'GAME': '🎯━━━━━━━━ {category} ━━━━━━━━🎯',
+        'ENTERTAINMENT': '🎭━━━━━━━━ {category} ━━━━━━━━🎭',
+        'NSFW': '🔞━━━━━━━━ {category} ━━━━━━━━🔞',
+        
+        // Media & Content
+        'MEDIA': '🎵━━━━━━━━ {category} ━━━━━━━━🎵',
+        'MUSIC': '🎶━━━━━━━━ {category} ━━━━━━━━🎶',
+        'IMAGE': '🖼️━━━━━━ {category} ━━━━━━🖼️',
+        'VIDEO': '🎬━━━━━━━━ {category} ━━━━━━━━🎬',
+        
+        // Utility & Tools
+        'UTILITY': '🛠️━━━━━━ {category} ━━━━━━🛠️',
+        'TOOLS': '🔧━━━━━━━━ {category} ━━━━━━━━🔧',
+        'SEARCH': '🔍━━━━━━━━ {category} ━━━━━━━━🔍',
+        
+        // Information
+        'INFO': '📚━━━━━━━━ {category} ━━━━━━━━📚',
+        'EDUCATION': '📖━━━━━━━━ {category} ━━━━━━━━📖',
+        
+        // AI & Technology
+        'AI': '🤖━━━━━━━━ {category} ━━━━━━━━🤖',
+        'CHAT': '💬━━━━━━━━ {category} ━━━━━━━━💬',
+        
+        // Social & Group
+        'GROUP': '👥━━━━━━━━ {category} ━━━━━━━━👥',
+        'SOCIAL': '🌐━━━━━━━━ {category} ━━━━━━━━🌐',
+        
+        // Default beautiful borders
+        'GENERAL': '🌟━━━━━━━━ {category} ━━━━━━━━🌟',
+        'DEFAULT': '🎀━━━━━━━━ {category} ━━━━━━━━🎀'
+      };
+
+      const style = borderStyles[category] || borderStyles['DEFAULT'];
+      return `\n   ${style.replace(/{category}/g, category)}\n`;
+    };
 
     if (commandName === 'c' && args[1]) {
       const categoryArg = args[1].toUpperCase();
@@ -75,7 +120,7 @@ module.exports = {
       }
 
       let replyMsg = this.langs.en.helpHeader;
-      replyMsg += this.langs.en.categoryHeader.replace(/{category}/g, categoryArg);
+      replyMsg += getCategoryBorder(categoryArg);
 
       commandsInCategory.sort((a, b) => a.name.localeCompare(b.name)).forEach(cmd => {
         replyMsg += this.langs.en.commandItem.replace(/{name}/g, cmd.name) + "\n";
@@ -108,7 +153,7 @@ module.exports = {
         const commandsInCategory = categories.get(category).sort((a, b) => a.name.localeCompare(b.name));
         totalCommands += commandsInCategory.length;
 
-        replyMsg += this.langs.en.categoryHeader.replace(/{category}/g, category);
+        replyMsg += getCategoryBorder(category);
 
         commandsInCategory.forEach(cmd => {
           replyMsg += this.langs.en.commandItem.replace(/{name}/g, cmd.name) + "\n";
@@ -164,7 +209,7 @@ module.exports = {
       .replace(/{role}/g, roleText)
       .replace(/{countDown}/g, config.countDown || 1)
       .replace(/{usePrefix}/g, typeof config.usePrefix === "boolean" ? (config.usePrefix ? "✅ Yes" : "❌ No") : "❓ Unknown")
-      .replace(/{author}/g, "Marina Khan"); // Always show your name as author
+      .replace(/{author}/g, "Marina Khan");
 
     replyMsg += "\n" + this.langs.en.usageHeader + "\n" +
                 this.langs.en.usageBody.replace(/{usage}/g, guide.split("\n").join("\n ")) + "\n" +
