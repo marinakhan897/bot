@@ -29,6 +29,23 @@ module.exports = {
             'hello': '👋',
             'good night': '🌙',
             'marin': '👑'
+            'happy': '😊'
+            'good':  '👍'
+            'naraz': '😒'
+            'sad'  : '😢'
+            'bikar': '😓'
+            'faltoo':'😞'
+            'care'  :'😍'
+            'set'   :'😉'
+            'cute'  :'🙈'
+            'sweet' :'🙊'
+            'priences':'👸'
+            'love'  : '😘'
+            'jan'   : '🙀'
+            'meri'  : '😃'
+            'bimar' : '😪'
+            'handsome':'🌚'
+            'achhi' :  '🙆'
         };
 
         for (const [keyword, emoji] of Object.entries(reactionRules)) {
