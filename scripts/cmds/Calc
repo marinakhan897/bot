@@ -1,0 +1,27 @@
+module.exports = {
+  config: {
+    name: "calc",
+    version: "1.0.0",
+    author: "Marina Khan", 
+    countDown: 0,
+    role: 0,
+    description: "Smart calculator",
+    category: "utility",
+    guide: {
+      en: ".calc [expression]"
+    }
+  },
+
+  onStart: async function({ api, event, args }) {
+    if (!args[0]) {
+      return api.sendMessage("❌ Please provide a calculation!\nExample: .calc 2+2*5", event.threadID, event.messageID);
+    }
+    
+    try {
+      const calculation = eval(args.join(" "));
+      api.sendMessage(`🧮 Calculation Result: ${calculation}`, event.threadID, event.messageID);
+    } catch (error) {
+      api.sendMessage("❌ Invalid calculation expression!", event.threadID, event.messageID);
+    }
+  }
+};
