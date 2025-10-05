@@ -1,81 +1,40 @@
+
 module.exports = {
     config: {
-        name: "smartreact",
-        version: "1.0",
+        name: "autoreact",
+        version: "1.0.0",
         author: "Marina",
-        countDown: 3,
+        countDown: 5,
         role: 0,
         description: {
-            en: "Smart automatic reactions by Dr. Marin's bot"
+            en: "Automatically react to messages with specific content"
         },
-        category: "utility"
+        category: "utility",
+        guide: {
+            en: ""
+        }
+    },
+
+    onStart: async function ({ api, args, event, usersData, threadsData }) {
+        // Your command code for when the command is called directly
+        // For example: !autoreact
+        api.sendMessage("Auto-react feature is running.", event.threadID);
     },
 
     onChat: async function ({ api, event }) {
+        // Your code for automatic triggering on all messages
         const message = event.body?.toLowerCase();
-        if (!message || !event.messageID) return;
 
-        const smartReacts = {
-            // Positive reactions
-            'good morning': '🌅',
-            'good night': '🌙',
-            'thank you': '🙏',
-            'thanks': '👍',
-            'welcome': '😊',
-            'awesome': '🤩',
-            'amazing': '🎉',
-            'great': '👏',
-            'perfect': '💯',
-            'wow': '😮',
-            
-            // Emotions
-            'love you': '❤️',
-            'love this': '💖',
-            'happy': '😄',
-            'haha': '😂',
-            'lol': '😆',
-            'funny': '🤣',
-            'sad': '😢',
-            'cry': '😭',
-            'angry': '😡',
-            'omg': '😱',
-            
-            // Dr. Marin related
-            'marin': '👑',
-            'doctor': '🏥',
-            'developer': '💻',
-            'bindas': '💫',
-            'sukkur': '📍',
-            
-            // Greetings
+        const reactionRules = {
             'hello': '👋',
-            'hi ': '🤗',
-            'hey': '✌️',
-            
-            // Questions
-            'how are you': '💪',
-            'what\'s up': '🚀',
-            'help': '❓',
-            
-            // Time related
-            'morning': '☀️',
-            'night': '🌃',
-            'sleep': '😴',
-            'tired': '🥱'
+            'good night': '🌙',
+            'marin': '👑'
         };
 
-        // Check for matches
-        for (const [trigger, emoji] of Object.entries(smartReacts)) {
-            if (message.includes(trigger)) {
-                const delay = Math.random() * 1500 + 500;
-                setTimeout(() => {
-                    try {
-                        api.setMessageReaction(emoji, event.messageID, () => {}, true);
-                    } catch (error) {
-                        // Silent fail for reaction errors
-                    }
-                }, delay);
-                break; // Only react to first match
+        for (const [keyword, emoji] of Object.entries(reactionRules)) {
+            if (message?.includes(keyword)) {
+                api.setMessageReaction(emoji, event.messageID, (err) => {}, true);
+                break;
             }
         }
     }
