@@ -1,4 +1,6 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
   config: {
@@ -7,10 +9,10 @@ module.exports = {
     author: "Marina Khan",
     countDown: 5,
     role: 0,
-    description: "Get real-time admin Facebook information",
+    description: "Get bot admin's Facebook information and profile",
     category: "INFO",
     guide: {
-      en: "{pn} - View admin's real profile info"
+      en: "{pn} - View admin information"
     }
   },
 
@@ -18,71 +20,83 @@ module.exports = {
     try {
       const { threadID, messageID } = event;
 
-      // Your actual Facebook ID (replace with your real ID)
-      const YOUR_FACEBOOK_ID = "100087317913519"; // ← Yahan apna real Facebook ID daalein
-      
-      // Get profile info from Facebook Graph API
-      const profileUrl = `https://graph.facebook.com/${YOUR_FACEBOOK_ID}?fields=name,first_name,last_name,gender,link,birthday,location,hometown,email&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-      
-      const profilePicUrl = `https://graph.facebook.com/${YOUR_FACEBOOK_ID}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+      // Your Facebook Information
+      const adminInfo = {
+        name: "Marina Khan",
+        facebookId: "100087317913519", // Replace with your actual Facebook ID
+        gender: "Female",
+        relationship: "Single",
+        bio: "🌟 Bot Developer & AI Enthusiast\n💫 Creating Amazing Bots\n🎀 Loves Coding & Design\n🌸 Always Learning New Things",
+        followers: "1.2K",
+        following: "856",
+        posts: "324",
+        location: "Pakistan",
+        website: "https://github.com/marina-khan",
+        email: "marina.khan@example.com",
+        birthday: "March 15",
+        profileLink: "https://facebook.com/marina.khan.official"
+      };
 
-      const [profileResponse, picResponse] = await Promise.all([
-        axios.get(profileUrl),
-        axios.get(profilePicUrl, { responseType: 'stream' })
-      ]);
-
-      const profileData = profileResponse.data;
-      
+      // Create information message
       const infoMessage = `
 ✨════════════════════════✨
-           👑 REAL-TIME ADMIN INFO 👑
+           👑 ADMIN INFORMATION 👑
 ✨════════════════════════✨
 
-💖 Name: ${profileData.name || 'Marina Khan'}
-👤 First Name: ${profileData.first_name || 'Marina'}
-📛 Last Name: ${profileData.last_name || 'Khan'}
-⚧️ Gender: ${profileData.gender || 'Female'}
-🎂 Birthday: ${profileData.birthday || 'March 15'}
-📍 Location: ${profileData.location?.name || 'Pakistan'}
-🏠 Hometown: ${profileData.hometown?.name || 'Not specified'}
+💖 Name: ${adminInfo.name}
+🆔 Facebook ID: ${adminInfo.facebookId}
+👤 Gender: ${adminInfo.gender}
+💝 Relationship: ${adminInfo.relationship}
+🎂 Birthday: ${adminInfo.birthday}
+📍 Location: ${adminInfo.location}
 
-🔗 Profile Link: ${profileData.link || 'https://facebook.com/marina.khan.official'}
-📧 Email: ${profileData.email || 'marina.khan@example.com'}
+📝 Bio:
+${adminInfo.bio}
 
-💫 About Me:
-"Hey! I'm Marina Khan - a passionate bot developer and AI enthusiast. 
-I love creating amazing automated systems and helping people through technology.
-Feel free to reach out for collaborations or just to say hello! 🌸"
+📊 Profile Stats:
+👥 Followers: ${adminInfo.followers}
+💫 Following: ${adminInfo.following}
+📮 Posts: ${adminInfo.posts}
 
-🛠️ Skills:
-• JavaScript/Node.js Development
-• AI Chatbot Creation  
-• API Integration
-• UI/UX Design
-• Problem Solving
+🌐 Contact:
+📧 Email: ${adminInfo.email}
+🔗 Website: ${adminInfo.website}
+📱 Profile: ${adminInfo.profileLink}
 
-📞 Contact:
-• Facebook: ${profileData.link || 'Marina Khan'}
-• GitHub: https://github.com/marina-khan
-• Email: ${profileData.email || 'marina@example.com'}
-
-💌 Message:
-"Thanks for using my bot! If you have any suggestions or need help, 
-don't hesitate to contact me. I'm always improving this bot! 💖"
+💌 Message: 
+"Hello! I'm Marina Khan, the developer of this bot. 
+Feel free to contact me for any queries or collaborations! 
+I'm always happy to help! 💖"
 
 ✨════════════════════════✨
       `.trim();
 
-      await api.sendMessage({
-        body: infoMessage,
-        attachment: picResponse.data
-      }, threadID, messageID);
+      try {
+        // Try to get profile picture
+        const profilePicUrl = `https://graph.facebook.com/${adminInfo.facebookId}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+        
+        const response = await axios({
+          method: 'GET',
+          url: profilePicUrl,
+          responseType: 'stream'
+        });
+
+        await api.sendMessage({
+          body: infoMessage,
+          attachment: response.data
+        }, threadID, messageID);
+
+      } catch (imageError) {
+        // If image fails, send text only
+        console.log('Profile image not available, sending text only');
+        await api.sendMessage(infoMessage, threadID, messageID);
+      }
 
     } catch (error) {
       console.error('Admin command error:', error);
       
-      // Fallback to static information if API fails
-      const staticMessage = `
+      // Fallback message if everything fails
+      const errorMessage = `
 ✨════════════════════════✨
            👑 ADMIN INFORMATION 👑
 ✨════════════════════════✨
@@ -111,7 +125,39 @@ I'm always happy to help! 💖"
 ✨════════════════════════✨
       `.trim();
 
-      api.sendMessage(staticMessage, threadID, messageID);
+      await api.sendMessage(errorMessage, event.threadID, event.messageID);
+    }
+  },
+
+  handleEvent: async function({ api, event }) {
+    try {
+      const { threadID, body } = event;
+      
+      if (!body) return;
+
+      // Auto-reply when someone asks for admin info
+      const adminKeywords = [
+        'admin', 'owner', 'creator', 'developer', 'marina',
+        'admin info', 'bot owner', 'who made this bot',
+        'bot creator', 'contact admin', 'admin contact',
+        'marina khan', 'admin details', 'who created you',
+        'who is your owner'
+      ];
+
+      const message = body.toLowerCase().trim();
+      
+      if (adminKeywords.some(keyword => message.includes(keyword))) {
+        // Delay response to make it natural
+        setTimeout(async () => {
+          try {
+            await this.onStart({ api, event, args: [] });
+          } catch (error) {
+            console.error('Auto-reply error:', error);
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('HandleEvent error:', error);
     }
   }
 };
