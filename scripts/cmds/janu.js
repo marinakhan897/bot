@@ -22,127 +22,37 @@ const modePrompts = {
 };
 
 module.exports.config = {
-    name: "janu",
+    name: "babu",
     version: "2.0.0",
     hasPermssion: 0,
     credits: "Marina Khan",
     description: "Multi-mode Gemini AI (Roast, Romantic, Bestie, etc)",
     commandCategory: "ai",
-    usages: "[ask / <mode> mode on]",
+    usages: "[ask] or [mode] mode on",
     cooldowns: 2,
-    dependencies: { "axios": "" }
+    dependencies: {
+        "axios": ""
+    }
 };
 
-module.exports.handleEvent = async function ({ api, event, Users }) {
-    const { threadID, messageID, senderID, body } = event;
-    if (!body) return;
-
-    // Ignore if message starts with prefix or is command
-    if (body.startsWith('.') || body.startsWith('!')) return;
-
-    const name = await Users.getNameUser(senderID);
-    const query = body.trim();
-
-    // Ignore if mode change command
-    if (/^\w+\s+mode\s+on$/i.test(query)) return;
-
-    const activeMode = threadModes[threadID] || "roast";
-    const selectedPrompt = modePrompts[activeMode];
-
-    // Set loading reaction
-    api.setMessageReaction("⌛", messageID, () => {}, true);
-
-    if (!conversationHistory[threadID]) {
-        conversationHistory[threadID] = [];
-    }
-
-    const history = conversationHistory[threadID];
-    
-    // Add user message with context
-    const userMessage = `${query}\n\nContext: You are talking to ${name}. ${selectedPrompt}`;
-    
-    history.push({
-        role: "user",
-        parts: [{ text: userMessage }]
-    });
-
-    if (history.length > 5) history.shift();
-
+module.exports.handleEvent = async function({ api, event, Users }) {
     try {
-        const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCaDz1GdD9VTVYHWfZ0HiNhQWhaRFr-AR4`,
-            { 
-                contents: history,
-                generationConfig: {
-                    maxOutputTokens: 500,
-                    temperature: 0.7
-                }
-            },
-            { 
-                headers: { "Content-Type": "application/json" },
-                timeout: 30000
-            }
-        );
+        const { threadID, messageID, senderID, body } = event;
+        if (!body) return;
 
-        const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Kuch samajh nahi aaya 😅";
+        // Ignore if message starts with command prefix
+        if (body.startsWith('.') || body.startsWith('!')) return;
 
-        // Add model response to history
-        history.push({ role: "model", parts: [{ text: reply }] });
-        if (history.length > 5) history.shift();
+        const name = await Users.getNameUser(senderID);
+        const query = body.trim();
 
-        api.sendMessage(reply, threadID, messageID);
-        api.setMessageReaction("✅", messageID, () => {}, true);
-    } catch (err) {
-        console.error("Gemini error:", err.response?.data || err.message);
-        api.setMessageReaction("❌", messageID, () => {}, true);
-        api.sendMessage(`❌ Error: ${err.message}`, threadID, messageID);
-    }
-};
+        // Ignore if mode change command
+        if (/^\w+\s+mode\s+on$/i.test(query)) return;
 
-module.exports.run = async function ({ api, event, args }) {
-    const { threadID, messageID } = event;
-    const query = args.join(" ").toLowerCase();
-
-    // Show available modes if no arguments
-    if (!query) {
-        const availableModes = Object.keys(modePrompts).join(', ');
-        return api.sendMessage(
-            `✨ **Marina's AI Bot** ✨\n\nAvailable Modes:\n${availableModes}\n\nUsage:\n• Just chat normally for roast mode\n• Type: "romantic mode on"\n• Type: "bestie mode on"\n\nCurrent Mode: ${threadModes[threadID] || 'roast'}`,
-            threadID,
-            messageID
-        );
-    }
-
-    const match = query.match(/^(\w+)\s+mode\s+on$/i);
-
-    if (match) {
-        const mode = match[1].toLowerCase();
-        if (modePrompts[mode]) {
-            const prev = threadModes[threadID] || "none";
-            threadModes[threadID] = mode;
-            
-            // Clear conversation history when mode changes
-            if (conversationHistory[threadID]) {
-                conversationHistory[threadID] = [];
-            }
-            
-            return api.sendMessage(
-                `✨ **Mode Changed Successfully!** ✨\n\nPrevious: ${prev}\nNew: ${mode}\n\nNow I'll talk in ${mode} style! 💝\n\n- Marina Khan`,
-                threadID,
-                messageID
-            );
-        } else {
-            return api.sendMessage(
-                `❌ Unknown mode! Available modes:\n${Object.keys(modePrompts).join(', ')}`,
-                threadID,
-                messageID
-            );
-        }
-    } else {
-        // If just text, process as normal message
         const activeMode = threadModes[threadID] || "roast";
         const selectedPrompt = modePrompts[activeMode];
 
+        // Set loading reaction
         api.setMessageReaction("⌛", messageID, () => {}, true);
 
         if (!conversationHistory[threadID]) {
@@ -150,9 +60,13 @@ module.exports.run = async function ({ api, event, args }) {
         }
 
         const history = conversationHistory[threadID];
+        
+        // Add user message with context
+        const userMessage = `${query}\n\nContext: You are talking to ${name}. ${selectedPrompt}`;
+        
         history.push({
             role: "user",
-            parts: [{ text: `${query}\n\n${selectedPrompt}` }]
+            parts: [{ text: userMessage }]
         });
 
         if (history.length > 5) history.shift();
@@ -175,6 +89,7 @@ module.exports.run = async function ({ api, event, args }) {
 
             const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Kuch samajh nahi aaya 😅";
 
+            // Add model response to history
             history.push({ role: "model", parts: [{ text: reply }] });
             if (history.length > 5) history.shift();
 
@@ -185,5 +100,101 @@ module.exports.run = async function ({ api, event, args }) {
             api.setMessageReaction("❌", messageID, () => {}, true);
             api.sendMessage(`❌ Error: ${err.message}`, threadID, messageID);
         }
+    } catch (error) {
+        console.error("HandleEvent error:", error);
+    }
+};
+
+module.exports.run = async function({ api, event, args }) {
+    try {
+        const { threadID, messageID } = event;
+        const query = args.join(" ").toLowerCase();
+
+        // Show available modes if no arguments
+        if (!query) {
+            const availableModes = Object.keys(modePrompts).join(', ');
+            return api.sendMessage(
+                `✨ **Marina's AI Bot** ✨\n\nAvailable Modes:\n${availableModes}\n\nUsage:\n• Just chat normally for roast mode\n• Type: "romantic mode on"\n• Type: "bestie mode on"\n\nCurrent Mode: ${threadModes[threadID] || 'roast'}`,
+                threadID,
+                messageID
+            );
+        }
+
+        const match = query.match(/^(\w+)\s+mode\s+on$/i);
+
+        if (match) {
+            const mode = match[1].toLowerCase();
+            if (modePrompts[mode]) {
+                const prev = threadModes[threadID] || "none";
+                threadModes[threadID] = mode;
+                
+                // Clear conversation history when mode changes
+                if (conversationHistory[threadID]) {
+                    conversationHistory[threadID] = [];
+                }
+                
+                return api.sendMessage(
+                    `✨ **Mode Changed Successfully!** ✨\n\nPrevious: ${prev}\nNew: ${mode}\n\nNow I'll talk in ${mode} style! 💝\n\n- Marina Khan`,
+                    threadID,
+                    messageID
+                );
+            } else {
+                return api.sendMessage(
+                    `❌ Unknown mode! Available modes:\n${Object.keys(modePrompts).join(', ')}`,
+                    threadID,
+                    messageID
+                );
+            }
+        } else {
+            // If just text, process as normal message
+            const activeMode = threadModes[threadID] || "roast";
+            const selectedPrompt = modePrompts[activeMode];
+
+            api.setMessageReaction("⌛", messageID, () => {}, true);
+
+            if (!conversationHistory[threadID]) {
+                conversationHistory[threadID] = [];
+            }
+
+            const history = conversationHistory[threadID];
+            history.push({
+                role: "user",
+                parts: [{ text: `${query}\n\n${selectedPrompt}` }]
+            });
+
+            if (history.length > 5) history.shift();
+
+            try {
+                const response = await axios.post(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCaDz1GdD9VTVYHWfZ0HiNhQWhaRFr-AR4`,
+                    { 
+                        contents: history,
+                        generationConfig: {
+                            maxOutputTokens: 500,
+                            temperature: 0.7
+                        }
+                    },
+                    { 
+                        headers: { "Content-Type": "application/json" },
+                        timeout: 30000
+                    }
+                );
+
+                const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Kuch samajh nahi aaya 😅";
+
+                history.push({ role: "model", parts: [{ text: reply }] });
+                if (history.length > 5) history.shift();
+
+                api.sendMessage(reply, threadID, messageID);
+                api.setMessageReaction("✅", messageID, () => {}, true);
+            } catch (err) {
+                console.error("Gemini error:", err.response?.data || err.message);
+                api.setMessageReaction("❌", messageID, () => {}, true);
+                api.sendMessage(`❌ Error: ${err.message}`, threadID, messageID);
+            }
+        }
+    } catch (error) {
+        console.error("Run error:", error);
+        api.sendMessage("❌ Command execution failed!", event.threadID, event.messageID);
     }
 };
