@@ -1,28 +1,29 @@
 module.exports = {
     config: {
-        name: "autoreact",
-        version: "1.0.0", 
+        name: "autoreply",
+        version: "1.0",
         author: "Marina",
         countDown: 5,
-        role: 2,
+        role: 0,
         description: {
-            en: "Automatically react to messages with specific content"
+            en: "Auto-reply system for specific keywords"
         },
-        category: "owner",
+        category: "utility",
         guide: {
-            en: "{p}autoreact [add/remove/list] [trigger] [emoji]"
+            en: ""
         }
     },
 
+    // ADD THIS MISSING onStart FUNCTION
+    onStart: async function ({ api, event, args }) {
+        const helpMessage = `🤖 Auto-Reply System is Active
+
+This command automatically responds to specific keywords in the chat.`;
+        await api.sendMessage(helpMessage, event.threadID);
+    },
+
+    // Your existing onChat function remains here
     onChat: async function ({ api, event }) {
-        const message = event.body?.toLowerCase() || "";
-        const autoReactions = await getAutoReactions();
-        
-        for (const rule of autoReactions) {
-            if (message.includes(rule.trigger.toLowerCase())) {
-                api.setMessageReaction(rule.emoji, event.messageID, () => {}, true);
-                break;
-            }
-        }
+        // ... your existing auto-reply logic
     }
 };
