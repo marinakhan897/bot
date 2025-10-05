@@ -22,13 +22,13 @@ const modePrompts = {
 };
 
 module.exports.config = {
-    name: "babu",
+    name: "janu",
     version: "2.0.0",
     hasPermssion: 0,
     credits: "Marina Khan",
-    description: "Multi-mode Gemini AI (Roast, Romantic, Bestie, etc)",
-    commandCategory: "ai",
-    usages: "[ask] or [mode] mode on",
+    description: "Multi-mode Gemini AI Chat Bot",
+    commandCategory: "boxchat",
+    usages: "[text] or [mode] mode on",
     cooldowns: 2,
     dependencies: {
         "axios": ""
@@ -38,7 +38,7 @@ module.exports.config = {
 module.exports.handleEvent = async function({ api, event, Users }) {
     try {
         const { threadID, messageID, senderID, body } = event;
-        if (!body) return;
+        if (!body || event.isGroup === false) return;
 
         // Ignore if message starts with command prefix
         if (body.startsWith('.') || body.startsWith('!')) return;
@@ -46,8 +46,8 @@ module.exports.handleEvent = async function({ api, event, Users }) {
         const name = await Users.getNameUser(senderID);
         const query = body.trim();
 
-        // Ignore if mode change command
-        if (/^\w+\s+mode\s+on$/i.test(query)) return;
+        // Ignore short messages or mode change commands
+        if (query.length < 2 || /^\w+\s+mode\s+on$/i.test(query)) return;
 
         const activeMode = threadModes[threadID] || "roast";
         const selectedPrompt = modePrompts[activeMode];
@@ -105,16 +105,17 @@ module.exports.handleEvent = async function({ api, event, Users }) {
     }
 };
 
-module.exports.run = async function({ api, event, args }) {
+module.exports.run = async function({ api, event, args, Users }) {
     try {
-        const { threadID, messageID } = event;
+        const { threadID, messageID, senderID } = event;
         const query = args.join(" ").toLowerCase();
+        const name = await Users.getNameUser(senderID);
 
         // Show available modes if no arguments
         if (!query) {
             const availableModes = Object.keys(modePrompts).join(', ');
             return api.sendMessage(
-                `✨ **Marina's AI Bot** ✨\n\nAvailable Modes:\n${availableModes}\n\nUsage:\n• Just chat normally for roast mode\n• Type: "romantic mode on"\n• Type: "bestie mode on"\n\nCurrent Mode: ${threadModes[threadID] || 'roast'}`,
+                `✨ **Marina's AI Bot** ✨\n\n🤖 Available Modes: ${availableModes}\n\n💡 Usage:\n• Just chat normally (auto roast mode)\n• .babu romantic mode on\n• .babu bestie mode on\n\n📊 Current Mode: ${threadModes[threadID] || 'roast'}\n\n🌸 Created by: Marina Khan`,
                 threadID,
                 messageID
             );
@@ -134,13 +135,13 @@ module.exports.run = async function({ api, event, args }) {
                 }
                 
                 return api.sendMessage(
-                    `✨ **Mode Changed Successfully!** ✨\n\nPrevious: ${prev}\nNew: ${mode}\n\nNow I'll talk in ${mode} style! 💝\n\n- Marina Khan`,
+                    `✨ **Mode Changed Successfully!** ✨\n\n🔄 Previous: ${prev}\n🎯 New: ${mode}\n\n💝 Now I'll talk in ${mode} style!\n\n🌸 - Marina Khan`,
                     threadID,
                     messageID
                 );
             } else {
                 return api.sendMessage(
-                    `❌ Unknown mode! Available modes:\n${Object.keys(modePrompts).join(', ')}`,
+                    `❌ Unknown mode! 🤔\n\n✅ Available modes:\n${Object.keys(modePrompts).join(', ')}`,
                     threadID,
                     messageID
                 );
@@ -157,9 +158,12 @@ module.exports.run = async function({ api, event, args }) {
             }
 
             const history = conversationHistory[threadID];
+            
+            const userMessage = `${query}\n\nContext: You are talking to ${name}. ${selectedPrompt}`;
+            
             history.push({
                 role: "user",
-                parts: [{ text: `${query}\n\n${selectedPrompt}` }]
+                parts: [{ text: userMessage }]
             });
 
             if (history.length > 5) history.shift();
