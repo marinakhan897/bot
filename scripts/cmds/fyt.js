@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 2,
     credits: "Marina Khan",
     description: "Fun battle command",
-    commandCategory: "fun", // Added current category
+    category: "fun", // Changed from commandCategory to category
     usages: "[text]",
     cooldowns: 10,
     dependencies: {
@@ -16,15 +16,31 @@ module.exports.config = {
 module.exports.run = async function({ api, args, Users, event}) {
   var say = args.join(" ")
    var n = say
-  let r = 6000;
-  
-
- //let diff = 400;
-// for (let i = 0; i < 10; i++) {
-
-
+  let r = 3000;
 
   var a = function (a) { 
+      api.sendMessage(a, event.threadID); }
+  
+  // Fun battle messages
+  a(`🎮 ${n} - Let the battle begin! 🌟`);
+
+  setTimeout(() => {a({body: `⚔️ ${n} - You're going down! 😎`})}, r);
+  setTimeout(() => {a({body: `🔥 ${n} - The heat is on! 💥`})}, 2*r);
+  setTimeout(() => {a({body: `🎯 ${n} - Direct hit! 🎯`})}, 3*r);
+  setTimeout(() => {a({body: `🚀 ${n} - Taking off! 🌌`})}, 4*r);
+  setTimeout(() => {a({body: `💫 ${n} - Amazing moves! ✨`})}, 5*r);
+  setTimeout(() => {a({body: `🌟 ${n} - Shining bright! ☀️`})}, 6*r);
+  setTimeout(() => {a({body: `🎪 ${n} - This is entertaining! 🎭`})}, 7*r);
+  setTimeout(() => {a({body: `⚡ ${n} - Electrifying! ⚡`})}, 8*r);
+  setTimeout(() => {a({body: `🎊 ${n} - Celebration time! 🎉`})}, 9*r);
+  setTimeout(() => {a({body: `🏆 ${n} - Champion moves! 🥇`})}, 10*r);
+
+  // Final message
+  setTimeout(() => {
+    a({body: `🎀 Battle completed! ${n} put up a great fight! 💝\n\n🌸 Powered by Marina Khan`});
+  }, 11*r);
+}
+
       
       api.sendMessage(a, event.threadID); }
 a(`${n} KUTTIIAAA K PILLE K BACHHEE BSDDKK`);
