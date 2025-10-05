@@ -16,7 +16,7 @@ module.exports = {
 		category: "box chat",
 		guide: {
   }
-};
+}
 module.exports.run = async function({ api,event,args,client,Users,Threads,__GLOBAL,Currencies }) {
 const axios = global.nodemodule["axios"];
 const request = global.nodemodule["request"];
