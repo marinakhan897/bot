@@ -2,10 +2,10 @@ module.exports.config = {
     name: "fytslow",
     version: "1.0.0",
     hasPermssion: 2,
-    credits: "... - Long LTD",
-    description: "War nát cái boxchat",
-    commandCategory: "BOX CHAT",
-    usages: "bold war",
+    credits: "Marina Khan",
+    description: "Fun battle command",
+    commandCategory: "fun", // Added current category
+    usages: "[text]",
     cooldowns: 10,
     dependencies: {
         "fs-extra": "",
