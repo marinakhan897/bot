@@ -3,26 +3,26 @@ const path = require('path');
 
 module.exports = {
 	config: {
-		name: "marin",
+		name: "marina",
 		version: "1.0",
 		author: "Marina",
 		countDown: 5,
 		role: 0,
 		description: {
-			en: "Know about Dr. Marin - The Boss"
+			en: "Know about Dr. Marina - The Boss"
 		},
 		category: "info",
 		guide: {
-			en: "{p}marin"
+			en: "{p}marina"
 		}
 	},
 
 	onStart: async function ({ api, event, args }) {
 		try {
-			const bossInfo = `⚡ **DR. MARIN - THE ULTIMATE POWER** ⚡
+			const bossInfo = `⚡ **DR. MARINA - THE ULTIMATE POWER** ⚡
 
 🎯 **BASIC INFO:**
-• Name: Dr. Marin
+• Name: Dr. Marina
 • Age: 23 Years Young
 • Residence: Sukkur City
 • Status: Living BINDAS ZINDAGI
@@ -42,7 +42,7 @@ module.exports = {
 
 ⚠️ **WARNING TO HATERS:**
 Don't challenge the skills!
-When Dr. Marin is in the game, everyone else is just playing! 😎
+When Dr. Marina is in the game, everyone else is just playing! 😎
 
 🔥 **FINAL MESSAGE:**
 Respect the Developer, Respect the Doctor!`;
