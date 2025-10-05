@@ -1,0 +1,44 @@
+module.exports = {
+  config: {
+    name: "compliment",
+    version: "1.0.0",
+    author: "Marina Khan", 
+    countDown: 0,
+    role: 0,
+    description: "Compliment someone",
+    category: "social",
+    guide: {
+      en: ".compliment [@tag]"
+    }
+  },
+
+  onStart: async function({ api, event, args }) {
+    const mentions = Object.keys(event.mentions);
+    const targetID = mentions[0] || event.senderID;
+    
+    const compliments = [
+      "You're smarter than Google and more reliable than WiFi! 🌐",
+      "Your smile could power a small village! ⚡",
+      "You're the human version of Ctrl+S - you save everything! 💾",
+      "If genius were electricity, you'd be the main power grid! 🔌",
+      "You're like a software update - always making things better! 🔄",
+      "Your brain should be declared a national treasure! 🏆",
+      "You're the reason they invented the 'awesome' button! 👍",
+      "You make robots wish they were human! 🤖❤️"
+    ];
+    
+    const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+    const name = await this.getUserName(api, targetID);
+    
+    api.sendMessage(`💝 For ${name}:\n${compliment}`, event.threadID, event.messageID);
+  },
+
+  getUserName: async function(api, userID) {
+    try {
+      const userInfo = await api.getUserInfo(userID);
+      return userInfo[userID].name;
+    } catch (error) {
+      return "Friend";
+    }
+  }
+};
