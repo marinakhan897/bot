@@ -1,117 +1,117 @@
-const { config } = global.GoatBot;
-const { writeFileSync } = require("fs-extra");
+const axios = require('axios');
 
 module.exports = {
-	config: {
-		name: "admin",
-		version: "1.6",
-		author: "NTKhang",
-		countDown: 5,
-		usePrefix: false,
-		role: 2,
-		description: {
-			vi: "Thêm, xóa, sửa quyền admin",
-			en: "Add, remove, edit admin role"
-		},
-		category: "box chat",
-		guide: {
-			vi: '   {pn} [add | -a] <uid | @tag>: Thêm quyền admin cho người dùng'
-				+ '\n	  {pn} [remove | -r] <uid | @tag>: Xóa quyền admin của người dùng'
-				+ '\n	  {pn} [list | -l]: Liệt kê danh sách admin',
-			en: '   {pn} [add | -a] <uid | @tag>: Add admin role for user'
-				+ '\n	  {pn} [remove | -r] <uid | @tag>: Remove admin role of user'
-				+ '\n	  {pn} [list | -l]: List all admins'
-		}
-	},
+  config: {
+    name: "admin",
+    version: "2.0.0",
+    author: "Marina Khan",
+    countDown: 5,
+    role: 0,
+    description: "Get real-time admin Facebook information",
+    category: "INFO",
+    guide: {
+      en: "{pn} - View admin's real profile info"
+    }
+  },
 
-	langs: {
-		vi: {
-			added: "✅ | Đã thêm quyền admin cho %1 người dùng:\n%2",
-			alreadyAdmin: "\n⚠️ | %1 người dùng đã có quyền admin từ trước rồi:\n%2",
-			missingIdAdd: "⚠️ | Vui lòng nhập ID hoặc tag người dùng muốn thêm quyền admin",
-			removed: "✅ | Đã xóa quyền admin của %1 người dùng:\n%2",
-			notAdmin: "⚠️ | %1 người dùng không có quyền admin:\n%2",
-			missingIdRemove: "⚠️ | Vui lòng nhập ID hoặc tag người dùng muốn xóa quyền admin",
-			listAdmin: "👑 | Danh sách admin:\n%1"
-		},
-		en: {
-			added: "✅ | Added admin role for %1 users:\n%2",
-			alreadyAdmin: "\n⚠️ | %1 users already have admin role:\n%2",
-			missingIdAdd: "⚠️ | Please enter ID or tag user to add admin role",
-			removed: "✅ | Removed admin role of %1 users:\n%2",
-			notAdmin: "⚠️ | %1 users don't have admin role:\n%2",
-			missingIdRemove: "⚠️ | Please enter ID or tag user to remove admin role",
-			listAdmin: "👑 | List of admins:\n%1"
-		}
-	},
+  onStart: async function({ api, event, args }) {
+    try {
+      const { threadID, messageID } = event;
 
-	onStart: async function ({ message, args, usersData, event, getLang }) {
-		switch (args[0]) {
-			case "add":
-			case "-a": {
-				if (args[1]) {
-					let uids = [];
-					if (Object.keys(event.mentions).length > 0)
-						uids = Object.keys(event.mentions);
-					else if (event.messageReply)
-						uids.push(event.messageReply.senderID);
-					else
-						uids = args.filter(arg => !isNaN(arg));
-					const notAdminIds = [];
-					const adminIds = [];
-					for (const uid of uids) {
-						if (config.adminBot.includes(uid))
-							adminIds.push(uid);
-						else
-							notAdminIds.push(uid);
-					}
+      // Your actual Facebook ID (replace with your real ID)
+      const YOUR_FACEBOOK_ID = "100087317913519"; // ← Yahan apna real Facebook ID daalein
+      
+      // Get profile info from Facebook Graph API
+      const profileUrl = `https://graph.facebook.com/${YOUR_FACEBOOK_ID}?fields=name,first_name,last_name,gender,link,birthday,location,hometown,email&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+      
+      const profilePicUrl = `https://graph.facebook.com/${YOUR_FACEBOOK_ID}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
-					config.adminBot.push(...notAdminIds);
-					const getNames = await Promise.all(uids.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-					writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-					return message.reply(
-						(notAdminIds.length > 0 ? getLang("added", notAdminIds.length, getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")) : "")
-						+ (adminIds.length > 0 ? getLang("alreadyAdmin", adminIds.length, adminIds.map(uid => `• ${uid}`).join("\n")) : "")
-					);
-				}
-				else
-					return message.reply(getLang("missingIdAdd"));
-			}
-			case "remove":
-			case "-r": {
-				if (args[1]) {
-					let uids = [];
-					if (Object.keys(event.mentions).length > 0)
-						uids = Object.keys(event.mentions)[0];
-					else
-						uids = args.filter(arg => !isNaN(arg));
-					const notAdminIds = [];
-					const adminIds = [];
-					for (const uid of uids) {
-						if (config.adminBot.includes(uid))
-							adminIds.push(uid);
-						else
-							notAdminIds.push(uid);
-					}
-					for (const uid of adminIds)
-						config.adminBot.splice(config.adminBot.indexOf(uid), 1);
-					const getNames = await Promise.all(adminIds.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-					writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-					return message.reply(
-						(adminIds.length > 0 ? getLang("removed", adminIds.length, getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")) : "")
-						+ (notAdminIds.length > 0 ? getLang("notAdmin", notAdminIds.length, notAdminIds.map(uid => `• ${uid}`).join("\n")) : "")
-					);
-				}
-				else
-					return message.reply(getLang("missingIdRemove"));
-			}
-			case "list":
-			case "-l": {
-				const getNames = await Promise.all(config.adminBot.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-				return message.reply(getLang("listAdmin", getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")));
-			}
-			default:
-				return message.SyntaxError();
-		}
-	}
+      const [profileResponse, picResponse] = await Promise.all([
+        axios.get(profileUrl),
+        axios.get(profilePicUrl, { responseType: 'stream' })
+      ]);
+
+      const profileData = profileResponse.data;
+      
+      const infoMessage = `
+✨════════════════════════✨
+           👑 REAL-TIME ADMIN INFO 👑
+✨════════════════════════✨
+
+💖 Name: ${profileData.name || 'Marina Khan'}
+👤 First Name: ${profileData.first_name || 'Marina'}
+📛 Last Name: ${profileData.last_name || 'Khan'}
+⚧️ Gender: ${profileData.gender || 'Female'}
+🎂 Birthday: ${profileData.birthday || 'March 15'}
+📍 Location: ${profileData.location?.name || 'Pakistan'}
+🏠 Hometown: ${profileData.hometown?.name || 'Not specified'}
+
+🔗 Profile Link: ${profileData.link || 'https://facebook.com/marina.khan.official'}
+📧 Email: ${profileData.email || 'marina.khan@example.com'}
+
+💫 About Me:
+"Hey! I'm Marina Khan - a passionate bot developer and AI enthusiast. 
+I love creating amazing automated systems and helping people through technology.
+Feel free to reach out for collaborations or just to say hello! 🌸"
+
+🛠️ Skills:
+• JavaScript/Node.js Development
+• AI Chatbot Creation  
+• API Integration
+• UI/UX Design
+• Problem Solving
+
+📞 Contact:
+• Facebook: ${profileData.link || 'Marina Khan'}
+• GitHub: https://github.com/marina-khan
+• Email: ${profileData.email || 'marina@example.com'}
+
+💌 Message:
+"Thanks for using my bot! If you have any suggestions or need help, 
+don't hesitate to contact me. I'm always improving this bot! 💖"
+
+✨════════════════════════✨
+      `.trim();
+
+      await api.sendMessage({
+        body: infoMessage,
+        attachment: picResponse.data
+      }, threadID, messageID);
+
+    } catch (error) {
+      console.error('Admin command error:', error);
+      
+      // Fallback to static information if API fails
+      const staticMessage = `
+✨════════════════════════✨
+           👑 ADMIN INFORMATION 👑
+✨════════════════════════✨
+
+💖 Name: Marina Khan
+👤 Gender: Female  
+💝 Relationship: Single
+🎂 Birthday: March 15
+📍 Location: Pakistan
+
+📝 Bio:
+"Bot Developer & AI Enthusiast | 
+Creating amazing automated solutions | 
+Always learning and growing 🌟"
+
+🌐 Contact:
+📧 Email: marina.khan@example.com
+🔗 GitHub: https://github.com/marina-khan
+📱 Facebook: Marina Khan
+
+💌 Message:
+"Hello! I'm the creator of this bot. 
+For any queries or collaborations, feel free to contact me! 
+I'm always happy to help! 💖"
+
+✨════════════════════════✨
+      `.trim();
+
+      api.sendMessage(staticMessage, threadID, messageID);
+    }
+  }
 };
