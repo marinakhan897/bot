@@ -1,27 +1,34 @@
 module.exports = {
   config: {
     name: "makecmd",
-    version: "3.0.0",
+    version: "4.0.0",
     author: "Marina Khan",
     countDown: 15,
     role: 2,
-    description: "Create commands with flexible naming",
+    description: "Create commands with safe JavaScript",
     category: "system",
     guide: {
       en: `{pn} [command_name] [code]
 
-🔹 Command names can contain:
-• Letters (a-z, A-Z)
-• Numbers (0-9)
-• Spaces (converted to underscores)
-• Hyphens (-), underscores (_)
-• Most special characters
+🔹 Safe JavaScript Features Allowed:
+• Basic operations and calculations
+• String manipulation
+• Array and Object methods
+• Math functions
+• Date operations
+• Regular expressions
+• Custom functions
+
+🚫 Restricted:
+• File system access
+• Process operations
+• Network requests
+• Dangerous prototypes
 
 📝 Examples:
-.makecmd hello-world
-.makecmd "my command"
-.makecmd calculator_v2
-.makecmd image-editor`
+.makecmd calculator
+.makecmd "text converter"
+.makecmd dice-roller`
     }
   },
 
@@ -41,54 +48,40 @@ module.exports = {
     }
 
     try {
-      // Handle quoted command names with spaces
       let commandName = args[0];
       let code = body.split('\n').slice(1).join('\n').trim();
 
-      // If command name is quoted, extract the full name
+      // Handle quoted command names
       if ((commandName.startsWith('"') && commandName.endsWith('"')) || 
           (commandName.startsWith("'") && commandName.endsWith("'"))) {
         commandName = commandName.slice(1, -1);
-      } else if (body.includes('"') || body.includes("'")) {
-        // Extract quoted command name from body
-        const quoteMatch = body.match(/(["'])(.*?)\1/);
-        if (quoteMatch) {
-          commandName = quoteMatch[2];
-          code = body.split('\n').slice(1).join('\n').trim();
-        }
       }
 
       await this.createCommand(api, event, commandName, code);
     } catch (error) {
-      api.sendMessage(`❌ Error: ${error.message}`, threadID, messageID);
+      api.sendMessage(`❌ ${error.message}`, threadID, messageID);
     }
   },
 
   createCommand: async function(api, event, commandName, userCode) {
     const { threadID, messageID } = event;
 
-    // Validate and sanitize command name
     const sanitizedName = this.sanitizeCommandName(commandName);
     
     if (!sanitizedName) {
-      throw new Error('Invalid command name. Please use letters, numbers, spaces, or common symbols.');
+      throw new Error('Invalid command name. Use letters, numbers, or common symbols.');
     }
 
-    if (sanitizedName.length > 30) {
-      throw new Error('Command name too long (max 30 characters).');
-    }
-
-    // Check if command already exists
     if (this.commandExists(sanitizedName)) {
-      throw new Error(`Command "${sanitizedName}" already exists. Use different name.`);
+      throw new Error(`Command "${sanitizedName}" already exists.`);
     }
 
-    // Validate JavaScript code
-    if (!this.isValidJavaScript(userCode)) {
-      throw new Error('Invalid JavaScript code. Please check syntax.');
+    // Validate code safely
+    const validation = this.validateJavaScriptSafely(userCode);
+    if (!validation.isValid) {
+      throw new Error(validation.error || 'Invalid JavaScript code.');
     }
 
-    // Create command file
     const finalCode = this.generateCommandTemplate(sanitizedName, userCode);
     const filePath = `${__dirname}/${sanitizedName}.js`;
 
@@ -99,83 +92,192 @@ module.exports = {
     api.sendMessage(message, threadID, messageID);
   },
 
-  // Improved command name sanitization
-  sanitizeCommandName: function(name) {
-    if (!name || name.trim().length === 0) {
-      return null;
+  // Safe JavaScript validation
+  validateJavaScriptSafely: function(code) {
+    try {
+      if (!code || code.trim().length === 0) {
+        return { isValid: false, error: 'Code cannot be empty' };
+      }
+
+      if (code.length > 10000) {
+        return { isValid: false, error: 'Code too long (max 10000 characters)' };
+      }
+
+      // Allowed safe patterns
+      const allowedPatterns = [
+        'api.sendMessage', 'event.threadID', 'event.messageID', 'event.senderID',
+        'args.join', 'args.slice', 'args.map', 'args.filter',
+        'Math.', 'Date.', 'String.', 'Array.', 'Object.', 'JSON.',
+        'console.log', 'console.error',
+        'if (', 'for (', 'while (', 'switch (', 'try {', 'catch (', 'function', '=>',
+        'const ', 'let ', 'var ', 'return ', 'await ', 'async '
+      ];
+
+      // Dangerous patterns to block
+      const dangerousPatterns = [
+        'eval(', 'Function(', 'process.', 'require("', 'import(', 'export ',
+        'fs.', 'child_process.', 'os.', 'path.', 'http.', 'https.', 'net.',
+        '__proto__', 'constructor.prototype', 'module.constructor',
+        'while(true)', 'for(;;)', 'setInterval(', 'setTimeout(',
+        'process.exit', 'process.kill', 'process.env',
+        'exec(', 'spawn(', 'execSync(', 'spawnSync(',
+        'readFile', 'writeFile', 'appendFile', 'unlink',
+        'rmdir', 'mkdir', 'readdir',
+        'fetch(', 'XMLHttpRequest', 'http.request', 'https.request'
+      ];
+
+      const codeLines = code.split('\n');
+      
+      // Check for dangerous patterns
+      for (let i = 0; i < codeLines.length; i++) {
+        const line = codeLines[i].trim();
+        
+        // Skip comments and empty lines
+        if (!line || line.startsWith('//') || line.startsWith('/*')) {
+          continue;
+        }
+
+        // Check for dangerous patterns
+        for (const pattern of dangerousPatterns) {
+          if (line.includes(pattern)) {
+            return { 
+              isValid: false, 
+              error: `Security violation: "${pattern}" is not allowed at line ${i + 1}`
+            };
+          }
+        }
+
+        // Check for suspicious function definitions
+        if (line.includes('function') && (
+            line.includes('Function(') || 
+            line.includes('new Function') ||
+            line.includes('constructor(')
+        )) {
+          return { 
+            isValid: false, 
+            error: `Dynamic function creation not allowed at line ${i + 1}`
+          };
+        }
+      }
+
+      // Basic syntax check without executing
+      try {
+        // Use safer parsing method
+        const parsed = this.parseJavaScriptSafely(code);
+        if (!parsed.valid) {
+          return { isValid: false, error: `Syntax error: ${parsed.error}` };
+        }
+      } catch (parseError) {
+        return { isValid: false, error: `Code parsing failed: ${parseError.message}` };
+      }
+
+      return { isValid: true };
+    } catch (error) {
+      return { isValid: false, error: `Validation error: ${error.message}` };
+    }
+  },
+
+  // Safe JavaScript parsing
+  parseJavaScriptSafely: function(code) {
+    try {
+      // Remove comments for cleaner parsing
+      const cleanCode = code
+        .replace(/\/\*[\s\S]*?\*\//g, '')  // Remove block comments
+        .replace(/\/\/.*$/gm, '')          // Remove line comments
+        .trim();
+
+      // Basic syntax structure validation
+      const brackets = this.checkBrackets(cleanCode);
+      if (!brackets.valid) {
+        return { valid: false, error: brackets.error };
+      }
+
+      // Check for basic JavaScript structure
+      if (!cleanCode.includes('api.sendMessage') && !cleanCode.includes('return')) {
+        // If no output method, warn but don't block
+        console.log('Warning: Command might not have output');
+      }
+
+      return { valid: true };
+    } catch (error) {
+      return { valid: false, error: error.message };
+    }
+  },
+
+  // Check bracket balance
+  checkBrackets: function(code) {
+    const stack = [];
+    const brackets = {
+      '(': ')', 
+      '[': ']', 
+      '{': '}'
+    };
+    const quotes = ['"', "'", '`'];
+    let inString = false;
+    let currentQuote = '';
+
+    for (let i = 0; i < code.length; i++) {
+      const char = code[i];
+      const prevChar = code[i - 1];
+      
+      // Handle strings
+      if (quotes.includes(char) && prevChar !== '\\') {
+        if (!inString) {
+          inString = true;
+          currentQuote = char;
+        } else if (char === currentQuote) {
+          inString = false;
+          currentQuote = '';
+        }
+        continue;
+      }
+
+      if (inString) continue;
+
+      // Check brackets
+      if (brackets[char]) {
+        stack.push(char);
+      } else if (Object.values(brackets).includes(char)) {
+        if (stack.length === 0) {
+          return { valid: false, error: `Unmatched ${char} at position ${i}` };
+        }
+        const last = stack.pop();
+        if (brackets[last] !== char) {
+          return { valid: false, error: `Mismatched brackets: ${last} and ${char}` };
+        }
+      }
     }
 
-    // Remove extra spaces and trim
-    let sanitized = name.trim().replace(/\s+/g, ' ');
-    
-    // Replace spaces with underscores for filename safety
-    sanitized = sanitized.replace(/\s+/g, '_');
-    
-    // Remove or replace problematic characters
-    sanitized = sanitized
-      .replace(/[<>:"|?*]/g, '') // Remove Windows forbidden characters
-      .replace(/[\\\/]/g, '-')   // Replace slashes with hyphens
-      .replace(/^[\.\s]+/, '')   // Remove leading dots and spaces
-      .replace(/[\.\s]+$/, '');  // Remove trailing dots and spaces
+    if (stack.length > 0) {
+      return { valid: false, error: `Unclosed ${stack.join(', ')}` };
+    }
 
-    // Ensure it starts with a letter or number
+    return { valid: true };
+  },
+
+  sanitizeCommandName: function(name) {
+    if (!name || name.trim().length === 0) return null;
+
+    let sanitized = name.trim()
+      .replace(/\s+/g, '_')
+      .replace(/[<>:"|?*\\\/]/g, '-')
+      .replace(/^[\.\-_]+/, '')
+      .replace(/[\.\-_]+$/, '');
+
     if (!/^[a-zA-Z0-9]/.test(sanitized)) {
       sanitized = 'cmd_' + sanitized;
     }
 
-    // Final validation - allow letters, numbers, underscores, hyphens
-    if (!/^[a-zA-Z0-9_\-]+$/.test(sanitized)) {
-      // If still invalid, create a safe name
-      sanitized = sanitized.replace(/[^a-zA-Z0-9_\-]/g, '');
-    }
-
+    sanitized = sanitized.replace(/[^a-zA-Z0-9_\-]/g, '');
     return sanitized.length > 0 ? sanitized.toLowerCase() : null;
   },
 
-  // Enhanced JavaScript validation
-  isValidJavaScript: function(code) {
-    try {
-      if (!code || code.trim().length === 0) {
-        return false;
-      }
-
-      // Security checks - block dangerous patterns
-      const dangerousPatterns = [
-        'eval(', 'process.exit', 'require("fs")', 'require("child_process")',
-        'delete', 'while(true)', 'for(;;)', '__proto__', 'constructor',
-        'require("os")', 'require("path")', 'require("http")',
-        'process.env', 'module.constructor', 'Function('
-      ];
-
-      const codeLower = code.toLowerCase();
-      for (const pattern of dangerousPatterns) {
-        if (codeLower.includes(pattern.toLowerCase())) {
-          throw new Error(`Security violation: ${pattern} not allowed`);
-        }
-      }
-
-      // Basic syntax check by attempting to parse
-      if (typeof code === 'string') {
-        // Try to parse as JavaScript
-        new Function(code);
-      }
-
-      return true;
-    } catch (error) {
-      if (error.message.includes('Security violation')) {
-        throw error;
-      }
-      return false;
-    }
-  },
-
-  // Enhanced command template
   generateCommandTemplate: function(commandName, userCode) {
     const timestamp = new Date().toLocaleString();
     
     return `// Auto-generated command
 // Created: ${timestamp}
-// Original name: ${commandName}
+// Safe JavaScript Command
 
 module.exports = {
   config: {
@@ -192,20 +294,17 @@ module.exports = {
 
   onStart: async function({ api, event, args }) {
     try {
+      // User code starts here
       ${userCode}
+      // User code ends here
     } catch (error) {
       console.error("${commandName} error:", error);
-      api.sendMessage("❌ Command execution failed: " + error.message, event.threadID);
+      api.sendMessage("❌ Command failed: " + error.message, event.threadID);
     }
-  },
-
-  onChat: async function({ api, event }) {
-    // Auto-reply functionality can be added here
   }
 };`;
   },
 
-  // List all custom commands
   listCommands: async function(api, event) {
     const { threadID, messageID } = event;
     const fs = require('fs');
@@ -232,16 +331,15 @@ module.exports = {
       api.sendMessage(message, threadID, messageID);
 
     } catch (error) {
-      api.sendMessage('❌ Failed to list commands: ' + error.message, threadID, messageID);
+      api.sendMessage('❌ Failed to list commands.', threadID, messageID);
     }
   },
 
-  // Delete command
   deleteCommand: async function(api, event, commandName) {
     const { threadID, messageID } = event;
 
     if (!commandName) {
-      return api.sendMessage('❌ Please specify command name to delete.', threadID, messageID);
+      return api.sendMessage('❌ Please specify command name.', threadID, messageID);
     }
 
     const fs = require('fs');
@@ -255,48 +353,48 @@ module.exports = {
     try {
       fs.unlinkSync(filePath);
       this.reloadCommands();
-      api.sendMessage(`✅ Command "${commandName}" deleted successfully.`, threadID, messageID);
+      api.sendMessage(`✅ Command "${commandName}" deleted.`, threadID, messageID);
     } catch (error) {
-      api.sendMessage(`❌ Failed to delete command: ${error.message}`, threadID, messageID);
+      api.sendMessage(`❌ Failed to delete command.`, threadID, messageID);
     }
   },
 
   getSuccessMessage: function(originalName, sanitizedName) {
     return `✅ Command Created Successfully!\n\n` +
-      `📛 Original Name: ${originalName}\n` +
-      `🔧 File Name: ${sanitizedName}.js\n` +
-      `🚀 Usage: .${sanitizedName}\n` +
-      `💾 Saved in commands folder\n\n` +
-      `✨ Your command is ready to use!`;
+      `📛 Name: ${originalName}\n` +
+      `🔧 File: ${sanitizedName}.js\n` +
+      `🚀 Usage: .${sanitizedName}\n\n` +
+      `✨ Your command is ready!`;
   },
 
   getHelpMessage: function() {
-    return `🛠️ Advanced Command Creator\n\n` +
-      `Create commands with flexible names!\n\n` +
-      `📝 Supported Names:\n` +
-      `• Letters & Numbers: hello, cmd123\n` +
-      `• Spaces: "my command" → my_command\n` +
-      `• Hyphens & Underscores: my-cmd, my_cmd\n` +
-      `• Special Characters: image-editor, calculator_v2\n\n` +
-      `🔧 Usage:\n` +
-      `.makecmd [command_name]\n` +
-      `[your_javascript_code]\n\n` +
-      `📋 Examples:\n` +
-      `.makecmd "hello world"\n` +
-      `api.sendMessage("Hello World! 🌍", event.threadID);\n\n` +
+    return `🛠️ Safe Command Creator\n\n` +
+      `Create commands with safe JavaScript!\n\n` +
+      `✅ Allowed Features:\n` +
+      `• Variables and functions\n` +
+      `• Math calculations\n` +
+      `• String operations\n` +
+      `• Arrays and objects\n` +
+      `• API message sending\n\n` +
+      `🚫 Restricted:\n` +
+      `• File system access\n` +
+      `• Network requests\n` +
+      `• Process operations\n\n` +
+      `📝 Usage:\n` +
+      `.makecmd [name]\n` +
+      `[your_safe_javascript_code]\n\n` +
+      `🔧 Examples:\n` +
       `.makecmd calculator\n` +
-      `const result = eval(args.join(' '));\n` +
-      `api.sendMessage("Result: " + result, event.threadID);\n\n` +
-      `📁 Management:\n` +
-      `.makecmd list - Show all commands\n` +
-      `.makecmd delete [name] - Remove command\n\n` +
-      `🛡️ Security: All code is validated for safety`;
+      `const result = 2 + 2;\n` +
+      `api.sendMessage("2 + 2 = " + result, event.threadID);\n\n` +
+      `.makecmd "random number"\n` +
+      `const random = Math.floor(Math.random() * 100) + 1;\n` +
+      `api.sendMessage("🎲 Random number: " + random, event.threadID);`;
   },
 
   commandExists: function(commandName) {
     const fs = require('fs');
-    const fileName = `${commandName}.js`;
-    return fs.existsSync(`${__dirname}/${fileName}`);
+    return fs.existsSync(`${__dirname}/${commandName}.js`);
   },
 
   saveFile: function(filePath, content) {
@@ -310,6 +408,6 @@ module.exports = {
   },
 
   reloadCommands: function() {
-    console.log('🔄 Commands reloaded - new command added');
+    console.log('🔄 Commands reloaded');
   }
 };
