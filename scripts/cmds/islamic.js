@@ -40,7 +40,6 @@ module.exports = {
             return;
         }
 
-        // Handle different actions
         switch (action) {
             case 'add':
                 await this.addKeyword(api, event, args.slice(1).join(' '));
@@ -64,23 +63,17 @@ module.exports = {
 
     onChat: async function ({ api, event }) {
         try {
-            // Prevent self-reply loop
             if (event.senderID === api.getCurrentUserID()) return;
             
-            // Check if auto-reply is enabled
             if (!this.isAutoReplyEnabled()) return;
             
             const message = event.body?.toLowerCase().trim();
             if (!message) return;
 
-            // Get Islamic replies
             const islamicReplies = this.getIslamicReplies();
-            
-            // Smart keyword matching
             const matchedReply = this.findBestMatch(message, islamicReplies);
             
             if (matchedReply) {
-                // Random delay to make it natural (1-3 seconds)
                 const delay = Math.floor(Math.random() * 2000) + 1000;
                 setTimeout(async () => {
                     try {
@@ -96,7 +89,6 @@ module.exports = {
         }
     },
 
-    // Get Islamic replies from memory
     getIslamicReplies: function () {
         if (!global.islamicReplyData) {
             global.islamicReplyData = this.initializeIslamicReplies();
@@ -104,20 +96,17 @@ module.exports = {
         return global.islamicReplyData;
     },
 
-    // Save Islamic replies to memory
     saveIslamicReplies: function (data) {
         global.islamicReplyData = data;
     },
 
-    // Check if auto-reply is enabled
     isAutoReplyEnabled: function () {
         if (typeof global.islamicAutoReplyEnabled === 'undefined') {
-            global.islamicAutoReplyEnabled = true; // Default enabled
+            global.islamicAutoReplyEnabled = true;
         }
         return global.islamicAutoReplyEnabled;
     },
 
-    // Toggle auto-reply
     toggleAutoReply: async function (api, event, status) {
         global.islamicAutoReplyEnabled = status;
         await api.sendMessage(
@@ -126,7 +115,6 @@ module.exports = {
         );
     },
 
-    // Add keyword
     addKeyword: async function (api, event, input) {
         const parts = input.split('|').map(part => part.trim());
         if (parts.length !== 2) {
@@ -141,7 +129,6 @@ module.exports = {
         await api.sendMessage(`✅ Added Islamic reply: "${keyword}"`, event.threadID);
     },
 
-    // Remove keyword
     removeKeyword: async function (api, event, keyword) {
         if (!keyword) {
             return api.sendMessage("❌ Please specify keyword to remove", event.threadID);
@@ -157,7 +144,6 @@ module.exports = {
         }
     },
 
-    // List keywords
     listKeywords: async function (api, event) {
         const islamicReplies = this.getIslamicReplies();
         const keywords = Object.keys(islamicReplies);
@@ -180,132 +166,109 @@ module.exports = {
         await api.sendMessage(message, event.threadID);
     },
 
-    // Initialize with comprehensive Islamic replies
     initializeIslamicReplies: function () {
         return {
-            // 🕌 BASIC ISLAMIC GREETINGS & PHRASES
+            // Basic Islamic Greetings
             'assalamualaikum': 'Wa Alaikum Assalam Wa Rahmatullahi Wa Barakatuhu! 🌙\nMay the peace, mercy, and blessings of Allah be upon you.',
             'salam': 'Wa Alaikum Salam! How are you today? 🤲',
             'salaam': 'Wa Alaikum Salaam! May Allah bless you. ✨',
             
-            // 📖 QURANIC VERSES & REFERENCES
-            'quran': '🕋 Quran is the word of Allah, a guidance for mankind. \n"Indeed, this Quran guides to that which is most suitable..." (Quran 17:9)',
-            'allah': '🤲 Allah is the Greatest! \n"He is Allah, the Creator, the Inventor, the Fashioner; to Him belong the best names." (Quran 59:24)',
-            'muhammad': '☪️ Prophet Muhammad (ﷺ) is the final messenger of Allah. \n"And We have not sent you except as a mercy to the worlds." (Quran 21:107)',
-            'islam': '🕌 Islam means submission to the will of Allah. \n"Indeed, the religion in the sight of Allah is Islam." (Quran 3:19)',
-            'iman': '💫 Iman (faith) is to believe in Allah, His angels, His books, His messengers, the Last Day, and divine decree.',
+            // Quranic Verses
+            'quran': '🕋 Quran is the word of Allah, a guidance for mankind.',
+            'allah': '🤲 Allah is the Greatest! \n"He is Allah, the Creator, the Inventor, the Fashioner." (Quran 59:24)',
+            'muhammad': '☪️ Prophet Muhammad (ﷺ) is the final messenger of Allah.',
+            'islam': '🕌 Islam means submission to the will of Allah.',
+            'iman': '💫 Iman (faith) is to believe in Allah, His angels, His books, His messengers.',
             
-            // 🕌 PILLARS OF ISLAM
-            'shahada': '📿 La ilaha illallah, Muhammadur Rasulullah \n(There is no god but Allah, Muhammad is the Messenger of Allah)',
-            'salah': '🕋 Salah (prayer) is the pillar of religion. \n"Indeed, prayer has been decreed upon the believers a decree of specified times." (Quran 4:103)',
-            'sawm': '🌙 Fasting in Ramadan teaches self-restraint. \n"O you who have believed, decreed upon you is fasting as it was decreed upon those before you that you may become righteous." (Quran 2:183)',
-            'zakat': '💰 Zakat purifies wealth. \n"Take charity from their wealth to purify them and cause them to increase." (Quran 9:103)',
-            'hajj': '🕋 Hajj is a journey of purification. \n"And Hajj to the House is a duty that mankind owes to Allah." (Quran 3:97)',
+            // Pillars of Islam
+            'shahada': '📿 La ilaha illallah, Muhammadur Rasulullah',
+            'salah': '🕋 Salah (prayer) is the pillar of religion.',
+            'sawm': '🌙 Fasting in Ramadan teaches self-restraint.',
+            'zakat': '💰 Zakat purifies wealth.',
+            'hajj': '🕋 Hajj is a journey of purification.',
             
-            // 🤲 DUAS & AZKAR
-            'subhanallah': 'SubhanAllah! Glory be to Allah 🌟\n"سبحان الله"',
-            'alhamdulillah': 'Alhamdulillah! All praise is for Allah 🙏\n"الحمد لله"',
-            'allah hu akbar': 'Allahu Akbar! Allah is the Greatest 🕌\n"الله أكبر"',
+            // Duas & Azkar
+            'subhanallah': 'SubhanAllah! Glory be to Allah 🌟',
+            'alhamdulillah': 'Alhamdulillah! All praise is for Allah 🙏',
+            'allah hu akbar': 'Allahu Akbar! Allah is the Greatest 🕌',
             'la ilaha illallah': 'La ilaha illallah! There is no god but Allah 📿',
-            'astaghfirullah': 'Astaghfirullah! I seek forgiveness from Allah 🤲\n"أستغفر الله"',
-            'mashallah': 'Masha Allah! As Allah has willed ✨\n"ما شاء الله"',
-            'inshallah': 'Insha Allah! If Allah wills 📅\n"إن شاء الله"',
+            'astaghfirullah': 'Astaghfirullah! I seek forgiveness from Allah 🤲',
+            'mashallah': 'Masha Allah! As Allah has willed ✨',
+            'inshallah': 'Insha Allah! If Allah wills 📅',
             
-            // 🕋 PRAYER TIMES & REMINDERS
-            'fajr': '🌅 Fajr prayer: The morning prayer that brings light to your day. \n"Establish prayer at the decline of the sun until the darkness of the night and the Quran at dawn. Indeed, the recitation of the Quran at dawn is ever witnessed." (Quran 17:78)',
-            'dhuhr': '☀️ Dhuhr prayer: The midday prayer that reconnects you with Allah.',
-            'asr': '🌇 Asr prayer: The afternoon prayer before sunset.',
+            // Prayer Times
+            'fajr': '🌅 Fajr prayer: The morning prayer that brings light to your day.',
+            'dhuhr': '☀️ Dhuhr prayer: The midday prayer.',
+            'asr': '🌇 Asr prayer: The afternoon prayer.',
             'maghrib': '🌄 Maghrib prayer: The prayer at sunset.',
-            'isha': '🌙 Isha prayer: The night prayer that completes your day.',
+            'isha': '🌙 Isha prayer: The night prayer.',
             
-            // 🌙 ISLAMIC MONTHS & OCCASIONS
-            'ramadan': '🌙 Ramadan Mubarak! Month of fasting, prayer, and Quran. \n"The month of Ramadan in which was revealed the Quran, a guidance for mankind..." (Quran 2:185)',
-            'eid': '🎉 Eid Mubarak! May Allah accept our good deeds and forgive our sins.',
-            'muharram': '📅 Muharram: The sacred month, first month of Islamic calendar.',
-            'hijri': '📆 Hijri calendar is based on the lunar cycle.',
+            // Islamic Months
+            'ramadan': '🌙 Ramadan Mubarak! Month of fasting and Quran.',
+            'eid': '🎉 Eid Mubarak! May Allah accept our good deeds.',
             
-            // 💫 ISLAMIC VALUES
-            'sabr': '⏳ Sabr (patience) is a great virtue. \n"Indeed, Allah is with the patient." (Quran 2:153)',
-            'shukr': '🙏 Shukr (gratitude) increases blessings. \n"And if you should count the favors of Allah, you could not enumerate them." (Quran 14:34)',
-            'tawakkul': '🤲 Tawakkul (trust in Allah) brings peace. \n"And rely upon Allah; and sufficient is Allah as Disposer of affairs." (Quran 33:3)',
-            'taqwa': '🛡️ Taqwa (God-consciousness) is the key to success. \n"And take provisions, but indeed, the best provision is Taqwa." (Quran 2:197)',
+            // Islamic Values
+            'sabr': '⏳ Sabr (patience) is a great virtue.',
+            'shukr': '🙏 Shukr (gratitude) increases blessings.',
+            'tawakkul': '🤲 Tawakkul (trust in Allah) brings peace.',
             
-            // 🏠 FAMILY & RELATIONSHIPS IN ISLAM
-            'parents': '👨‍👩‍👧‍👦 Be kind to parents. \n"And your Lord has decreed that you not worship except Him, and to parents, good treatment." (Quran 17:23)',
-            'mother': '🤱 Paradise lies under the feet of mothers. (Hadith)',
-            'family': '🏠 Family is a blessing from Allah. Maintain good relations with relatives.',
+            // Family in Islam
+            'parents': '👨‍👩‍👧‍👦 Be kind to parents.',
+            'mother': '🤱 Paradise lies under the feet of mothers.',
             
-            // 📚 ISLAMIC KNOWLEDGE
-            'hadith': '📖 Hadith are the sayings and actions of Prophet Muhammad (ﷺ).',
+            // Islamic Knowledge
+            'hadith': '📖 Hadith are the sayings of Prophet Muhammad (ﷺ).',
             'sunnah': '☪️ Sunnah is the way of Prophet Muhammad (ﷺ).',
-            'fiqh': '📚 Fiqh is Islamic jurisprudence.',
-            'tawhid': '✨ Tawhid is the oneness of Allah.',
             
-            // 🕌 ISLAMIC PLACES
-            'makkah': '🕋 Makkah: The holiest city in Islam, home to Kaaba.',
+            // Islamic Places
+            'makkah': '🕋 Makkah: The holiest city in Islam.',
             'madina': '🌴 Madinah: City of Prophet Muhammad (ﷺ).',
-            'kaaba': '🕋 Kaaba: The house of Allah in Makkah.',
-            'masjid': '🕌 Masjid: Place of worship for Muslims.',
+            'kaaba': '🕋 Kaaba: The house of Allah.',
             
-            // 🤲 DUAS FOR DIFFERENT OCCASIONS
-            'dua': '🤲 Dua is the weapon of the believer. \n"And your Lord says, Call upon Me; I will respond to you." (Quran 40:60)',
-            'for forgiveness': '🤲 "Rabbi inni zalamto nafsi faghfirli" \n(My Lord, I have wronged myself, so forgive me)',
-            'for guidance': '🤲 "Rabbi zidni ilma" \n(My Lord, increase me in knowledge)',
-            'for protection': '🤲 "Hasbunallahu wa ni'mal wakeel" \n(Allah is sufficient for us, and He is the best Disposer of affairs)',
+            // Duas
+            'dua': '🤲 Dua is the weapon of the believer.',
+            'for forgiveness': '🤲 "Rabbi inni zalamto nafsi faghfirli"',
+            'for guidance': '🤲 "Rabbi zidni ilma"',
             
-            // 🌟 DAILY REMINDERS
-            'morning': '🌅 Morning Azkar: \n"SubhanAllahi wa bihamdihi" x100 \nWhoever says this in the morning will have a tree planted for him in Paradise.',
-            'evening': '🌇 Evening Azkar: \n"Allahumma bika amsaina wa bika asbahna" \n(O Allah, by You we enter the evening and by You we enter the morning)',
-            'sleep': '🌙 Before sleeping: \nRecite Ayat-ul-Kursi and Surah Ikhlas, Falaq, Nas',
-            'waking up': '☀️ Upon waking: \n"Alhamdulillahil-lathee ahyana ba'da ma amatana wa ilayhin-nushoor" \n(All praise is for Allah who gave us life after death, and to Him is the resurrection)',
+            // Daily Reminders
+            'morning': '🌅 Morning Azkar: "SubhanAllahi wa bihamdihi"',
+            'evening': '🌇 Evening Azkar: "Allahumma bika amsaina"',
+            'sleep': '🌙 Before sleeping: Recite Ayat-ul-Kursi',
             
-            // 💖 SPIRITUAL ADVICE
-            'depressed': '🤲 Turn to Allah in difficult times. \n"Indeed, with hardship comes ease." (Quran 94:6)',
-            'anxious': '💫 Remember Allah brings peace to hearts. \n"Verily, in the remembrance of Allah do hearts find rest." (Quran 13:28)',
-            'happy': 'Alhamdulillah! Share your happiness with others and be grateful to Allah.',
-            'sick': '🤲 Illness erases sins. Be patient and seek cure through Quran and medicine.',
+            // Spiritual Advice
+            'depressed': '🤲 Turn to Allah in difficult times.',
+            'anxious': '💫 Remember Allah brings peace to hearts.',
+            'sick': '🤲 Illness erases sins. Be patient.',
             
-            // 🕌 BASIC ISLAMIC TERMS
-            'wudu': '💧 Wudu: Ritual purification before prayer.',
-            'gusal': '🚿 Ghusl: Full body purification.',
+            // Islamic Terms
+            'wudu': '💧 Wudu: Ritual purification.',
             'halal': '✅ Halal: Permissible in Islam.',
             'haram': '❌ Haram: Forbidden in Islam.',
-            'sunnah': '☪️ Sunnah: Practices of Prophet Muhammad (ﷺ).',
-            'mustahabb': '👍 Mustahabb: Recommended actions.',
-            'makruh': '⚠️ Makruh: Disliked actions.',
             
-            // 🎯 FINAL MESSAGES
-            'jannah': '🏞️ Jannah (Paradise): The eternal abode for believers. \n"No soul knows what has been hidden for them of comfort for eyes as reward for what they used to do." (Quran 32:17)',
-            'jahannam': '🔥 Jahannam (Hell): May Allah protect us from it.',
-            'qayamat': '⏰ Qayamat (Day of Judgment): Every soul will be accounted for.',
-            'akhirah': '💫 Akhirah (Hereafter): The eternal life after death.',
+            // Final Messages
+            'jannah': '🏞️ Jannah (Paradise): The eternal abode for believers.',
+            'akhirah': '💫 Akhirah (Hereafter): The eternal life.',
             
-            // 🤲 SHORT DUAS
+            // Short Duas
             'ameen': 'Ameen! May Allah accept our prayers 🤲',
-            'jazakallah': 'JazakAllahu Khairan! May Allah reward you with good 🙏',
-            'barakallah': 'BarakAllahu Feek! May Allah bless you ✨',
-            'fi amanillah': 'Fi Amanillah! May Allah protect you 🛡️',
-            'yarhamukallah': 'YarhamukAllah! May Allah have mercy on you 🤲'
+            'jazakallah': 'JazakAllahu Khairan! May Allah reward you 🙏',
+            'barakallah': 'BarakAllahu Feek! May Allah bless you ✨'
         };
     },
 
-    // Smart matching algorithm
     findBestMatch: function (message, islamicReplies) {
         const words = message.toLowerCase().split(' ');
         
-        // Try exact match first
         if (islamicReplies[message]) {
             return islamicReplies[message];
         }
         
-        // Try word-by-word matching
         for (const word of words) {
             if (word.length > 2 && islamicReplies[word]) {
                 return islamicReplies[word];
             }
         }
         
-        // Try partial matching for longer phrases
         for (const [keyword, response] of Object.entries(islamicReplies)) {
             if (message.includes(keyword) && keyword.length > 3) {
                 return response;
