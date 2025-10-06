@@ -15,11 +15,7 @@ module.exports = {
 
  //let diff = 400;
 // for (let i = 0; i < 10; i++) {
-
-
-
-  var a = function (a) { 
-      
+     
       api.sendMessage(a, event.threadID); }
 a(`${n} KUTTIIAAA K PILLE K BACHHEE BSDDKK`);
 
