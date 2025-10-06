@@ -9,10 +9,10 @@ module.exports = {
 		countDown: 5,
 		role: 2,
 		description: {
-			vi: "Load lại config của bot",
+			ur: "bot ka config reload karain",
 			en: "Reload config of bot"
 		},
-		category: "owner","site",
+		category: "owner",
 		guide: "{pn}"
 	},
 
