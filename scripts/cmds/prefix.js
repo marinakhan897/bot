@@ -5,7 +5,7 @@ module.exports = {
 	config: {
 		name: "prefix",
 		version: "1.6",
-		author: "NTKhang + Modified by XNIL",
+		author: "Marina Khan",
 		countDown: 5,
 		role: 0,
 		description: "Change bot prefix in your group or globally",
@@ -31,7 +31,7 @@ module.exports = {
 	onStart: async function ({ message, role, args, commandName, event, threadsData, getLang }) {
 		if (!args[0]) return message.SyntaxError();
 
-		const prefixImage = "https://i.ibb.co/Zzqz5nBx/file-00000000588061f6ac814c432f6c0273.png";
+		const prefixImage = "https://i.imgur.com/your-image.png"; // Replace with your PNG URL
 
 		if (args[0] === "reset") {
 			await threadsData.set(event.threadID, null, "data.prefix");
@@ -96,14 +96,15 @@ module.exports = {
 			const [datePart, timePart] = dateTime.split(", ");
 
 			const infoBox = `
-╔═════ OBITO CHATBOT ════╗
+╔═════ MARINA CHATBOT ════╗
 🌐 System Prefix  : ${systemPrefix.padEnd(10)}
 💬 Group Prefix   : ${groupPrefix.padEnd(10)} 
 🕒 Time           : ${timePart.padEnd(10)} 
 📅 Date           : ${datePart.padEnd(10)}
-╚══════════════════╝`;
+👑 Created By     : Marina Khan
+╚══════════════════════════╝`;
 
-			const prefixImage = "https://i.ibb.co/Zzqz5nBx/file-00000000588061f6ac814c432f6c0273.png";
+			const prefixImage = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages-platform.99static.com%2F%2FvPUS6Ro_LUsG_qmDHapk9K0-t8M%3D%2F91x28%3A702x639%2Ffit-in%2F590x590%2F99designs-contests-attachments%2F55%2F55811%2Fattachment_55811305&tbnid=zYK6Wpm0f4WQ6M&vet=1&imgrefurl=https%3A%2F%2F99designs.com%2Finspiration%2Flogos%2Fmarine&docid=zfcM-bOcmC3rvM&w=590&h=590&source=sh%2Fx%2Fim%2Fm5%2F2&kgs=7bba99f363978e19&shem=bdsc%2Cisst
 
 			return message.reply({
 				body: infoBox,
