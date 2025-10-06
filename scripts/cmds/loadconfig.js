@@ -12,7 +12,7 @@ module.exports = {
 			vi: "Load lại config của bot",
 			en: "Reload config of bot"
 		},
-		category: "owner",
+		category: "owner","site",
 		guide: "{pn}"
 	},
 
