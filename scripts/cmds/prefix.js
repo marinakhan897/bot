@@ -1,4 +1,5 @@
 const fs = require("fs-extra");
+const path = require("path");
 const { utils } = global;
 
 module.exports = {
@@ -21,8 +22,8 @@ module.exports = {
 		en: {
 			reset: "✅ Prefix reset to default:\n➡️  System prefix: %1",
 			onlyAdmin: "⛔ Only admin can change the system-wide prefix.",
-			confirmGlobal: "⚙️ Global prefix change requested.\n🪄 React to confirm.\n📷 See image below.",
-			confirmThisThread: "🛠️ Group prefix change requested.\n🪄 React to confirm.\n📷 See image below.",
+			confirmGlobal: "⚙️ Global prefix change requested.\n🪄 React to confirm.",
+			confirmThisThread: "🛠️ Group prefix change requested.\n🪄 React to confirm.",
 			successGlobal: "✅ Global prefix changed successfully!\n🆕 New prefix: %1",
 			successThisThread: "✅ Group prefix updated!\n🆕 New prefix: %1"
 		}
@@ -31,15 +32,38 @@ module.exports = {
 	onStart: async function ({ message, role, args, commandName, event, threadsData, getLang }) {
 		if (!args[0]) return message.SyntaxError();
 
-		// Local PNG file path
-		const prefixImage = `${__dirname}/../assets/images/marina-prefix.png`;
+		// Try multiple possible file locations
+		const possiblePaths = [
+			// Try in commands folder first
+			path.join(__dirname, "marina-prefix.png"),
+			// Try in scripts root
+			path.join(__dirname, "..", "marina-prefix.png"),
+			// Try in assets folder
+			path.join(__dirname, "..", "..", "assets", "images", "marina-prefix.png"),
+			// Try in data folder
+			path.join(__dirname, "..", "..", "data", "marina-prefix.png")
+		];
+
+		let prefixImage = null;
+		for (const imagePath of possiblePaths) {
+			if (fs.existsSync(imagePath)) {
+				prefixImage = imagePath;
+				break;
+			}
+		}
 
 		if (args[0] === "reset") {
 			await threadsData.set(event.threadID, null, "data.prefix");
-			return message.reply({
-				body: getLang("reset", global.GoatBot.config.prefix),
-				attachment: fs.createReadStream(prefixImage)
-			});
+			const messageBody = getLang("reset", global.GoatBot.config.prefix);
+			
+			if (prefixImage) {
+				return message.reply({
+					body: messageBody,
+					attachment: fs.createReadStream(prefixImage)
+				});
+			} else {
+				return message.reply(messageBody);
+			}
 		}
 
 		const newPrefix = args[0];
@@ -55,13 +79,20 @@ module.exports = {
 
 		const confirmMsg = formSet.setGlobal ? getLang("confirmGlobal") : getLang("confirmThisThread");
 
-		return message.reply({
-			body: confirmMsg,
-			attachment: fs.createReadStream(prefixImage)
-		}, (err, info) => {
-			formSet.messageID = info.messageID;
-			global.GoatBot.onReaction.set(info.messageID, formSet);
-		});
+		if (prefixImage) {
+			return message.reply({
+				body: confirmMsg,
+				attachment: fs.createReadStream(prefixImage)
+			}, (err, info) => {
+				formSet.messageID = info.messageID;
+				global.GoatBot.onReaction.set(info.messageID, formSet);
+			});
+		} else {
+			return message.reply(confirmMsg, (err, info) => {
+				formSet.messageID = info.messageID;
+				global.GoatBot.onReaction.set(info.messageID, formSet);
+			});
+		}
 	},
 
 	onReaction: async function ({ message, threadsData, event, Reaction, getLang }) {
@@ -104,13 +135,30 @@ module.exports = {
 👑 Created By     : Marina Khan
 ╚══════════════════════════╝`;
 
-			// Local PNG file path
-			const prefixImage = `${__dirname}/../assets/images/marina-prefix.png`;
+			// Try to find the image file
+			const possiblePaths = [
+				path.join(__dirname, "marina-prefix.png"),
+				path.join(__dirname, "..", "marina-prefix.png"),
+				path.join(__dirname, "..", "..", "assets", "images", "marina-prefix.png"),
+				path.join(__dirname, "..", "..", "data", "marina-prefix.png")
+			];
 
-			return message.reply({
-				body: infoBox,
-				attachment: fs.createReadStream(prefixImage)
-			});
+			let prefixImage = null;
+			for (const imagePath of possiblePaths) {
+				if (fs.existsSync(imagePath)) {
+					prefixImage = imagePath;
+					break;
+				}
+			}
+
+			if (prefixImage) {
+				return message.reply({
+					body: infoBox,
+					attachment: fs.createReadStream(prefixImage)
+				});
+			} else {
+				return message.reply(infoBox);
+			}
 		}
 	}
 };
