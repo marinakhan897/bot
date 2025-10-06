@@ -1,141 +1,129 @@
 module.exports = {
     config: {
-        name: "nobg",
-        version: "2.0",
-        author: "Marina", 
+        name: "removebg",
+        version: "3.0",
+        author: "Marina Khan",
         countDown: 5,
         role: 0,
         description: {
-            en: "Remove background from any image (reply to photo/DP/PNG) - Created by Marina"
+            en: "AI background removal - Created by Marina Khan"
         },
         category: "media",
         guide: {
-            en: "Simply reply to any image with '{p}nobg' to remove background"
+            en: "Reply to image with {p}removebg"
         }
     },
 
     onStart: async function ({ api, event, args }) {
         try {
-            // Check if user replied to a message with image
-            if (event.type !== "message_reply" || !event.messageReply.attachments || event.messageReply.attachments.length === 0) {
-                return await api.sendMessage(`🎨 **BACKGROUND REMOVER BY MARINA** 🎨
+            if (event.type !== "message_reply" || !event.messageReply.attachments?.[0]) {
+                return await api.sendMessage(`🎨 **Background Remover** 🎨
+                
+💖 **Created by: Marina Khan**
+✨ **AI-Powered Background Removal**
 
-✨ **Remove background from any image!**
-💝 **Created and Powered by Marina Khan**
+📝 **Usage:**
+Reply to any image with: {p}removebg
 
-📝 **How to use:**
-1. Reply to any photo/DP/PNG image
-2. Type: {p}nobg
-3. I'll remove the background instantly!
+📸 **Works with:**
+• Profile Pictures (DP)
+• PNG/JPG Images  
+• Photos & Selfies
+• Any clear image
 
-📸 **Supported formats:**
-• JPG/JPEG images
-• PNG images  
-• Profile pictures
-• Any photo with clear subject
+🎯 **Result:**
+Perfect transparent background PNG
 
-💖 **Example:**
-Reply to any image and type: {p}nobg
+💝 **Example:**
+[Reply to image] + {p}removebg
 
-🎯 **Features:**
-✅ AI-powered background removal
-✅ High quality transparent PNG
-✅ Fast processing
-✅ Perfect cutouts
-
-- Marina Khan 💝`, event.threadID);
+- Marina Khan 🎀`, event.threadID);
             }
 
             const attachment = event.messageReply.attachments[0];
-            
-            // Check if it's an image
-            if (!attachment.type || !attachment.type.startsWith('image')) {
-                return await api.sendMessage("❌ Please reply to an image file (jpg, png, etc.) to remove background!", event.threadID);
+            if (!attachment.type?.includes('image')) {
+                return await api.sendMessage("❌ Please reply to an image file!", event.threadID);
             }
 
-            await api.sendMessage("🔄 Removing background from your image... Please wait! ✨", event.threadID);
+            await api.sendMessage("🔮 Processing your image... Powered by Marina Khan ✨", event.threadID);
 
-            const imageUrl = attachment.url;
-            const result = await this.removeBackground(imageUrl);
+            const result = await this.removeBackgroundSimple(attachment.url);
             
             if (result.success) {
                 await api.sendMessage({
-                    body: `✨ **BACKGROUND REMOVED SUCCESSFULLY!** ✨
+                    body: `🎉 **BACKGROUND REMOVED!** 🎉
 
-✅ Perfect AI cutout
-✅ Transparent PNG format  
-✅ High quality result
-✅ Ready to use anywhere!
+🌈 **Perfect transparent result!**
+⚡ **AI-Powered Precision**
+💫 **High Quality Output**
 
-💝 Processed by Marina Khan's Magic 🎀
+💖 **Created by: Marina Khan**
+🎀 **Powered by Remove.bg API**
 
-📁 **Now you can:**
-• Use as transparent sticker
-• Add new backgrounds
-• Create professional edits
-• Share as profile picture
-
-🌟 **Created by: Marina Khan**`,
-                    attachment: result.imageStream
+✨ **Your image is now ready for:**
+• Transparent stickers
+• New backgrounds  
+• Professional edits
+• Profile pictures`,
+                    attachment: result.imageBuffer
                 }, event.threadID);
             } else {
-                await api.sendMessage(`❌ Failed to remove background: ${result.error}\n\n💡 **Tips for better results:**\n• Use clear, high-quality images\n• Ensure good contrast between subject and background\n• Avoid complex hair/fur details\n• Use images with solid backgrounds\n\n🔧 **Developer: Marina Khan**`, event.threadID);
+                await api.sendMessage(`❌ Removal failed: ${result.error}\n\n💡 Try with a clearer image!\n\n🔧 **Developer:** Marina Khan`, event.threadID);
             }
 
         } catch (error) {
-            console.error("Background remove error:", error);
-            await api.sendMessage("💔 Sorry darling! I couldn't process the image right now. Please try again with a different image! \n\n- Marina Khan 🎀", event.threadID);
+            console.error("Error:", error);
+            await api.sendMessage("💔 Service temporarily unavailable. Try again later!\n\n- Marina Khan 🎀", event.threadID);
         }
     },
 
-    removeBackground: async function(imageUrl) {
+    removeBackgroundSimple: async function(imageUrl) {
         try {
-            // Use axios instead of global.utils.request
             const axios = require('axios');
-            const FormData = require('form-data');
             
-            // First download the image
-            const imageResponse = await axios({
-                method: 'GET',
-                url: imageUrl,
-                responseType: 'arraybuffer'
+            // Download image first
+            const imageResponse = await axios.get(imageUrl, { 
+                responseType: 'arraybuffer' 
             });
 
+            // Send to remove.bg
             const formData = new FormData();
-            formData.append('image_file', imageResponse.data, {
-                filename: 'image.jpg',
-                contentType: 'image/jpeg'
-            });
+            formData.append('image_file', imageResponse.data, 'image.jpg');
             formData.append('size', 'auto');
-            
-            const response = await axios({
-                method: 'POST',
-                url: 'https://api.remove.bg/v1.0/removebg',
-                data: formData,
-                headers: {
-                    'X-Api-Key': 'AVmqihkQ62FFNjyv6W223STd',
-                    ...formData.getHeaders()
-                },
-                responseType: 'arraybuffer'
-            });
 
-            if (response.status === 200) {
-                return {
-                    success: true,
-                    imageStream: Buffer.from(response.data)
-                };
-            } else {
-                return {
-                    success: false,
-                    error: `API Error: ${response.status}`
-                };
-            }
+            const response = await axios.post(
+                'https://api.remove.bg/v1.0/removebg',
+                formData,
+                {
+                    headers: {
+                        'X-Api-Key': 'AVmqihkQ62FFNjyv6W223STd',
+                        ...formData.getHeaders()
+                    },
+                    responseType: 'arraybuffer'
+                }
+            );
+
+            return {
+                success: true,
+                imageBuffer: Buffer.from(response.data)
+            };
 
         } catch (error) {
-            console.error("Remove.bg API error:", error);
+            let errorMsg = "Unknown error";
+            if (error.response) {
+                try {
+                    const errorData = JSON.parse(Buffer.from(error.response.data).toString());
+                    errorMsg = errorData.errors?.[0]?.title || `HTTP ${error.response.status}`;
+                } catch {
+                    errorMsg = `HTTP ${error.response.status}`;
+                }
+            } else {
+                errorMsg = error.message;
+            }
+            
             return {
                 success: false,
-                error: error.response?.data?.errors?.[0]?.title || error.message
+                error: errorMsg
             };
         }
     }
