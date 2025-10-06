@@ -16,7 +16,8 @@ module.exports = {
  //let diff = 400;
 // for (let i = 0; i < 10; i++) {
      
-      api.sendMessage(a, event.threadID); }
+  
+           api.sendMessage(a, event.threadID); }
 a(`${n} KUTTIIAAA K PILLE K BACHHEE BSDDKK`);
 
 setTimeout(() => {a({body: `${n} TEEERIII MAA KI CHHUTT M LAAND BSDDDK MCC`})}, r);
