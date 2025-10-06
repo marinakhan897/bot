@@ -1,6 +1,6 @@
 module.exports = {
     config: {
-        name: "dpedit",
+        name: "edit",
         version: "4.0",
         author: "Marina Khan",
         countDown: 5,
