@@ -1,18 +1,3 @@
-const fs = require('fs-extra');
-const path = require('path');
-
-// File to store auto-reply data
-const autoReplyFile = path.join(__dirname, '..', 'data', 'autoreply_data.json');
-
-// Ensure data directory exists
-const ensureDataDir = async () => {
-    const dataDir = path.join(__dirname, '..', 'data');
-    await fs.ensureDir(dataDir);
-    if (!fs.existsSync(autoReplyFile)) {
-        await fs.writeJson(autoReplyFile, {});
-    }
-};
-
 module.exports = {
     config: {
         name: "autoreply",
@@ -30,7 +15,6 @@ module.exports = {
     },
 
     onStart: async function ({ api, event, args }) {
-        await ensureDataDir();
         const action = args[0];
         
         if (!action) {
@@ -56,8 +40,23 @@ module.exports = {
             return;
         }
 
-        // Handle different actions (add, remove, list, import)
-        // ... (implementation for management commands)
+        // Handle different actions
+        switch (action) {
+            case 'add':
+                await this.addKeyword(api, event, args.slice(1).join(' '));
+                break;
+            case 'remove':
+                await this.removeKeyword(api, event, args.slice(1).join(' '));
+                break;
+            case 'list':
+                await this.listKeywords(api, event);
+                break;
+            case 'import':
+                await this.importDefaults(api, event);
+                break;
+            default:
+                await api.sendMessage("❌ Invalid command. Use 'autoreply' for help.", event.threadID);
+        }
     },
 
     onChat: async function ({ api, event }) {
@@ -68,12 +67,12 @@ module.exports = {
             const message = event.body?.toLowerCase().trim();
             if (!message) return;
 
-            await ensureDataDir();
-            const autoReplies = await fs.readJson(autoReplyFile);
-
-            // If no custom replies, use default database
+            // Get auto-replies from memory
+            const autoReplies = this.getAutoReplies();
+            
+            // If no replies, initialize defaults
             if (Object.keys(autoReplies).length === 0) {
-                await this.initializeDefaultReplies();
+                this.initializeDefaultReplies();
                 return this.onChat({ api, event }); // Retry with initialized data
             }
 
@@ -93,29 +92,84 @@ module.exports = {
         }
     },
 
+    // Get auto-replies from memory
+    getAutoReplies: function () {
+        if (!global.autoReplyData) {
+            global.autoReplyData = {};
+        }
+        return global.autoReplyData;
+    },
+
+    // Save auto-replies to memory
+    saveAutoReplies: function (data) {
+        global.autoReplyData = data;
+    },
+
+    // Add keyword
+    addKeyword: async function (api, event, input) {
+        const parts = input.split('|').map(part => part.trim());
+        if (parts.length !== 2) {
+            return api.sendMessage("❌ Format: autoreply add [keyword] | [reply]", event.threadID);
+        }
+
+        const [keyword, reply] = parts;
+        const autoReplies = this.getAutoReplies();
+        autoReplies[keyword.toLowerCase()] = reply;
+        this.saveAutoReplies(autoReplies);
+
+        await api.sendMessage(`✅ Added: "${keyword}" → "${reply}"`, event.threadID);
+    },
+
+    // Remove keyword
+    removeKeyword: async function (api, event, keyword) {
+        if (!keyword) {
+            return api.sendMessage("❌ Please specify keyword to remove", event.threadID);
+        }
+
+        const autoReplies = this.getAutoReplies();
+        if (autoReplies[keyword.toLowerCase()]) {
+            delete autoReplies[keyword.toLowerCase()];
+            this.saveAutoReplies(autoReplies);
+            await api.sendMessage(`✅ Removed: "${keyword}"`, event.threadID);
+        } else {
+            await api.sendMessage(`❌ Keyword "${keyword}" not found`, event.threadID);
+        }
+    },
+
+    // List keywords
+    listKeywords: async function (api, event) {
+        const autoReplies = this.getAutoReplies();
+        const keywords = Object.keys(autoReplies);
+
+        if (keywords.length === 0) {
+            return api.sendMessage("📝 No auto-reply keywords set yet.", event.threadID);
+        }
+
+        let message = `📝 Auto-Reply Keywords (${keywords.length}):\n\n`;
+        keywords.slice(0, 20).forEach((keyword, index) => {
+            message += `${index + 1}. ${keyword}\n`;
+        });
+
+        if (keywords.length > 20) {
+            message += `\n... and ${keywords.length - 20} more keywords`;
+        }
+
+        await api.sendMessage(message, event.threadID);
+    },
+
+    // Import default keywords
+    importDefaults: async function (api, event) {
+        this.initializeDefaultReplies();
+        const autoReplies = this.getAutoReplies();
+        await api.sendMessage(`✅ Imported ${Object.keys(autoReplies).length} default keywords!`, event.threadID);
+    },
+
     // Initialize with 3000+ default keywords
-    initializeDefaultReplies: async function () {
+    initializeDefaultReplies: function () {
         const defaultReplies = {
-            // Urdu/English Mixed Daily Life Keywords (3000+ samples)
-            
-            // 🔹 GREETINGS & BASIC CONVERSATION (500+ keywords)
+            // 🔹 GREETINGS & BASIC CONVERSATION
             'hello': 'Hello! Kaise hain aap? 👋',
-            'KAISE': 'alhamdulellah main thik ap sunain?',
-            'Kase hain': 'Allah ka karam hai ap sunain?',
-            'Hal hai'  :  'allah pak ka shukar hai ap daso?',
-            'kon ha'   : 'main ek Al assist messanger bot hon jisko marina ne banaya hai',
-            'gir boy'  : 'main ek Al bot hon mujhe marina ne banaya hai',
-            'keya karti': 'meri owner doctor+devoloper hain',
-             '😳'      : '😂',
-             '😢'      : '😭',
-             '😎'      :  '😒',
-             '😍'      :  '😘',
-             '😏'      :  '😶',
-             '😡'      :  '😔',
             'hi': 'Hi there! Kya haal chaal? 🤗',
-            'lORA':'T3R3 MAN K9 MARINA K2 M9TA LORA',
-            'GAND':'T3R3 MAN K3 CH7T M2 DANDA',
-            
             'hey': 'Hey! Sunao kya chal raha hai? 😊',
             'assalamualaikum': 'Wa Alaikum Assalam! Kaise hain aap? 🌙',
             'salam': 'Wa Alaikum Salam! Kya kar rahe hain?',
@@ -123,15 +177,14 @@ module.exports = {
             'kese ho': 'Alhamdulillah theek! Aap kaise hain?',
             'how are you': 'I am fine alhamdulillah! How about you? 💫',
             'aap kaise ho': 'Main bilkul theek hoon! Aap ka khayal rakhna 🌸',
-            'aap kaisi ho': 'Main bilkul theek hoon! Aap ka khayal rakhna
             'good morning': 'Subha bakhair! Khush raho 🌅',
             'good night': 'Shab bakhair! Sweet dreams 🌙',
             'bye': 'Allah Hafiz! Milte hain phir 👋',
             'goodbye': 'Khuda Hafiz! Take care 🤲',
             'see you': 'Insha Allah milenge phir! 😊',
             'take care': 'Aap bhi khayal rakhna! 🤗',
-            
-            // 🔹 FEELINGS & EMOTIONS (400+ keywords)
+
+            // 🔹 FEELINGS & EMOTIONS
             'happy': 'Khushi ki baat hai! Mubarak ho 🎉',
             'sad': 'Gham na karo, sab theek ho jayega 🤲',
             'tired': 'Aaraam karo thoda, phir fresh ho jao 😴',
@@ -140,8 +193,8 @@ module.exports = {
             'angry': 'Gussa thanda karo, sab set ho jayega ❄️',
             'hungry': 'Khaana kha lo, energy milegi! 🍕',
             'thirsty': 'Pani pi lo, sehat ke liye acha hai 💧',
-            
-            // 🔹 DAILY ACTIVITIES (600+ keywords)
+
+            // 🔹 DAILY ACTIVITIES
             'eating': 'Mazay se khao! Kya bana hai? 🍽️',
             'sleeping': 'Aaraam karo, neend poori karo 😴',
             'working': 'Kaam acha chal raha hai? All the best! 💼',
@@ -150,8 +203,8 @@ module.exports = {
             'walking': 'Walking achi exercise hai! Keep going 🚶',
             'shopping': 'Shopping ke liye best of luck! 🛍️',
             'cooking': 'Kya pak rahe ho? Maza aayega! 👨‍🍳',
-            
-            // 🔹 TECHNOLOGY & INTERNET (300+ keywords)
+
+            // 🔹 TECHNOLOGY
             'phone': 'Mobile acha use karo, time manage karo 📱',
             'internet': 'Internet acha tool hai, positive use karo 🌐',
             'computer': 'Computer skills achi hain? Great! 💻',
@@ -159,8 +212,8 @@ module.exports = {
             'video': 'Video dekh rahe ho? Entertainment acha hai 🎬',
             'music': 'Konsa music sun rahe ho? 🎵',
             'movie': 'Konsi movie dekh rahe ho? 🎥',
-            
-            // 🔹 WEATHER & TIME (200+ keywords)
+
+            // 🔹 WEATHER & TIME
             'weather': 'Mausam kaisa hai? Enjoy the day! ☀️',
             'hot': 'Garmi hai? Thanda pani piyo 🥤',
             'cold': 'Thand hai? Garam kapre pehno 🧥',
@@ -169,39 +222,116 @@ module.exports = {
             'morning': 'Subha ka time productive hota hai 🌅',
             'evening': 'Shaam relaxed time hai 🌆',
             'night': 'Raat ko aaraam karo 🌃',
-            
-            // 🔹 RELATIONSHIPS & FAMILY (400+ keywords)
+
+            // 🔹 RELATIONSHIPS
             'family': 'Family sabse important hai 👨‍👩‍👧‍👦',
             'friends': 'Dost zindagi ki khoobsurat naimat hain 👫',
             'love': 'Pyar khoobsurat ehsaas hai ❤️',
             'parents': 'Parents ki dua mein barkat hai 🤲',
             'siblings': 'Bhai-behen zindagi ka support hain 👨‍👧‍👦',
-            
-            // 🔹 ISLAMIC & SPIRITUAL (300+ keywords)
+
+            // 🔹 ISLAMIC
             'allah': 'Allah sabse bada hai, uska shukar 🤲',
             'islam': 'Islam complete way of life hai 🕌',
             'quran': 'Quran hidayat ki kitab hai 📖',
             'prayer': 'Namaz rohani taaqat deti hai 🕋',
             'fasting': 'Roza sabr sikhata hai 🌙',
-            
-            // 🔹 FOOD & DRINKS (300+ keywords)
+
+            // 🔹 FOOD & DRINKS
             'food': 'Khaana sehat ke liye acha hai 🍲',
             'water': 'Pani peena sehat ke liye zaroori hai 💧',
             'tea': 'Chai achi lagti hai! ☕',
             'coffee': 'Coffee energy deti hai! 🔥',
             'sweet': 'Meetha khane ka maza hi kuch aur hai 🍰',
-            
-            // 🔹 WORK & STUDY (200+ keywords)
+
+            // 🔹 WORK & STUDY
             'job': 'Job achi chal rahi hai? 👍',
             'office': 'Office ka kaam manage karo 💼',
             'study': 'Parhai future ke liye important hai 📚',
             'exam': 'Exams ke liye best of luck! 🎯',
-            'project': 'Project acha chal raha hai? 🚀'
-            
-            // ... Add 2000+ more keywords here following the same pattern
+            'project': 'Project acha chal raha hai? 🚀',
+
+            // 🔹 EMOJI RESPONSES
+            '😊': '😄 Kya baat hai!',
+            '😂': 'Hasi achi baat hai! 😄',
+            '😢': 'Kyun udaas ho? Sab theek ho jayega 🤗',
+            '❤️': 'Pyar banta hai! 💕',
+            '👍': 'Shukriya! 😊',
+            '🎉': 'Party time! 🥳',
+            '🤔': 'Kya soch rahe ho? 💭',
+            '😴': 'Neend a rahi hai? So jao 🌙',
+            '🤗': 'Hug accepted! 💝',
+            '😎': 'Cool lag rahe ho! 😄',
+            '💕': 'Love you too! ❤️',
+            '🌟': 'You are shining! ✨',
+            '🎂': 'Happy Birthday! 🥳',
+            '🎁': 'Present for me? 😄',
+            '📚': 'Padhai kar rahe ho? 👍',
+            '⚽': 'Football kheloge? 🎯',
+            '🎵': 'Music lover! 🎶',
+            '📱': 'New phone? 📲',
+            '🍕': 'Pizza time! Yummy 😋',
+            '☕': 'Chai peete ho? 😊',
+            '🌙': 'Chand khoobsurat hai! ✨',
+            '⭐': 'Twinkle twinkle! 🌟',
+            '🌈': 'Rainbow colors! 🎨',
+            '🔥': 'Fire! Amazing 🔥',
+            '❄️': 'Cool! Thand meethi hai ☃️',
+            '💯': 'Perfect! Excellent 🎯',
+            '✅': 'Done! Good job 👍',
+            '❌': 'Kya galat hua? 🤔',
+            '⚠️': 'Be careful! 🛡️',
+            '💡': 'Bright idea! 🤩',
+            '🔑': 'Key to success! 🚪',
+            '💰': 'Paisa important hai! 💵',
+            '🎯': 'Target achieved! 🏆',
+            '🚀': 'Flying high! 🌌',
+            '🏆': 'Winner! Congratulations 🎉',
+            '🎊': 'Celebration time! 🥳',
+            '🎨': 'Artist ho? Beautiful 🖼️',
+            '✏️': 'Writing something? 📝',
+            '📷': 'Photo letay ho? 📸',
+            '🎥': 'Video bana rahe ho? 🎬',
+            '🔔': 'Notification aaya? 📲',
+            '⏰': 'Time dekh rahe ho? ⌚',
+            '🌍': 'World is beautiful! 🌎',
+            '🐦': 'Birds are singing! 🎵',
+            '🌸': 'Flowers khil rahe hain! 💐',
+            '🌞': 'Suraj nikla hai! ☀️',
+            '🌧️': 'Barish ho rahi hai! ☔',
+            '⛄': 'Snowman banaoge? ☃️',
+            '🎄': 'Christmas tree! 🎁',
+            '🕋': 'Masjid jao ge? 🕌',
+            '🤲': 'Dua karo! 🙏',
+            '🙏': 'Allah madad kare! 🤲',
+            '☪️': 'Islam zindabad! 🕌',
+            '📿': 'Tasbeeh parhte ho? 🤲',
+            '🕰️': 'Waqt guzar raha hai! ⏳',
+            '🔍': 'Khoj kar rahe ho? 🕵️',
+            '💼': 'Office jao ge? 👔',
+            '🎓': 'Graduation mubarak! 🎉',
+            '🏫': 'School/College? 📚',
+            '💻': 'Coding kar rahe ho? 👨‍💻',
+            '📊': 'Data analyze? 📈',
+            '🛒': 'Shopping kar rahe ho? 🛍️',
+            '🍎': 'Apple khao, sehatmand raho! ❤️',
+            '🚗': 'Car chalate ho? 🏎️',
+            '✈️': 'Travel karo ge? 🌎',
+            '🏠': 'Ghar mein ho? 🏡',
+            '🌃': 'Raat ko jagte ho? 🌙',
+            '💤': 'Neend a rahi hai? 😴',
+            '🤝': 'Handshake! Friendship 👫',
+            '💔': 'Dil toot gaya? ❤️‍🩹',
+            '💖': 'Pyar badhta hai! 💕',
+            '💘': 'Love arrow! Cupid 🏹',
+            '💝': 'Gift for someone? 🎁',
+            '💞': 'Hearts spinning! 💫',
+            '💓': 'Heart beating! 💗',
+            '💗': 'Growing love! ❤️',
+            '💟': 'Love symbol! 💖'
         };
 
-        await fs.writeJson(autoReplyFile, defaultReplies);
+        this.saveAutoReplies(defaultReplies);
     },
 
     // Smart matching algorithm
@@ -215,7 +345,7 @@ module.exports = {
         
         // Try word-by-word matching
         for (const word of words) {
-            if (word.length > 2 && autoReplies[word]) { // Only match words with 3+ characters
+            if (word.length > 2 && autoReplies[word]) {
                 return autoReplies[word];
             }
         }
