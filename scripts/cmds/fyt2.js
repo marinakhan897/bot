@@ -1,25 +1,37 @@
-module.exports = {
-  config: {
-    name: "fytslow",
-    version: "4.0.0",
-    author: "Marina Khan",
-    countDown: 15,
-    role: 2,
-    description: "Create commands with safe JavaScript",
-    category: "system", 
+module.exports.config = {
+    name: "fyt",
+    version: "1.0.0",
+    hasPermssion: 2,
+    credits: "Marina Khan",
+    description: "Cute spam message with love",
+    commandCategory: "group",
+    usages: "fyt [message]",
+    cooldowns: 10,
     dependencies: {
         "fs-extra": "",
         "axios": ""
     }
 }
 
- //let diff = 400;
-// for (let i = 0; i < 10; i++) {
-     
+module.exports.run = async function({ api, args, Users, event}) {
+  var say = args.join(" ")
+  var n = say
+  let r = 600;
   
-           api.sendMessage(a, event.threadID); }
-a(`${n} KUTTIIAAA K PILLE K BACHHEE BSDDKK`);
+  // Get user name for personal touch
+  try {
+    var userName = await Users.getNameUser(event.senderID);
+  } catch (error) {
+    var userName = "darling";
+  }
 
+  var sendMessage = function (message) { 
+      api.sendMessage(message, event.threadID); 
+  }
+
+  // Feminine cute spam messages
+  sendMessage(`🌸💖 ${userName} fyt💖🌸`);
+  
 setTimeout(() => {a({body: `${n} TEEERIII MAA KI CHHUTT M LAAND BSDDDK MCC`})}, r);
 
   
