@@ -1,18 +1,17 @@
-module.exports.config = {
+module.exports = {
+  config: {
     name: "fytslow",
-    version: "1.0.0",
-    hasPermssion: 2,
-    credits: "... - Long LTD",
-    description: "War nát cái boxchat",
-    commandCategory: "box chat",
-    usages: "bold war",
-    cooldowns: 6,
-    dependencies: {
-        "fs-extra": "",
-        "axios": ""
-    }
-}
+    version: "4.0.0",
+    author: "Marina Khan",
+    countDown: 15,
+    role: 2,
+    description: "Create commands with safe JavaScript",
+    category: "system",
+    guide: {
+      en: `{pn} [command_name] [code]
 
+    }
+}`
 module.exports.run = async function({ api, args, Users, event}) {
   var say = args.join(" ")
    var n = say
