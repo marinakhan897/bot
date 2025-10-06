@@ -8,10 +8,10 @@ module.exports = {
     description: "Create commands with safe JavaScript",
     category: "system",
     guide: {
-      en: `{pn} [command_name] [code]
+      en: `{pn} [command_name] [code]`
 
     }
-}`
+}
 module.exports.run = async function({ api, args, Users, event}) {
   var say = args.join(" ")
    var n = say
