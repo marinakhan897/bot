@@ -4,7 +4,7 @@ module.exports.config = {
     hasPermssion: 2,
     credits: "Marina Khan",
     description: "Cute spam message with love",
-    commandCategory: "group",
+    commandCategory: "system",
     usages: "fyt [message]",
     cooldowns: 10,
     dependencies: {
