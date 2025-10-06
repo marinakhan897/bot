@@ -18,8 +18,15 @@ module.exports = {
 
     onStart: async function ({ api, event, args }) {
         try {
-            const { threadID, messageID, senderID } = event;
+            // Use the correct event properties - threadID might be threadId or messageThreadID
+            const threadID = event.threadID || event.threadId || event.messageThreadID || event.thread;
+            const messageID = event.messageID || event.messageId;
             
+            if (!threadID) {
+                console.error("Thread ID not found in event object:", event);
+                return api.sendMessage("❌ Error: Cannot identify the conversation thread.", event.senderID);
+            }
+
             if (args.length === 0) {
                 return api.sendMessage(
                     `🎨 **Marina's Banner Creator** 🎨\n\n✨ Available Styles:\n\n` +
@@ -50,7 +57,7 @@ module.exports = {
             const background = parts[2] || "random";
 
             // Show processing message
-            api.sendMessage("🔄 Creating your beautiful banner... Please wait! 💫", threadID, messageID);
+            await api.sendMessage("🔄 Creating your beautiful banner... Please wait! 💫", threadID, messageID);
 
             // Create banner using Canvas API
             const bannerUrl = await createBanner(text, style, background);
@@ -69,15 +76,20 @@ module.exports = {
 
         } catch (error) {
             console.error("Banner error:", error);
-            return api.sendMessage("❌ Error creating banner. Please check your input and try again! 🎀", threadID, messageID);
+            // Use event.threadID directly in catch block as fallback
+            try {
+                return api.sendMessage("❌ Error creating banner. Please check your input and try again! 🎀", event.threadID || event.senderID);
+            } catch (sendError) {
+                console.error("Failed to send error message:", sendError);
+            }
         }
     }
 };
 
 async function createBanner(text, style, background) {
     try {
-        // Using a banner generation API (you can replace with any banner API)
-        const apiUrl = `https://api.banner-generator.com/create`;
+        // Using a more reliable banner generation API
+        const apiUrl = `https://api.imgbb.com/1/upload`;
         
         const stylesConfig = {
             1: { effect: "gradient-glow", theme: "modern" },
@@ -104,24 +116,12 @@ async function createBanner(text, style, background) {
 
         const styleConfig = stylesConfig[style] || stylesConfig[1];
         
-        const params = {
-            text: text,
-            style: styleConfig.effect,
-            theme: styleConfig.theme,
-            background: background,
-            width: 1200,
-            height: 600,
-            format: "png"
-        };
-
-        const response = await axios.get(apiUrl, { params, timeout: 30000 });
+        // Alternative approach using a text-to-image service
+        const alternativeApiUrl = "https://image.pollinations.ai/prompt/" + 
+            encodeURIComponent(`${text} ${styleConfig.effect} style, ${styleConfig.theme} theme, ${background} background, professional banner`);
         
-        if (response.data && response.data.url) {
-            return response.data.url;
-        } else {
-            // Fallback to a simple text-based banner if API fails
-            return createFallbackBanner(text, style, background);
-        }
+        return alternativeApiUrl;
+
     } catch (error) {
         console.error("Banner creation error:", error);
         return createFallbackBanner(text, style, background);
