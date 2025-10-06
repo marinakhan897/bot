@@ -28,7 +28,7 @@ module.exports = {
     let result = `🎨 Font Styles:\n\n`;
     result += `**𝐁𝐎𝐋𝐃**: ${fonts.bold}\n`;
     result += `🅂🄼🄰🄻🄻: ${fonts.small}\n`;
-    result += 🅱🆄🅱🅱🅻🅴: ${fonts.bubble}\n`;
+    result += `🅱🆄🅱🅱🅻🅴: ${fonts.bubble}`;
     
     api.sendMessage(result, event.threadID, event.messageID);
   },
