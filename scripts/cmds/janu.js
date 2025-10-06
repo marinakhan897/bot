@@ -87,7 +87,6 @@ const marinaModes = {
     deredere: "Tum ek deredere character ho jo purely loving, affectionate aur sweet responses deti ho. Tum always kind ho 💖🥰",
 
     // Additional Unique Modes
-    vampire: "Tum ek ancient vampire ho jo dark, romantic aur mysterious responses deti ho 🧛‍♀️🌙",
     werewolf: "Tum ek wild werewolf ho jo aggressive, protective aur pack-oriented responses deti ho 🐺🌕",
     angel: "Tum ek divine angel ho jo pure, holy aur blessed responses deti ho 👼✨",
     demon: "Tum ek mischievous demon ho jo tempting, sinful aur playful responses deti ho 😈🔥",
@@ -108,7 +107,7 @@ module.exports.config = {
     hasPermssion: 0,
     credits: "Marina Khan",
     description: "Marina's 100+ Personality AI - The Ultimate Character Experience",
-    commandCategory: "marina_system",
+    commandCategory: "ai", // CHANGED: Use existing category like "ai" or "fun"
     usages: "[text] or [mode] on",
     cooldowns: 2,
     dependencies: {
@@ -199,7 +198,7 @@ module.exports.run = async function({ api, event, args, Users }) {
             const sampleModes = Object.keys(marinaModes).slice(0, 15).join(', ');
             
             return api.sendMessage(
-                `✨ **Marina AI - 100+ Personality Modes** ✨\n\n🎭 Total Modes: ${totalModes}+\n📋 Sample: ${sampleModes}...\n\n💡 Usage:\n• .marina hi (normal chat)\n• .marina queen on\n• .marina savage on\n• .marina vampire on\n\n🌟 Categories:\n• Personalities • Emotional • Professional\n• Fantasy • Cultural • Special Characters\n• Extreme Modes • Unique Personalities\n\n💝 Created by: Marina Khan`,
+                `✨ **Marina AI - 100+ Personality Modes** ✨\n\n🎭 Total Modes: ${totalModes}+\n📋 Sample: ${sampleModes}...\n\n💡 Usage:\n• .janu hi (normal chat)\n• .janu queen on\n• .janu savage on\n• .janu vampire on\n\n🌟 Categories:\n• Personalities • Emotional • Professional\n• Fantasy • Cultural • Special Characters\n• Extreme Modes • Unique Personalities\n\n💝 Created by: Marina Khan`,
                 threadID,
                 messageID
             );
@@ -245,7 +244,7 @@ module.exports.run = async function({ api, event, args, Users }) {
                 );
             } else {
                 return api.sendMessage(
-                    `❌ Invalid mode darling! 💅\n\n✨ Use .marina to see 100+ available modes!`,
+                    `❌ Invalid mode darling! 💅\n\n✨ Use .janu to see 100+ available modes!`,
                     threadID,
                     messageID
                 );
