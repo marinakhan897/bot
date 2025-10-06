@@ -31,13 +31,14 @@ module.exports = {
 	onStart: async function ({ message, role, args, commandName, event, threadsData, getLang }) {
 		if (!args[0]) return message.SyntaxError();
 
-		const prefixImage = "https://i.imgur.com/your-image.png"; // Replace with your PNG URL
+		// Local PNG file path
+		const prefixImage = `${__dirname}/../assets/images/marina-prefix.png`;
 
 		if (args[0] === "reset") {
 			await threadsData.set(event.threadID, null, "data.prefix");
 			return message.reply({
 				body: getLang("reset", global.GoatBot.config.prefix),
-				attachment: await global.utils.getStreamFromURL(prefixImage)
+				attachment: fs.createReadStream(prefixImage)
 			});
 		}
 
@@ -56,7 +57,7 @@ module.exports = {
 
 		return message.reply({
 			body: confirmMsg,
-			attachment: await global.utils.getStreamFromURL(prefixImage)
+			attachment: fs.createReadStream(prefixImage)
 		}, (err, info) => {
 			formSet.messageID = info.messageID;
 			global.GoatBot.onReaction.set(info.messageID, formSet);
@@ -81,7 +82,6 @@ module.exports = {
 		if (event.body && event.body.toLowerCase() === "prefix") {
 			const systemPrefix = global.GoatBot.config.prefix;
 			const groupPrefix = utils.getPrefix(event.threadID);
-			const senderID = event.senderID;
 
 			const dateTime = new Date().toLocaleString("en-US", {
 				timeZone: "Asia/Dhaka",
@@ -104,11 +104,12 @@ module.exports = {
 👑 Created By     : Marina Khan
 ╚══════════════════════════╝`;
 
-			const prefixImage = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages-platform.99static.com%2F%2FvPUS6Ro_LUsG_qmDHapk9K0-t8M%3D%2F91x28%3A702x639%2Ffit-in%2F590x590%2F99designs-contests-attachments%2F55%2F55811%2Fattachment_55811305&tbnid=zYK6Wpm0f4WQ6M&vet=1&imgrefurl=https%3A%2F%2F99designs.com%2Finspiration%2Flogos%2Fmarine&docid=zfcM-bOcmC3rvM&w=590&h=590&source=sh%2Fx%2Fim%2Fm5%2F2&kgs=7bba99f363978e19&shem=bdsc%2Cisst
+			// Local PNG file path
+			const prefixImage = `${__dirname}/../assets/images/marina-prefix.png`;
 
 			return message.reply({
 				body: infoBox,
-				attachment: await global.utils.getStreamFromURL(prefixImage)
+				attachment: fs.createReadStream(prefixImage)
 			});
 		}
 	}
