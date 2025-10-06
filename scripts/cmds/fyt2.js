@@ -1,10 +1,10 @@
 module.exports.config = {
-    name: "fyt",
+    name: "fun",
     version: "1.0.0",
     hasPermssion: 2,
     credits: "Marina Khan",
     description: "Cute spam message with love",
-    commandCategory: "system",
+    commandCategory: "fun",
     usages: "fyt [message]",
     cooldowns: 10,
     dependencies: {
