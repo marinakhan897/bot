@@ -18,14 +18,12 @@ module.exports = {
         if (args.length === 0) {
             const helpMessage = `🎭 **ULTIMATE VOICE BY MARINA** 🎭
 
-💖 **Multiple Languages & Voice Modes - 100% Real**
+💖 **Multiple Languages & Voice Modes**
 
 🌍 **Supported Languages:**
 • English (en) • Urdu (ur) • Hindi (hi)
 • Arabic (ar) • Spanish (es) • French (fr)
 • German (de) • Italian (it) • Portuguese (pt)
-• Turkish (tr) • Russian (ru) • Japanese (ja)
-• Korean (ko) • Chinese (zh) • Punjabi (pa)
 
 🎙️ **Voice Modes:**
 • Girl Voice (Default) - Sweet & Natural
@@ -44,11 +42,9 @@ module.exports = {
 
 💬 **Examples:**
 {p}voice Hello darling!
-{p}voice آپ کیسے ہیں؟ - Auto Urdu
-{p}voice lang ur آپ کیسے ہیں؟ - Force Urdu
-{p}voice boy हेलो दोस्त - Auto Hindi
-{p}voice romantic Te amo mucho - Auto Spanish
-{p}voice languages`;
+{p}voice آپ کیسے ہیں؟
+{p}voice lang ur آپ کیسے ہیں؟
+{p}voice boy हेलो दोस्त`;
             
             await api.sendMessage(helpMessage, event.threadID);
             return;
@@ -56,7 +52,7 @@ module.exports = {
 
         try {
             const voiceModes = {
-                girl: { name: "🎀 Girl Voice", voiceId: "EXAVITQu4vr4xnSDxMAL" },
+                girl: { name: "🎀 Girl Voice", voiceId: "21m00Tcm4TlvDq8ikWAM" },
                 boy: { name: "👦 Boy Voice", voiceId: "VR6AewLTigWG4xSOukaG" }, 
                 child: { name: "🍭 Child Voice", voiceId: "MF3mGyEYCl7XYWbV9V6O" },
                 romantic: { name: "💖 Romantic Voice", voiceId: "ThT5KcBeYPX3keUQqHPh" }
@@ -64,34 +60,24 @@ module.exports = {
 
             const languages = {
                 // English
-                'en': { name: "English", voiceId: "EXAVITQu4vr4xnSDxMAL", code: "en-US" },
-                'en-us': { name: "English (US)", voiceId: "EXAVITQu4vr4xnSDxMAL", code: "en-US" },
-                'en-gb': { name: "English (UK)", voiceId: "LcfcDJNUP1GQjkzn1xUU", code: "en-GB" },
+                'en': { name: "English", code: "en-US" },
+                'en-us': { name: "English (US)", code: "en-US" },
+                'en-gb': { name: "English (UK)", code: "en-GB" },
                 
                 // Urdu & Hindi
-                'ur': { name: "Urdu", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ur-PK" },
-                'hi': { name: "Hindi", voiceId: "XB0fDUnXU5powFXDhCwa", code: "hi-IN" },
-                'pa': { name: "Punjabi", voiceId: "XB0fDUnXU5powFXDhCwa", code: "pa-IN" },
+                'ur': { name: "Urdu", code: "ur-PK" },
+                'hi': { name: "Hindi", code: "hi-IN" },
+                'pa': { name: "Punjabi", code: "pa-IN" },
                 
                 // Arabic
-                'ar': { name: "Arabic", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ar-SA" },
-                'ar-sa': { name: "Arabic (Saudi)", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ar-SA" },
-                'ar-eg': { name: "Arabic (Egypt)", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ar-EG" },
+                'ar': { name: "Arabic", code: "ar-SA" },
                 
                 // European Languages
-                'es': { name: "Spanish", voiceId: "D38z5RcWu1voky8WS1ja", code: "es-ES" },
-                'fr': { name: "French", voiceId: "VR6AewLTigWG4xSOukaG", code: "fr-FR" },
-                'de': { name: "German", voiceId: "VR6AewLTigWG4xSOukaG", code: "de-DE" },
-                'it': { name: "Italian", voiceId: "VR6AewLTigWG4xSOukaG", code: "it-IT" },
-                'pt': { name: "Portuguese", voiceId: "VR6AewLTigWG4xSOukaG", code: "pt-BR" },
-                
-                // Asian Languages
-                'tr': { name: "Turkish", voiceId: "XB0fDUnXU5powFXDhCwa", code: "tr-TR" },
-                'ru': { name: "Russian", voiceId: "VR6AewLTigWG4xSOukaG", code: "ru-RU" },
-                'ja': { name: "Japanese", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ja-JP" },
-                'ko': { name: "Korean", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ko-KR" },
-                'zh': { name: "Chinese", voiceId: "XB0fDUnXU5powFXDhCwa", code: "zh-CN" },
-                'zh-cn': { name: "Chinese (Simplified)", voiceId: "XB0fDUnXU5powFXDhCwa", code: "zh-CN" }
+                'es': { name: "Spanish", code: "es-ES" },
+                'fr': { name: "French", code: "fr-FR" },
+                'de': { name: "German", code: "de-DE" },
+                'it': { name: "Italian", code: "it-IT" },
+                'pt': { name: "Portuguese", code: "pt-BR" }
             };
 
             const firstArg = args[0].toLowerCase();
@@ -121,7 +107,7 @@ module.exports = {
                 const langCode = args[1].toLowerCase();
                 if (languages[langCode]) {
                     language = languages[langCode];
-                    voiceType = "girl"; // Default voice for language mode
+                    voiceType = "girl";
                     text = args.slice(2).join(" ");
                 } else {
                     return await api.sendMessage(`❌ Invalid language code: ${langCode}\nUse {p}voice languages to see all codes\n- Marina 💝`, event.threadID);
@@ -144,7 +130,8 @@ module.exports = {
 
             await api.sendMessage(`🎙️ Creating ${voiceModes[voiceType].name} in ${language.name}...\n- Marina 💖`, event.threadID);
 
-            const voiceResult = await this.generateElevenLabsVoice(text, voiceModes[voiceType].voiceId, language.code);
+            // Try multiple voice generation methods
+            const voiceResult = await this.generateVoice(text, language.code, voiceType);
             
             if (voiceResult.success) {
                 await api.sendMessage({
@@ -152,55 +139,86 @@ module.exports = {
                     attachment: voiceResult.audioStream
                 }, event.threadID);
             } else {
-                await this.fallbackVoice(api, event, text, voiceType, language);
+                throw new Error("All voice generation methods failed");
             }
 
         } catch (error) {
             console.error("Voice error:", error);
-            await api.sendMessage(`💔 Sorry! Voice service is busy right now.\n\nTry again in a moment darling!\n- Marina 💝`, event.threadID);
+            // Use reliable Google TTS as final fallback
+            await this.useGoogleTTSFallback(api, event, args.join(" "));
         }
     },
 
     detectLanguage: function(text) {
         const languages = {
-            'ur': { name: "Urdu", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ur-PK" },
-            'hi': { name: "Hindi", voiceId: "XB0fDUnXU5powFXDhCwa", code: "hi-IN" },
-            'ar': { name: "Arabic", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ar-SA" },
-            'es': { name: "Spanish", voiceId: "D38z5RcWu1voky8WS1ja", code: "es-ES" },
-            'fr': { name: "French", voiceId: "VR6AewLTigWG4xSOukaG", code: "fr-FR" },
-            'de': { name: "German", voiceId: "VR6AewLTigWG4xSOukaG", code: "de-DE" },
-            'it': { name: "Italian", voiceId: "VR6AewLTigWG4xSOukaG", code: "it-IT" },
-            'pt': { name: "Portuguese", voiceId: "VR6AewLTigWG4xSOukaG", code: "pt-BR" },
-            'tr': { name: "Turkish", voiceId: "XB0fDUnXU5powFXDhCwa", code: "tr-TR" },
-            'ru': { name: "Russian", voiceId: "VR6AewLTigWG4xSOukaG", code: "ru-RU" },
-            'ja': { name: "Japanese", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ja-JP" },
-            'ko': { name: "Korean", voiceId: "XB0fDUnXU5powFXDhCwa", code: "ko-KR" },
-            'zh': { name: "Chinese", voiceId: "XB0fDUnXU5powFXDhCwa", code: "zh-CN" }
+            'ur': { name: "Urdu", code: "ur-PK" },
+            'hi': { name: "Hindi", code: "hi-IN" },
+            'ar': { name: "Arabic", code: "ar-SA" },
+            'es': { name: "Spanish", code: "es-ES" },
+            'fr': { name: "French", code: "fr-FR" },
+            'de': { name: "German", code: "de-DE" },
+            'it': { name: "Italian", code: "it-IT" },
+            'pt': { name: "Portuguese", code: "pt-BR" },
+            'en': { name: "English", code: "en-US" }
         };
 
-        // Language detection logic
+        // Simple language detection
         if (/[\u0600-\u06FF]/.test(text)) return languages.ar; // Arabic
         if (/[\u0900-\u097F]/.test(text)) return languages.hi; // Hindi
-        if (/[\u0A00-\u0A7F]/.test(text)) return languages.pa; // Punjabi
-        if (/[\u4e00-\u9fff]/.test(text)) return languages.zh; // Chinese
-        if (/[\u3040-\u309F]/.test(text)) return languages.ja; // Japanese
-        if (/[\uAC00-\uD7AF]/.test(text)) return languages.ko; // Korean
         if (/[آ-ی]/.test(text)) return languages.ur; // Urdu/Persian
-        
-        // European languages detection
         if (/ñ|¿|¡/.test(text)) return languages.es; // Spanish
         if (/é|è|ê|à|ç/.test(text)) return languages.fr; // French
         if (/ä|ö|ü|ß/.test(text)) return languages.de; // German
-        if (/à|è|é|ì|ò|ù/.test(text)) return languages.it; // Italian
-        if (/ã|õ|ç/.test(text)) return languages.pt; // Portuguese
         
         return languages['en']; // Default English
     },
 
-    generateElevenLabsVoice: async function(text, voiceId, languageCode = "en-US") {
+    generateVoice: async function(text, languageCode, voiceType) {
+        // METHOD 1: Try Google TTS first (most reliable)
         try {
-            // YOUR ELEVENLABS API KEY
+            const googleVoice = await this.generateGoogleTTS(text, languageCode);
+            if (googleVoice.success) {
+                return googleVoice;
+            }
+        } catch (error) {
+            console.log("Google TTS failed, trying next method...");
+        }
+
+        // METHOD 2: Try ElevenLabs with better error handling
+        try {
+            const elevenLabsVoice = await this.generateElevenLabsVoice(text, languageCode);
+            if (elevenLabsVoice.success) {
+                return elevenLabsVoice;
+            }
+        } catch (error) {
+            console.log("ElevenLabs failed, using fallback...");
+        }
+
+        // METHOD 3: Final fallback - basic TTS
+        return await this.generateBasicTTS(text, languageCode);
+    },
+
+    generateGoogleTTS: async function(text, languageCode) {
+        try {
+            // Google TTS URL - most reliable and free
+            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${languageCode}&client=tw-ob&idx=0&total=1`;
+            
+            const response = await global.utils.getStreamFromURL(ttsUrl);
+            return {
+                success: true,
+                audioStream: response
+            };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+
+    generateElevenLabsVoice: async function(text, languageCode) {
+        try {
             const XI_API_KEY = "sk_8b6c8f4a75f2e8e9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f";
+            
+            // Use a working voice ID
+            const voiceId = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice - works well
             
             const response = await global.utils.request({
                 url: `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -211,16 +229,19 @@ module.exports = {
                 },
                 body: JSON.stringify({
                     text: text,
-                    model_id: "eleven_multilingual_v1", // Multilingual model
+                    model_id: "eleven_monolingual_v1",
                     voice_settings: {
-                        stability: 0.3,
-                        similarity_boost: 0.7,
-                        style: 0.5,
-                        use_speaker_boost: true
+                        stability: 0.5,
+                        similarity_boost: 0.5
                     }
                 }),
-                responseType: 'stream'
+                responseType: 'stream',
+                timeout: 30000 // 30 second timeout
             });
+
+            if (response.statusCode !== 200) {
+                throw new Error(`API returned status: ${response.statusCode}`);
+            }
 
             return {
                 success: true,
@@ -228,38 +249,56 @@ module.exports = {
             };
 
         } catch (error) {
-            console.error("ElevenLabs error:", error);
+            console.error("ElevenLabs error:", error.message);
             return { success: false, error: error.message };
         }
     },
 
-    fallbackVoice: async function(api, event, text, voiceType, language) {
+    generateBasicTTS: async function(text, languageCode) {
         try {
+            // Alternative TTS service
+            const ttsUrl = `http://api.voicerss.org/?key=demo&hl=${languageCode}&src=${encodeURIComponent(text)}`;
+            const response = await global.utils.getStreamFromURL(ttsUrl);
+            
+            return {
+                success: true,
+                audioStream: response
+            };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+
+    useGoogleTTSFallback: async function(api, event, text) {
+        try {
+            await api.sendMessage(`🔊 Creating voice message with reliable service...\n- Marina 💖`, event.threadID);
+            
+            const language = this.detectLanguage(text);
             const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${language.code}&client=tw-ob`;
             
             await api.sendMessage({
-                body: `🎭 **${voiceType.toUpperCase()} VOICE** | 🌍 **${language.name}**\n\n"${text}"\n\n💝 Created by Marina\n✨ Using basic TTS service`,
+                body: `🎵 **Voice Message** | 🌍 **${language.name}**\n\n"${text}"\n\n💝 Created with love by Marina\n✨ Using reliable voice service`,
                 attachment: await global.utils.getStreamFromURL(ttsUrl)
             }, event.threadID);
-
-        } catch (fallbackError) {
+            
+        } catch (finalError) {
+            console.error("Final fallback failed:", finalError);
             await api.sendMessage({
-                body: `🎭 **${voiceType.toUpperCase()} VOICE** | 🌍 **${language.name}**\n\n"${text}"\n\n💖 Voice service unavailable right now\n✨ Try again later darling!\n\nWith love,\nMarina 💝`
+                body: `💝 **Voice Message Preview**\n\n"${text}"\n\n🎵 Imagine this in a sweet voice!\n✨ Voice services are temporarily busy\n\nTry again in a few minutes darling!\n- Marina 💖`
             }, event.threadID);
         }
     },
 
     onChat: async function ({ api, event }) {
-        // Auto-detect voice requests in chat
         if (event.body && event.body.toLowerCase().includes('voice') && 
-            (event.mentions && Object.values(event.mentions).some(mention => mention.id === api.getCurrentUserID()))) {
+            event.mentions && Object.values(event.mentions).some(mention => mention.id === api.getCurrentUserID())) {
             
             const message = event.body.replace(/@[\w\s]+/g, '').replace('voice', '').trim();
             
             if (message.length > 3) {
                 setTimeout(async () => {
                     await api.sendMessage({
-                        body: `💖 You want a voice message? Use:\n{p}voice "${message}"\n\nI support 15+ languages! 🌍\n- Marina 🎀`
+                        body: `💖 You want a voice message? Use:\n{p}voice "${message}"\n\nI support multiple languages! 🌍\n- Marina 🎀`
                     }, event.threadID, event.messageID);
                 }, 1500);
             }
