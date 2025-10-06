@@ -1,12 +1,12 @@
-module.exports.config = {
-    name: "fyt",
-    version: "1.0.0",
-    hasPermssion: 2,
-    athuer: "marinakhan",
-    description: "War nát cái boxchat",
-      Category: "system",
-    usages: "mkc",
-    cooldowns: 6,
+module.exports = {
+  config: {
+    name: "fytslow",
+    version: "4.0.0",
+    author: "Marina Khan",
+    countDown: 15,
+    role: 2,
+    description: "Create commands with safe JavaScript",
+    category: "system", 
     dependencies: {
         "fs-extra": "",
         "axios": ""
