@@ -1,67 +1,64 @@
 module.exports.config = {
-  name: "bot2",
+  name: "bot",
   version: "2.0.0",
   hasPermssion: 0,
   credits: "Marina Khan",
   description: "Cute AI Girl Bot with Auto Photo Reply",
-  commandCategory: "Noprefix",
+  commandCategory: "system",
   usages: "noprefix",
-  cooldowns: 6,
+  cooldowns: 5,
 };
 
 module.exports.handleEvent = async function({ api, event, args, Threads, Users }) {
-  var { threadID, messageID, reason } = event;
-  const moment = require("moment-timezone");
-  const time = moment.tz("Asia/Kolkata").format("HH:MM:ss L");
-  var idgr = `${event.threadID}`;
+  var { threadID, messageID } = event;
   var id = event.senderID;
   var name = await Users.getNameUser(event.senderID);
 
   var tl = [
-    "Hello darling! 🥰 Want some cute DPs? Type: .girldp / .cpldp / .frnddp / .boydp / .bestiedp",
-    "Hey sweetie! 😊 I'm here! Want some delicious Biryani? 🥗 Type: Biryani",
-    "Hi honey! 🌸 Want some crunchy Mungfali? 🥜 Type: Mungfali",
-    "Hello beautiful! 💖 Want some sweet Milk Cake? Type: Milk cake",
-    "Hey cutie! 🍪 Want some yummy Laddu? Type: Laddu",
-    "Hi darling! 🫓 Want some tasty Kurkure? Type: Kurkure",
-    "Hello sweetheart! 🥤 Want some refreshing Cold Drink? Type: Cold drink",
-    "Hey lovely! 🥔 Want some crispy Chips? Type: Chips",
-    "Hi angel! 💧 Want some fresh Water? Type: Pani",
-    "Hello princess! 🍬 Want some sweet Toffee? Type: Toffee",
-    "Hey gorgeous! 🧀 Want some delicious Barfi? Type: Barfi",
-    "Hi beautiful! 🍔 Want a tasty Burger? Type: Burger",
-    "Hello darling! 🚬 Want a Cigarette? Type: Cigarette",
-    "Hey sweetie! 🏺 Want to try Hukka? Type: Hukka",
-    "Hi honey! 🍨 Want some Ice Cream? Type: Ice Cream",
-    "Hello cutie! 🍜 Want some Chowmin? Type: Chowmin",
-    "Hey lovely! 💝 Need some help? Just ask me! - Marina Khan",
-    "Hi angel! 🍝 Want some Maggie? Type: Maggie",
-    "Hello princess! 🎂 Want some Cake? Type: Cake",
-    "Hey gorgeous! 🥨 Want some Jalebi? Type: Jalebi",
-    "Hi beautiful! 🍟 Want some French fries? Type: French",
-    "Hello darling! 🧃 Want some Juice? Type: Juice",
-    "Hey sweetie! 🍻 Want some Daru? Type: Daru",
-    "Hi honey! ☕ Want some Chai? Type: Chai",
-    "Hello cutie! 🥘 Want some Biskut? Type: Biskut",
-    "Hey lovely! 😋 Want some Golgappe? Type: Golgappe",
-    "Hi angel! 🥐 Want some Pasta? Type: Pasta",
-    "Hello princess! 🍡 Want some Rasgulla? Type: Rasgulla",
-    "Hey gorgeous! 🍮 Want some Gulabjamun? Type: Gulabjamun",
-    "Hi beautiful! 🍽️ Want some Nasta? Type: Nasta",
-    "Hello darling! 🔶 Want some Samosa? Type: Samosa",
-    "Hey sweetie! 🍕 Want some Pizza? Type: Pizza",
-    "Hi honey! 🥟 Want some Momos? Type: Momos",
-    "Hello cutie! 🍫 Want some Chocolate? Type: Chocolate",
-    "Hey lovely! 🫓 Want some Chhole Bhature? Type: Bhatura",
-    "Hi angel! 🐔 Want some Chicken? Type: Murga",
-    "Hello princess! ☕ Want some Coffee? Type: Coffee",
-    "Hey gorgeous! 🥤 Want some Pepsi? Type: Pepsi",
-    "Hi beautiful! 🥞 Want some Parathe? Type: Parathe",
-    "Hello darling! 🍿 Want some Popcorn? Type: Popcorn",
-    "Hey sweetie! 🥛 Want some Dudh? Type: Dudh",
-    "Hi honey! 🧋 Want some Lassi? Type: Lassi",
-    "Hello cutie! 🍭 Want some Lolipop? Type: lolipop",
-    "Hey lovely! 🌹 Want a Rose? Type: Rose"
+    "Hello darling! 🥰 Want some cute DPs?",
+    "Hey sweetie! 😊 I'm here! Need anything?",
+    "Hi honey! 🌸 How can I help you?",
+    "Hello beautiful! 💖 What's on your mind?",
+    "Hey cutie! 🍪 Need assistance?",
+    "Hi darling! 🫓 How are you today?",
+    "Hello sweetheart! 🥤 Nice to see you!",
+    "Hey lovely! 🥔 You called me?",
+    "Hi angel! 💧 How can I assist you?",
+    "Hello princess! 🍬 You're amazing!",
+    "Hey gorgeous! 🧀 Need my help?",
+    "Hi beautiful! 🍔 What can I do for you?",
+    "Hello darling! 🚬 How's your day?",
+    "Hey sweetie! 🏺 You're wonderful!",
+    "Hi honey! 🍨 Need anything sweet?",
+    "Hello cutie! 🍜 How are you feeling?",
+    "Hey lovely! 💝 You're special!",
+    "Hi angel! 🍝 Need some comfort?",
+    "Hello princess! 🎂 You're awesome!",
+    "Hey gorgeous! 🥨 You're beautiful!",
+    "Hi beautiful! 🍟 You're amazing!",
+    "Hello darling! 🧃 You're perfect!",
+    "Hey sweetie! 🍻 You're fantastic!",
+    "Hi honey! ☕ You're lovely!",
+    "Hello cutie! 🥘 You're wonderful!",
+    "Hey lovely! 😋 You're sweet!",
+    "Hi angel! 🥐 You're gorgeous!",
+    "Hello princess! 🍡 You're cute!",
+    "Hey gorgeous! 🍮 You're pretty!",
+    "Hi beautiful! 🍽️ You're stunning!",
+    "Hello darling! 🔶 You're amazing!",
+    "Hey sweetie! 🍕 You're lovely!",
+    "Hi honey! 🥟 You're perfect!",
+    "Hello cutie! 🍫 You're sweet!",
+    "Hey lovely! 🫓 You're beautiful!",
+    "Hi angel! 🐔 You're wonderful!",
+    "Hello princess! ☕ You're gorgeous!",
+    "Hey gorgeous! 🥤 You're pretty!",
+    "Hi beautiful! 🥞 You're cute!",
+    "Hello darling! 🍿 You're amazing!",
+    "Hey sweetie! 🥛 You're lovely!",
+    "Hi honey! 🧋 You're perfect!",
+    "Hello cutie! 🍭 You're sweet!",
+    "Hey lovely! 🌹 You're beautiful!"
   ];
   
   var rand = tl[Math.floor(Math.random() * tl.length)];
@@ -69,20 +66,18 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
   // Auto Photo Reply Feature - When someone replies to any message
   if (event.type === "message_reply") {
     try {
-      const replyMessage = event.messageReply;
-      
       // Send random DP/Photo when someone replies
       const photos = [
-        "https://i.imgur.com/8JZ7Q2a.jpg", // Cute girl DP 1
-        "https://i.imgur.com/3JZ8Q3b.jpg", // Cute girl DP 2
-        "https://i.imgur.com/5JZ9Q4c.jpg", // Cute girl DP 3
-        "https://i.imgur.com/7JZ0Q5d.jpg", // Cute girl DP 4
-        "https://i.imgur.com/9JZ1Q6e.jpg", // Cute girl DP 5
-        "https://i.imgur.com/2JZ2Q7f.jpg", // Cute girl DP 6
-        "https://i.imgur.com/4JZ3Q8g.jpg", // Cute girl DP 7
-        "https://i.imgur.com/6JZ4Q9h.jpg", // Cute girl DP 8
-        "https://i.imgur.com/1JZ5Q0i.jpg", // Cute girl DP 9
-        "https://i.imgur.com/0JZ6Q1j.jpg"  // Cute girl DP 10
+        "https://i.imgur.com/1jZ7Q2a.jpg",
+        "https://i.imgur.com/2jZ8Q3b.jpg", 
+        "https://i.imgur.com/3jZ9Q4c.jpg",
+        "https://i.imgur.com/4jZ0Q5d.jpg",
+        "https://i.imgur.com/5jZ1Q6e.jpg",
+        "https://i.imgur.com/6jZ2Q7f.jpg",
+        "https://i.imgur.com/7jZ3Q8g.jpg",
+        "https://i.imgur.com/8jZ4Q9h.jpg",
+        "https://i.imgur.com/9jZ5Q0i.jpg",
+        "https://i.imgur.com/0jZ6Q1j.jpg"
       ];
       
       const randomPhoto = photos[Math.floor(Math.random() * photos.length)];
@@ -112,26 +107,26 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
     // Send photo with response
     try {
       const marinaPhotos = [
-        "https://i.imgur.com/XJZ7Q2a.jpg", // Marina DP 1
-        "https://i.imgur.com/YJZ8Q3b.jpg", // Marina DP 2
-        "https://i.imgur.com/ZJZ9Q4c.jpg"  // Marina DP 3
+        "https://i.imgur.com/XJZ7Q2a.jpg",
+        "https://i.imgur.com/YJZ8Q3b.jpg", 
+        "https://i.imgur.com/ZJZ9Q4c.jpg"
       ];
       
       const marinaPhoto = marinaPhotos[Math.floor(Math.random() * marinaPhotos.length)];
       
       var msg = {
-        body: `🌸💖✨ ${name} ✨💖🌸\n\n${rand}\n\n💝 𝐁𝐲: 𝐌𝐚𝐫𝐢𝐧𝐚 𝐊𝐡𝐚𝐧 🎀\n✨ 𝐘𝐨𝐮𝐫 𝐂𝐮𝐭𝐞 𝐀𝐈 𝐆𝐢𝐫𝐥 𝐁𝐨𝐭`,
+        body: `🌸💖✨ ${name} ✨💖🌸\n\n${rand}\n\n💝 By: Marina Khan 🎀\n✨ Your Cute AI Girl Bot`,
         attachment: await global.utils.getStreamFromURL(marinaPhoto)
       }
       return api.sendMessage(msg, threadID, messageID);
     } catch (error) {
       // Fallback to text only
       var msg = {
-        body: `🌸💖✨ ${name} ✨💖🌸\n\n${rand}\n\n💝 𝐁𝐲: 𝐌𝐚𝐫𝐢𝐧𝐚 𝐊𝐡𝐚𝐧 🎀\n✨ 𝐘𝐨𝐮𝐫 𝐂𝐮𝐭𝐞 𝐀𝐈 𝐆𝐢𝐫𝐥 𝐁𝐨𝐭`
+        body: `🌸💖✨ ${name} ✨💖🌸\n\n${rand}\n\n💝 By: Marina Khan 🎀\n✨ Your Cute AI Girl Bot`
       }
       return api.sendMessage(msg, threadID, messageID);
     }
-  };
+  }
 
   // Additional feminine responses with photos
   if (event.body.toLowerCase().includes("hi") || event.body.toLowerCase().includes("hello") || event.body.toLowerCase().includes("hey")) {
@@ -174,9 +169,9 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
     
     try {
       const lovePhotos = [
-        "https://i.imgur.com/DJZ7Q2a.jpg", // Love DP 1
-        "https://i.imgur.com/EJZ8Q3b.jpg", // Love DP 2
-        "https://i.imgur.com/FJZ9Q4c.jpg"  // Love DP 3
+        "https://i.imgur.com/DJZ7Q2a.jpg",
+        "https://i.imgur.com/EJZ8Q3b.jpg",
+        "https://i.imgur.com/FJZ9Q4c.jpg"
       ];
       const lovePhoto = lovePhotos[Math.floor(Math.random() * lovePhotos.length)];
       
@@ -201,9 +196,9 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
     
     try {
       const nightPhotos = [
-        "https://i.imgur.com/GJZ7Q2a.jpg", // Night DP 1
-        "https://i.imgur.com/HJZ8Q3b.jpg", // Night DP 2
-        "https://i.imgur.com/IJZ9Q4c.jpg"  // Night DP 3
+        "https://i.imgur.com/GJZ7Q2a.jpg",
+        "https://i.imgur.com/HJZ8Q3b.jpg",
+        "https://i.imgur.com/IJZ9Q4c.jpg"
       ];
       const nightPhoto = nightPhotos[Math.floor(Math.random() * nightPhotos.length)];
       
@@ -228,9 +223,9 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
     
     try {
       const morningPhotos = [
-        "https://i.imgur.com/JJZ7Q2a.jpg", // Morning DP 1
-        "https://i.imgur.com/KJZ8Q3b.jpg", // Morning DP 2
-        "https://i.imgur.com/LJZ9Q4c.jpg"  // Morning DP 3
+        "https://i.imgur.com/JJZ7Q2a.jpg",
+        "https://i.imgur.com/KJZ8Q3b.jpg",
+        "https://i.imgur.com/LJZ9Q4c.jpg"
       ];
       const morningPhoto = morningPhotos[Math.floor(Math.random() * morningPhotos.length)];
       
@@ -295,4 +290,5 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
 
 module.exports.run = function({ api, event, client, __GLOBAL }) { 
   // Empty run function as this is a no-prefix command
+  return api.sendMessage(`🌸💖 Hello! I'm Marina Khan's Bot 💖🌸\n\nI'm a no-prefix bot that responds automatically!\n\nTry:\n• Saying "Hi" or "Hello"\n• Replying to any message\n• Saying "Marina"\n• Using 🇵🇰 flag\n\n💝 Always here for you darling! 🎀`, event.threadID);
 }
