@@ -12,26 +12,20 @@
   "antiInbox": false,
   "language": "en",
   "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
-  "nickNameBot": "obito-bot",
-  "prefix": "/",
+  "nickNameBot": "💖 Marina Bot",
+  "prefix": ".",
   "adminOnly": {
     "enable": false,
     "ignoreCommand": []
   },
   "adminBot": [
-    "100078794143432",
-    "100001986888287",
-    "100000180724818"
+    "100078794143432"
   ],
   "developers": [
-    "100078794143432",
-    "100001986888287",
-    "100000180724818"
+    "100078794143432"
   ],
   "premium": [
-    "100078794143432",
-    "100001986888287",
-    "100000180724818"
+    "100078794143432"
   ],
   "whiteListMode": {
     "enable": false,
@@ -55,18 +49,18 @@
     "autoRefreshThreadInfoFirstTime": true,
     "notes": "(1) type selects 'json' or 'sqlite' or 'mongodb'. If you choose mongodb, enter uri connect mongodb in the uriMongodb section, instructions to get uri connect mongodb at: https://youtu.be/z1f9urHW5xY. I recommend using 'mongodb' or 'sqlite', json is not recommended because it is not stable. (2) when you set autoSyncWhenStart to true, the bot will automatically synchronize the data in the database when starting the bot, this will make the bot start slower. (3) when you set autoRefreshThreadInfoFirstTime to true, the bot will automatically refresh the thread information when get first message from the thread since starting the bot"
   },
-  "timeZone": "Asia/Dhaka",
+  "timeZone": "Asia/Karachi",
   "credentials": {
     "gmailAccount": {
-      "email": "andylabaco@gmail.com",
-      "clientId": "96871167660-5js0qjdlpr2mcd331kv5obpifev5j69r.apps.googleusercontent.com",
-      "clientSecret": "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",
-      "refreshToken": "1//04qK_zxJkdK7RCgYIARAAGAQSNwF-L9IrZOdI4prCgpqvAoDEvn-HpuSugKxBTRNoGS37QwxfAWJUCehSKhdas26xOh-SjmdR4uw",
+      "email": "",
+      "clientId": "",
+      "clientSecret": "",
+      "refreshToken": "",
       "apiKey": ""
     },
     "gRecaptcha": {
-      "siteKey": "6Ldu4R0qAAAAAJrUKnTYx1AaUtVIUCtye1UE_ohw",
-      "secretKey": "6Ldu4R0qAAAAAFauKulV8aV2Z8uowe1ujXG3K5iR"
+      "siteKey": "",
+      "secretKey": ""
     }
   },
   "dashBoard": {
@@ -79,8 +73,8 @@
     "port": 3001,
     "socket": {
       "enable": true,
-      "channelName": "uptime",
-      "verifyToken": "u1940319-ea7f101121162c69af48f6ce"
+      "channelName": "marina-bot",
+      "verifyToken": "marina-khan-2024-bot-system"
     }
   },
   "autoRestart": {
@@ -112,7 +106,7 @@
   "notiWhenListenMqttError": {
     "notes": "This is the message when the bot is listening to the mqtt server and the mqtt server stops working due to account problems such as: locked acc, blocked due to spam,... bot will automatically send notifications to parts of your settings. You must change enable to true to use this feature. See bot/login/handlerWhenListenHasError.js file for details on how it works",
     "gmail": {
-      "enable": true,
+      "enable": false,
       "emailGetNoti": "",
       "note": "Bot will use gmailAccount to send email to emailGetNoti, can send notifications to many email, separate by comma or space, example: \"example1@gmail.com example2@gmail.com\" (without backslash)"
     },
@@ -161,5 +155,13 @@
     "autoReconnect": true,
     "online": false,
     "notes": "Document here: https://github.com/ntkhang03/fb-chat-api/blob/master/DOCS.md#apisetoptionsoptions "
+  },
+  "marinaSettings": {
+    "owner": "Marina Khan",
+    "version": "2.0.0",
+    "language": "urdu-english",
+    "timezone": "Asia/Karachi",
+    "signature": "💖 By Marina Khan",
+    "botType": "Advanced Messenger Bot"
   }
 }
