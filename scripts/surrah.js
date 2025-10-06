@@ -23,7 +23,6 @@ module.exports = {
     if (surahNum < 1 || surahNum > 114) {
       return api.sendMessage("❌ Surah number must be 1-114", threadID, messageID);
     }
-
     await this.showSurah(api, event, surahNum, args[1]);
   },
 
