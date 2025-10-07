@@ -31,5 +31,36 @@
     "logsbot": {
       "allow": true
     }
+  },
+  "commandCategory": {
+    "system": [
+      "admin", "fyt", "automsg", "botcontrol", "config",
+      "restart", "eval", "exec", "backup", "broadcast"
+    ],
+    "utility": [
+      "nobg", "dpedit", "voice", "imgedit", "removebg",
+      "weather", "time", "calc", "translate", "search",
+      "shorten", "upload", "download", "qrcode"
+    ],
+    "fun": [
+      "game", "joke", "quote", "meme", "compliment",
+      "roast", "8ball", "dice", "coinflip", "riddle"
+    ],
+    "media": [
+      "edit", "music", "video", "image", "filter",
+      "blur", "crop", "rotate", "sticker", "gif"
+    ],
+    "group": [
+      "members", "info", "notify", "clean", "kick",
+      "add", "ban", "unban", "mute", "setname"
+    ],
+    "economy": [
+      "daily", "rank", "rankup", "money", "coin",
+      "bank", "transfer", "pay", "slot", "fish"
+    ],
+    "general": [
+      "help", "ping", "uptime", "info", "menu",
+      "about", "support", "guide"
+    ]
   }
 }
