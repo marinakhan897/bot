@@ -1,7 +1,7 @@
 {
   "facebookAccount": {
-    "email": "x",
-    "password": "",
+    "email": "husnain.tonali.bhaiee@gmail.com",
+    "password": "pathani123",
     "2FASecret": "",
     "i_user": "",
     "proxy": null,
@@ -12,7 +12,7 @@
   "antiInbox": false,
   "language": "en",
   "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (URDU), en (English)",
-  "nickNameBot": "obito-bot",
+  "nickNameBot": "marina khan",
   "prefix": "/",
   "adminOnly": {
     "enable": false,
