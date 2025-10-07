@@ -1,0 +1,4 @@
+config.enc
+*.enc
+.env
+secure-config.json
