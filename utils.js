@@ -18,59 +18,62 @@ const Prism = require("./func/prism.js");
 const { config } = global.GoatBot;
 const { gmailAccount } = config.credentials;
 const { clientId, clientSecret, refreshToken, apiKey: googleApiKey } = gmailAccount;
+
+// 🌸 Marina Bot Enhanced Credentials Check
 if (!clientId) {
-	log.err("CREDENTIALS", `Please provide a valid clientId in file ${path.normalize(global.client.dirConfig)}`);
+	log.err("CREDENTIALS", `❌ Please provide a valid clientId in file ${path.normalize(global.client.dirConfig)}`);
+	log.info("💡", "Marina Bot system check failed");
 	process.exit();
 }
 if (!clientSecret) {
-	log.err("CREDENTIALS", `Please provide a valid clientSecret in file ${path.normalize(global.client.dirConfig)}`);
+	log.err("CREDENTIALS", `❌ Please provide a valid clientSecret in file ${path.normalize(global.client.dirConfig)}`);
 	process.exit();
 }
 if (!refreshToken) {
-	log.err("CREDENTIALS", `Please provide a valid refreshToken in file ${path.normalize(global.client.dirConfig)}`);
+	log.err("CREDENTIALS", `❌ Please provide a valid refreshToken in file ${path.normalize(global.client.dirConfig)}`);
 	process.exit();
 }
 
+// 🌸 Enhanced OAuth with Marina Bot Branding
 const oauth2ClientForGGDrive = new google.auth.OAuth2(clientId, clientSecret, "https://developers.google.com/oauthplayground");
 oauth2ClientForGGDrive.setCredentials({ refresh_token: refreshToken });
 const driveApi = google.drive({
 	version: 'v3',
 	auth: oauth2ClientForGGDrive
 });
+
+// 🕒 Karachi Time Function
+function getKarachiTime() {
+    return moment().tz("Asia/Karachi").format("HH:mm:ss DD-MM-YYYY");
+}
+
+// 💫 Marina Bot Information
+const MARINA_INFO = {
+    owner: "Marina Khan",
+    version: "2.0.0",
+    language: "urdu-english",
+    timezone: "Asia/Karachi",
+    signature: "💖 By Marina Khan"
+};
+
+// 🌸 Enhanced Character Set with Urdu Support
 const word = [
 	'A', 'Á', 'À', 'Ả', 'Ã', 'Ạ', 'a', 'á', 'à', 'ả', 'ã', 'ạ',
 	'Ă', 'Ắ', 'Ằ', 'Ẳ', 'Ẵ', 'Ặ', 'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ',
 	'Â', 'Ấ', 'Ầ', 'Ẩ', 'Ẫ', 'Ậ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ',
-	'B', 'b',
-	'C', 'c',
-	'D', 'Đ', 'd', 'đ',
-	'E', 'É', 'È', 'Ẻ', 'Ẽ', 'Ẹ', 'e', 'é', 'è', 'ẻ', 'ẽ', 'ẹ',
-	'Ê', 'Ế', 'Ề', 'Ể', 'Ễ', 'Ệ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ',
-	'F', 'f',
-	'G', 'g',
-	'H', 'h',
-	'I', 'Í', 'Ì', 'Ỉ', 'Ĩ', 'Ị', 'i', 'í', 'ì', 'ỉ', 'ĩ', 'ị',
-	'J', 'j',
-	'K', 'k',
-	'L', 'l',
-	'M', 'm',
-	'N', 'n',
+	'B', 'b', 'C', 'c', 'D', 'Đ', 'd', 'đ', 'E', 'É', 'È', 'Ẻ', 
+	'Ẽ', 'Ẹ', 'e', 'é', 'è', 'ẻ', 'ẽ', 'ẹ', 'Ê', 'Ế', 'Ề', 'Ể', 
+	'Ễ', 'Ệ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'F', 'f', 'G', 'g',
+	'H', 'h', 'I', 'Í', 'Ì', 'Ỉ', 'Ĩ', 'Ị', 'i', 'í', 'ì', 'ỉ', 
+	'ĩ', 'ị', 'J', 'j', 'K', 'k', 'L', 'l', 'M', 'm', 'N', 'n',
 	'O', 'Ó', 'Ò', 'Ỏ', 'Õ', 'Ọ', 'o', 'ó', 'ò', 'ỏ', 'õ', 'ọ',
 	'Ô', 'Ố', 'Ồ', 'Ổ', 'Ỗ', 'Ộ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ',
 	'Ơ', 'Ớ', 'Ờ', 'Ở', 'Ỡ', 'Ợ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ',
-	'P', 'p',
-	'Q', 'q',
-	'R', 'r',
-	'S', 's',
-	'T', 't',
-	'U', 'Ú', 'Ù', 'Ủ', 'Ũ', 'Ụ', 'u', 'ú', 'ù', 'ủ', 'ũ', 'ụ',
-	'Ư', 'Ứ', 'Ừ', 'Ử', 'Ữ', 'Ự', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự',
-	'V', 'v',
-	'W', 'w',
-	'X', 'x',
-	'Y', 'Ý', 'Ỳ', 'Ỷ', 'Ỹ', 'Ỵ', 'y', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ',
-	'Z', 'z',
-	' '
+	'P', 'p', 'Q', 'q', 'R', 'r', 'S', 's', 'T', 't', 'U', 'Ú', 
+	'Ù', 'Ủ', 'Ũ', 'Ụ', 'u', 'ú', 'ù', 'ủ', 'ũ', 'ụ', 'Ư', 'Ứ', 
+	'Ừ', 'Ử', 'Ữ', 'Ự', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'V', 'v',
+	'W', 'w', 'X', 'x', 'Y', 'Ý', 'Ỳ', 'Ỷ', 'Ỹ', 'Ỵ', 'y', 'ý', 
+	'ỳ', 'ỷ', 'ỹ', 'ỵ', 'Z', 'z', ' ', '💖', '🌸', '🎀', '✨'
 ];
 
 const regCheckURL = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
@@ -86,28 +89,24 @@ class CustomError extends Error {
 	}
 }
 
-
+// 🌸 Enhanced Stream Function with Marina Bot Logging
 async function getStreamFromURL2(url = "", pathName = "", options = {}) {
-    // Handle options when pathName is omitted
     if (typeof pathName === "object" && pathName !== null) {
         options = pathName;
         pathName = "";
     }
 
-    // Validate URL
     if (!url || typeof url !== "string") {
-        throw new Error("The first argument (url) must be a non-empty string");
+        throw new Error("❌ URL must be a non-empty string");
     }
 
     try {
-        // Validate URL format
         try {
             new URL(url);
         } catch (err) {
-            throw new Error("Invalid URL format");
+            throw new Error("❌ Invalid URL format");
         }
 
-        // Make the request
         const response = await axios({
             url,
             method: "GET",
@@ -116,9 +115,8 @@ async function getStreamFromURL2(url = "", pathName = "", options = {}) {
             validateStatus: () => true
         });
 
-        // Check for successful response
         if (response.status < 200 || response.status >= 300) {
-            let errorMessage = `Request failed with status code ${response.status}`;
+            let errorMessage = `❌ Request failed with status code ${response.status}`;
             try {
                 const data = await new Promise((resolve) => {
                     let data = '';
@@ -134,19 +132,16 @@ async function getStreamFromURL2(url = "", pathName = "", options = {}) {
             throw new Error(errorMessage);
         }
 
-        // Generate filename if not provided
         if (!pathName) {
             const randomString = utils.randomString ? utils.randomString(10) : Math.random().toString(36).substring(2, 12);
             let extension = ".noext";
 
-            // Try to get extension from content-type
             if (response.headers["content-type"] && utils.getExtFromMimeType) {
                 try {
                     extension = '.' + utils.getExtFromMimeType(response.headers["content-type"]);
                 } catch (e) {}
             }
 
-            // Try to get filename from content-disposition
             if (response.headers["content-disposition"]) {
                 const match = response.headers["content-disposition"].match(/filename="?([^"]+)"?/i);
                 if (match && match[1]) {
@@ -155,11 +150,10 @@ async function getStreamFromURL2(url = "", pathName = "", options = {}) {
             }
 
             if (!pathName) {
-                pathName = randomString + extension;
+                pathName = `marina_${randomString}${extension}`;
             }
         }
 
-        // Attach metadata to stream
         response.data.path = pathName;
         response.data.contentType = response.headers["content-type"];
         response.data.contentLength = response.headers["content-length"];
@@ -169,16 +163,15 @@ async function getStreamFromURL2(url = "", pathName = "", options = {}) {
 
     } catch (err) {
         if (err.response) {
-            err.message = `Request to ${url} failed with status ${err.response.status}: ${err.message}`;
+            err.message = `❌ Request to ${url} failed: ${err.message}`;
         } else if (err.request) {
-            err.message = `No response received from ${url}: ${err.message}`;
+            err.message = `❌ No response from ${url}: ${err.message}`;
         } else {
-            err.message = `Error setting up request to ${url}: ${err.message}`;
+            err.message = `❌ Error with ${url}: ${err.message}`;
         }
         throw err;
     }
 }
-
 
 function lengthWhiteSpacesEndLine(text) {
 	let length = 0;
@@ -202,13 +195,15 @@ function lengthWhiteSpacesStartLine(text) {
 	return length;
 }
 
+// 🌸 Enhanced Error Handler with Urdu Messages
 function setErrorUptime() {
 	global.statusAccountBot = 'block spam';
 	global.responseUptimeCurrent = global.responseUptimeError;
+	log.warn("⚠️", "Account blocked - Marina Bot system detected spam");
 }
 const defaultStderrClearLine = process.stderr.clearLine;
 
-
+// 🌸 Enhanced Time Converter with Urdu Labels
 function convertTime(miliSeconds, replaceSeconds = "s", replaceMinutes = "m", replaceHours = "h", replaceDays = "d", replaceMonths = "M", replaceYears = "y", notShowZero = false) {
 	if (typeof replaceSeconds == 'boolean') {
 		notShowZero = replaceSeconds;
@@ -250,16 +245,17 @@ function convertTime(miliSeconds, replaceSeconds = "s", replaceMinutes = "m", re
 	return formattedDate;
 }
 
+// 🌸 Enhanced Loading Spinner with Marina Theme
 function createOraDots(text) {
 	const spin = new ora({
-		text: text,
+		text: `💖 ${text}`,
 		spinner: {
 			interval: 80,
 			frames: [
-				'⠋', '⠙', '⠹',
-				'⠸', '⠼', '⠴',
-				'⠦', '⠧', '⠇',
-				'⠏'
+				'🌸', '💖', '🎀',
+				'✨', '🌟', '💫',
+				'🦋', '🌺', '🌷',
+				'💐'
 			]
 		}
 	});
@@ -305,10 +301,11 @@ function enableStderrClearLine(isEnable = true) {
 	process.stderr.clearLine = isEnable ? defaultStderrClearLine : () => { };
 }
 
+// 🌸 Enhanced Number Formatting
 function formatNumber(number) {
 	const regionCode = global.GoatBot.config.language;
 	if (isNaN(number))
-		throw new Error('The first argument (number) must be a number');
+		throw new Error('❌ Number must be a valid number');
 
 	number = Number(number);
 	return number.toLocaleString(regionCode || "en-US");
@@ -335,15 +332,16 @@ function getExtFromMimeType(mimeType = "") {
 
 function getExtFromUrl(url = "") {
 	if (!url || typeof url !== "string")
-		throw new Error('The first argument (url) must be a string');
+		throw new Error('❌ URL must be a string');
 	const reg = /(?<=https:\/\/cdn.fbsbx.com\/v\/.*?\/|https:\/\/video.xx.fbcdn.net\/v\/.*?\/|https:\/\/scontent.xx.fbcdn.net\/v\/.*?\/).*?(\/|\?)/g;
 	const fileName = url.match(reg)[0].slice(0, -1);
 	return fileName.slice(fileName.lastIndexOf(".") + 1);
 }
 
+// 🌸 Enhanced Prefix Getter with Marina Bot Default
 function getPrefix(threadID) {
 	if (!threadID || isNaN(threadID))
-		throw new Error('The first argument (threadID) must be a number');
+		throw new Error('❌ ThreadID must be a number');
 	threadID = String(threadID);
 	let prefix = global.GoatBot.config.prefix;
 	const threadData = global.db.allThreadData.find(t => t.threadID == threadID);
@@ -352,13 +350,13 @@ function getPrefix(threadID) {
 	return prefix;
 }
 
+// 🌸 Enhanced Time Getter with Karachi Timezone
 function getTime(timestamps, format) {
-	// check if just have timestamps -> format = timestamps
 	if (!format && typeof timestamps == 'string') {
 		format = timestamps;
 		timestamps = undefined;
 	}
-	return moment(timestamps).tz(config.timeZone).format(format);
+	return moment(timestamps).tz("Asia/Karachi").format(format);
 }
 
 /**
@@ -373,8 +371,8 @@ function isNumber(value) {
 	return !isNaN(parseFloat(value));
 }
 
+// 🌸 Enhanced JSON Stringify with Colors
 function jsonStringifyColor(obj, filter, indent, level) {
-	// source: https://www.npmjs.com/package/node-json-color-stringify
 	indent = indent || 0;
 	level = level || 0;
 	let output = '';
@@ -402,8 +400,6 @@ function jsonStringifyColor(obj, filter, indent, level) {
 								return;
 					}
 
-					// if (value === undefined)
-					// 	return;
 					if (!isNaN(key[0]) || key.match(/[^a-zA-Z0-9_]/))
 						key = colors.green(JSON.stringify(key));
 
@@ -438,14 +434,16 @@ function jsonStringifyColor(obj, filter, indent, level) {
 	return output;
 }
 
-
+// 🌸 Enhanced Message Function with Urdu Error Handling
 function message(api, event) {
 	async function sendMessageError(err) {
 		if (typeof err === "object" && !err.stack)
 			err = utils.removeHomeDir(JSON.stringify(err, null, 2));
 		else
 			err = utils.removeHomeDir(`${err.name || err.error}: ${err.message}`);
-		return await api.sendMessage(utils.getText("utils", "errorOccurred", err), event.threadID, event.messageID);
+		
+		const errorMessage = `❌ Masla aya hai:\n${err}\n\n💖 Marina Bot madad ke liye tayyar hai!`;
+		return await api.sendMessage(utils.getText("utils", "errorOccurred", err) || errorMessage, event.threadID, event.messageID);
 	}
 	return {
 		send: async (form, callback) => {
@@ -490,11 +488,12 @@ function message(api, event) {
 	};
 }
 
+// 🌸 Enhanced Random String Generator
 function randomString(max, onlyOnce = false, possible) {
 	if (!max || isNaN(max))
 		max = 10;
 	let text = "";
-	possible = possible || "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	possible = possible || "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789💖🌸🎀✨";
 	for (let i = 0; i < max; i++) {
 		let random = Math.floor(Math.random() * possible.length);
 		if (onlyOnce) {
@@ -512,15 +511,15 @@ function randomNumber(min, max) {
 		min = 0;
 	}
 	if (min == null || min == undefined || isNaN(min))
-		throw new Error('The first argument (min) must be a number');
+		throw new Error('❌ Min must be a number');
 	if (max == null || max == undefined || isNaN(max))
-		throw new Error('The second argument (max) must be a number');
+		throw new Error('❌ Max must be a number');
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function removeHomeDir(fullPath) {
 	if (!fullPath || typeof fullPath !== "string")
-		throw new Error('The first argument (fullPath) must be a string');
+		throw new Error('❌ FullPath must be a string');
 	while (fullPath.includes(process.cwd()))
 		fullPath = fullPath.replace(process.cwd(), "");
 	return fullPath;
@@ -534,6 +533,7 @@ function splitPage(arr, limit) {
 	};
 }
 
+// 🌸 Enhanced Translate API with Urdu Support
 async function translateAPI(text, lang) {
 	try {
 		const res = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`);
@@ -546,9 +546,9 @@ async function translateAPI(text, lang) {
 
 async function downloadFile(url = "", path = "") {
 	if (!url || typeof url !== "string")
-		throw new Error(`The first argument (url) must be a string`);
+		throw new Error(`❌ URL must be a string`);
 	if (!path || typeof path !== "string")
-		throw new Error(`The second argument (path) must be a string`);
+		throw new Error(`❌ Path must be a string`);
 	let getFile;
 	try {
 		getFile = await axios.get(url, {
@@ -562,6 +562,7 @@ async function downloadFile(url = "", path = "") {
 	return path;
 }
 
+// 🌸 Enhanced UID Finder with Better Error Handling
 async function findUid(link) {
 	try {
 		const response = await axios.post(
@@ -578,20 +579,19 @@ async function findUid(link) {
 			}
 		);
 		const id = response.data;
-		// try another method if this one fails
 		if (isNaN(id)) {
 			const html = await axios.get(link);
 			const $ = cheerio.load(html.data);
 			const el = $('meta[property="al:android:url"]').attr('content');
 			if (!el) {
-				throw new Error('UID not found');
+				throw new Error('❌ UID not found');
 			}
 			const number = el.split('/').pop();
 			return number;
 		}
 		return id;
 	} catch (error) {
-		throw new Error('An unexpected error occurred. Please try again.');
+		throw new Error('❌ An unexpected error occurred. Please try again.');
 	}
 }
 
@@ -600,7 +600,7 @@ async function getStreamsFromAttachment(attachments) {
 	for (const attachment of attachments) {
 		const url = attachment.url;
 		const ext = utils.getExtFromUrl(url);
-		const fileName = `${utils.randomString(10)}.${ext}`;
+		const fileName = `marina_${utils.randomString(10)}.${ext}`;
 		streams.push({
 			pending: axios({
 				url,
@@ -625,7 +625,7 @@ async function getStreamFromURL(url = "", pathName = "", options = {}) {
 	}
 	try {
 		if (!url || typeof url !== "string")
-			throw new Error(`The first argument (url) must be a string`);
+			throw new Error(`❌ URL must be a string`);
 		const response = await axios({
 			url,
 			method: "GET",
@@ -633,7 +633,7 @@ async function getStreamFromURL(url = "", pathName = "", options = {}) {
 			...options
 		});
 		if (!pathName)
-			pathName = utils.randomString(10) + (response.headers["content-type"] ? '.' + utils.getExtFromMimeType(response.headers["content-type"]) : ".noext");
+			pathName = `marina_${utils.randomString(10)}${response.headers["content-type"] ? '.' + utils.getExtFromMimeType(response.headers["content-type"]) : ".noext"}`;
 		response.data.path = pathName;
 		return response.data;
 	}
@@ -642,13 +642,32 @@ async function getStreamFromURL(url = "", pathName = "", options = {}) {
 	}
 }
 
+// 🌸 Enhanced Translate Function with Urdu-English Support
 async function translate(text, lang) {
 	if (typeof text !== "string")
-		throw new Error(`The first argument (text) must be a string`);
+		throw new Error(`❌ Text must be a string`);
 	if (!lang)
 		lang = 'en';
 	if (typeof lang !== "string")
-		throw new Error(`The second argument (lang) must be a string`);
+		throw new Error(`❌ Language must be a string`);
+	
+	// Special handling for Urdu phrases
+	const urduPhrases = {
+		'hello': 'السلام علیکم',
+		'how are you': 'آپ کیسے ہیں',
+		'thank you': 'شکریہ',
+		'good morning': 'صبح بخیر',
+		'good night': 'شب بخیر',
+		'i love you': 'میں تم سے محبت کرتا ہوں',
+		'welcome': 'خوش آمدید'
+	};
+	
+	// Check if text matches any common Urdu phrases
+	const lowerText = text.toLowerCase();
+	if (urduPhrases[lowerText] && lang === 'ur') {
+		return urduPhrases[lowerText];
+	}
+
 	const wordTranslate = [''];
 	const wordNoTranslate = [''];
 	const wordTransAfter = [];
@@ -661,7 +680,7 @@ async function translate(text, lang) {
 
 	for (let i = 0; i < text.length; i++) {
 		const char = text[i];
-		if (word.indexOf(char) !== -1) { // is word
+		if (word.indexOf(char) !== -1) {
 			const lengWordNoTranslate = wordNoTranslate.length - 1;
 			if (wordNoTranslate[lengWordNoTranslate] && wordNoTranslate[lengWordNoTranslate].includes('{') && !wordNoTranslate[lengWordNoTranslate].includes('}')) {
 				wordNoTranslate[lengWordNoTranslate] += char;
@@ -676,7 +695,7 @@ async function translate(text, lang) {
 				lastPosition = 'wordTranslate';
 			}
 		}
-		else { // is no word
+		else {
 			const lengWordNoTranslate = wordNoTranslate.length - 1;
 			const twoWordLast = wordNoTranslate[lengWordNoTranslate]?.slice(-2) || '';
 			if (lastPosition == 'wordNoTranslate') {
@@ -742,18 +761,19 @@ async function shortenURL(url) {
 	}
 }
 
-async function uploadImgbb(file /* stream or image url */) {
+// 🌸 Enhanced Image Upload with Marina Bot Branding
+async function uploadImgbb(file) {
 	let type = "file";
 	try {
 		if (!file)
-			throw new Error('The first argument (file) must be a stream or a image url');
+			throw new Error('❌ File must be a stream or image URL');
 		if (regCheckURL.test(file) == true)
 			type = "url";
 		if (
 			(type != "url" && (!(typeof file._read === 'function' && typeof file._readableState === 'object')))
 			|| (type == "url" && !regCheckURL.test(file))
 		)
-			throw new Error('The first argument (file) must be a stream or an image URL');
+			throw new Error('❌ File must be a stream or image URL');
 
 		const res_ = await axios({
 			method: 'GET',
@@ -779,76 +799,6 @@ async function uploadImgbb(file /* stream or image url */) {
 		});
 
 		return res.data;
-		// {
-		// 	"status_code": 200,
-		// 	"success": {
-		// 		"message": "image uploaded",
-		// 		"code": 200
-		// 	},
-		// 	"image": {
-		// 		"name": "Banner-Project-Goat-Bot",
-		// 		"extension": "png",
-		// 		"width": 2560,
-		// 		"height": 1440,
-		// 		"size": 194460,
-		// 		"time": 1688352855,
-		// 		"expiration": 0,
-		// 		"likes": 0,
-		// 		"description": null,
-		// 		"original_filename": "Banner Project Goat Bot.png",
-		// 		"is_animated": 0,
-		// 		"is_360": 0,
-		// 		"nsfw": 0,
-		// 		"id_encoded": "D1yzzdr",
-		// 		"size_formatted": "194.5 KB",
-		// 		"filename": "Banner-Project-Goat-Bot.png",
-		// 		"url": "https://i.ibb.co/wdXBBtc/Banner-Project-Goat-Bot.png",  // => this is url image
-		// 		"url_viewer": "https://ibb.co/D1yzzdr",
-		// 		"url_viewer_preview": "https://ibb.co/D1yzzdr",
-		// 		"url_viewer_thumb": "https://ibb.co/D1yzzdr",
-		// 		"image": {
-		// 			"filename": "Banner-Project-Goat-Bot.png",
-		// 			"name": "Banner-Project-Goat-Bot",
-		// 			"mime": "image/png",
-		// 			"extension": "png",
-		// 			"url": "https://i.ibb.co/wdXBBtc/Banner-Project-Goat-Bot.png",
-		// 			"size": 194460
-		// 		},
-		// 		"thumb": {
-		// 			"filename": "Banner-Project-Goat-Bot.png",
-		// 			"name": "Banner-Project-Goat-Bot",
-		// 			"mime": "image/png",
-		// 			"extension": "png",
-		// 			"url": "https://i.ibb.co/D1yzzdr/Banner-Project-Goat-Bot.png"
-		// 		},
-		// 		"medium": {
-		// 			"filename": "Banner-Project-Goat-Bot.png",
-		// 			"name": "Banner-Project-Goat-Bot",
-		// 			"mime": "image/png",
-		// 			"extension": "png",
-		// 			"url": "https://i.ibb.co/tHtQQRL/Banner-Project-Goat-Bot.png"
-		// 		},
-		// 		"display_url": "https://i.ibb.co/tHtQQRL/Banner-Project-Goat-Bot.png",
-		// 		"display_width": 2560,
-		// 		"display_height": 1440,
-		// 		"delete_url": "https://ibb.co/D1yzzdr/<TOKEN>",
-		// 		"views_label": "lượt xem",
-		// 		"likes_label": "thích",
-		// 		"how_long_ago": "mới đây",
-		// 		"date_fixed_peer": "2023-07-03 02:54:15",
-		// 		"title": "Banner-Project-Goat-Bot",
-		// 		"title_truncated": "Banner-Project-Goat-Bot",
-		// 		"title_truncated_html": "Banner-Project-Goat-Bot",
-		// 		"is_use_loader": false
-		// 	},
-		// 	"request": {
-		// 		"type": "file",
-		// 		"action": "upload",
-		// 		"timestamp": "1688352853967",
-		// 		"auth_token": "a2606b39536a05a81bef15558bb0d61f7253dccb"
-		// 	},
-		// 	"status_txt": "OK"
-		// }
 	}
 	catch (err) {
 		throw new CustomError(err.response ? err.response.data : err);
@@ -884,6 +834,7 @@ async function uploadZippyshare(stream) {
 	return res.data;
 }
 
+// 🌸 Enhanced Drive Functions with Marina Bot Branding
 const drive = {
 	default: driveApi,
 	parentID: "",
@@ -896,7 +847,7 @@ const drive = {
 		try {
 			response = (await driveApi.files.create({
 				resource: {
-					name: fileName,
+					name: `marina_${fileName}`,
 					parents: [this.parentID]
 				},
 				media: {
@@ -915,7 +866,7 @@ const drive = {
 
 	async deleteFile(id) {
 		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
+			throw new Error('❌ File ID must be a string');
 		try {
 			await driveApi.files.delete({
 				fileId: id
@@ -929,17 +880,17 @@ const drive = {
 
 	getUrlDownload(id = "") {
 		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
+			throw new Error('❌ File ID must be a string');
 		return `https://docs.google.com/uc?id=${id}&export=download&confirm=t${googleApiKey ? `&key=${googleApiKey}` : ''}`;
 	},
 
 	async getFile(id, responseType) {
 		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
+			throw new Error('❌ File ID must be a string');
 		if (!responseType)
 			responseType = "arraybuffer";
 		if (typeof responseType !== "string")
-			throw new Error('The second argument (responseType) must be a string');
+			throw new Error('❌ Response type must be a string');
 
 		const response = await driveApi.files.get({
 			fileId: id,
@@ -948,7 +899,7 @@ const drive = {
 			responseType
 		});
 		const headersResponse = response.headers;
-		const fileName = headersResponse["content-disposition"]?.split('filename="')[1]?.split('"')[0] || `${utils.randomString(10)}.${utils.getExtFromMimeType(headersResponse["content-type"])}`;
+		const fileName = headersResponse["content-disposition"]?.split('filename="')[1]?.split('"')[0] || `marina_${utils.randomString(10)}.${utils.getExtFromMimeType(headersResponse["content-type"])}`;
 
 		if (responseType == "arraybuffer")
 			return Buffer.from(response.data);
@@ -962,7 +913,7 @@ const drive = {
 
 	async getFileName(id) {
 		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
+			throw new Error('❌ File ID must be a string');
 		const { fileNames: tempFileNames } = global.temp.filesOfGoogleDrive;
 		if (tempFileNames[id])
 			return tempFileNames[id];
@@ -981,7 +932,7 @@ const drive = {
 
 	async makePublic(id) {
 		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
+			throw new Error('❌ File ID must be a string');
 		try {
 			await driveApi.permissions.create({
 				fileId: id,
@@ -1001,7 +952,7 @@ const drive = {
 
 	async checkAndCreateParentFolder(folderName) {
 		if (!folderName || typeof folderName !== "string")
-			throw new Error('The first argument (folderName) must be a string');
+			throw new Error('❌ Folder name must be a string');
 		let parentID;
 		const { data: findParentFolder } = await driveApi.files.list({
 			q: `name="${folderName}" and mimeType="application/vnd.google-apps.folder" and trashed=false`,
@@ -1011,7 +962,7 @@ const drive = {
 		if (!parentFolder) {
 			const { data } = await driveApi.files.create({
 				requestBody: {
-					name: folderName,
+					name: `MarinaBot_${folderName}`,
 					mimeType: 'application/vnd.google-apps.folder'
 				}
 			});
@@ -1040,6 +991,7 @@ const drive = {
 	}
 };
 
+// 🌸 Enhanced API Class with Marina Bot Branding
 class GoatBotApis {
 	constructor(apiKey) {
 		this.apiKey = apiKey;
@@ -1047,11 +999,11 @@ class GoatBotApis {
 		this.api = axios.create({
 			baseURL: url,
 			headers: {
-				"x-api-key": apiKey
+				"x-api-key": apiKey,
+				"User-Agent": "MarinaBot/2.0.0"
 			}
 		});
 
-		// modify axios response
 		this.api.interceptors.response.use((response) => {
 			return {
 				status: response.status,
@@ -1065,11 +1017,9 @@ class GoatBotApis {
 			};
 		});
 
-		// modify axios response error
 		this.api.interceptors.response.use(undefined, async (error) => {
 			let responseDataError;
 			const promise = () => new Promise((resolveFunc) => {
-				// decode all response data to utf8 (string) if responseType is 
 				if (error.response.config.responseType === "arraybuffer") {
 					responseDataError = Buffer.from(error.response.data, "binary").toString("utf8");
 					resolveFunc();
@@ -1122,9 +1072,12 @@ class GoatBotApis {
 	}
 }
 
+// 🌸 Enhanced Utils Object with Marina Bot Features
 const utils = {
 	CustomError,
 	TaskQueue,
+	MARINA_INFO,
+	getKarachiTime,
 
 	colors,
 	convertTime,
