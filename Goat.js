@@ -409,50 +409,41 @@ process.on('SIGTERM', () => {
 	log.info("🌙", "Allah Hafiz - Marina Khan");
 	process.exit(0);
 // ==================================================
-// 🚀 MARINA BOT - DIRECT INTEGRATION
+// 🚀 MARINA BOT - SIMPLE INTEGRATION
 // ==================================================
 
-const MarinaHandler = require('./bot/handlers/marinaHandler');
+const CommandHandler = require('./scripts/cmds/handler');
+const marinaHandler = new CommandHandler();
 
-// ✅ INTEGRATE MARINA BOT WITH EXISTING SYSTEM
-function integrateMarinaBot() {
-    console.log("💖 INTEGRATING MARINA BOT MESSAGE HANDLER...");
+// ✅ SIMPLE MESSAGE HANDLER INTEGRATION
+function setupMarinaBot() {
+    console.log("💖 SETTING UP MARINA BOT MESSAGES...");
     
-    // Override the global onChat function
+    // Store original onChat function
     const originalOnChat = global.GoatBot.onChat;
     
+    // Override with Marina Bot handler
     global.GoatBot.onChat = async function({ api, event }) {
         try {
-            // First call original handler if exists
-            if (originalOnChat && typeof originalOnChat === 'function') {
+            // First process with original handler
+            if (originalOnChat) {
                 await originalOnChat({ api, event });
             }
             
-            // Then call Marina Bot handler
-            await MarinaHandler(api, event);
+            // Then process with Marina Bot
+            const response = await marinaHandler.handleMessage(event, event);
+            if (response) {
+                await api.sendMessage(response, event.threadID, event.messageID);
+                console.log("✅ Marina Bot Response Sent!");
+            }
             
         } catch (error) {
-            console.error("❌ Global onChat Error:", error.message);
+            console.error("Marina Bot Error:", error.message);
         }
     };
     
-    console.log("✅ MARINA BOT INTEGRATED SUCCESSFULLY!");
-    console.log("🚀 Commands: /help, /test, /time, /edit, /logo");
+    console.log("✅ MARINA BOT MESSAGE HANDLER READY!");
 }
 
-// Initialize Marina Bot integration
-integrateMarinaBot();
-
-// 🛡️ Enhanced Process Handlers with Urdu Messages
-process.on('SIGINT', () => {
-    log.info("🛑", "Marina Bot band kiya ja raha hai...");
-    log.info("💝", "Shukriya! - Marina Khan");
-    log.info("🕒", `Shutdown time: ${getKarachiTime()}`);
-    process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-    log.info("📴", "Termination signal received...");
-    log.info("🌙", "Allah Hafiz - Marina Khan");
-    process.exit(0);
-});
+// Initialize
+setupMarinaBot();
