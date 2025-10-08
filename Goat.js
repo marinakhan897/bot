@@ -363,8 +363,7 @@ process.on('SIGTERM', () => {
 	process.exit(0);
 });
 
-// ✅ Agar handler.js scrypt/cmd mein hai to:
-const CommandHandler = require('./scrypt/cmd/handler');
+const CommandHandler = require('./scripts/cmds/handler');
 
 // Initialize command handler
 const commandHandler = new CommandHandler();
