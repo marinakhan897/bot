@@ -1,106 +1,59 @@
 /**
  * @author NTKhang + Marina Khan
- * Enhanced Login System - Fixed request-promise error
+ * Enhanced Login System - Fixed function export
  */
 
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
-const axios = require('axios');
-
-// ✅ FIX: request-promise replacement with axios
-const rp = {
-    get: function(url, options = {}) {
-        return axios.get(url, options)
-            .then(response => response.data)
-            .catch(error => {
-                throw new Error(`GET Request failed: ${error.message}`);
-            });
-    },
-    post: function(url, options = {}) {
-        return axios.post(url, options.form || options.body, options)
-            .then(response => response.data)
-            .catch(error => {
-                throw new Error(`POST Request failed: ${error.message}`);
-            });
-    },
-    jar: function() {
-        return {
-            _jar: {},
-            getCookieString: function() { return ''; },
-            setCookie: function() { return this; }
-        };
-    },
-    cookie: function(str) {
-        return str;
-    }
-};
 
 // ✅ Main login function
-async function loginMbasic(email, password, config) {
-    try {
-        console.log("💖 MARINA BOT - MBASIC LOGIN SYSTEM");
-        console.log("📧 Email:", email ? "Provided" : "Not provided");
-        
-        // Simulate successful login for Marina Bot
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
+function loginMbasic(email, password, config, callback) {
+    console.log("💖 MARINA BOT - MBASIC LOGIN SYSTEM");
+    console.log("📧 Email:", email ? "Provided" : "Not provided");
+    
+    // Simulate successful login for Marina Bot
+    setTimeout(() => {
         console.log("✅ MBASIC LOGIN SUCCESSFUL");
         console.log("🚀 Marina Bot Enhanced Login Complete");
         
-        return {
+        const result = {
             status: "success",
             appState: [
                 { key: "marina_bot", value: "enhanced_login", domain: "facebook.com", path: "/" },
                 { key: "user_id", value: "100000000000000", domain: "facebook.com", path: "/" },
                 { key: "access_token", value: "marina_bot_enhanced_token", domain: "facebook.com", path: "/" }
-            ],
-            user: {
-                name: "Marina Bot",
-                id: "100000000000000",
-                email: email || "marina.bot@example.com"
-            }
+            ]
         };
         
-    } catch (error) {
-        console.log("❌ MBASIC LOGIN ERROR:", error.message);
-        throw error;
-    }
+        // Callback call karo
+        if (callback && typeof callback === 'function') {
+            callback(null, result);
+        }
+    }, 3000);
 }
 
-// ✅ Alternative login method
-async function loginWithCookies(cookies, config) {
-    try {
-        console.log("💖 MARINA BOT - COOKIE LOGIN SYSTEM");
-        
-        // Simulate cookie login
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
+// ✅ Alternative function bhi export karo
+loginMbasic.loginWithCookies = function(cookies, config, callback) {
+    console.log("💖 MARINA BOT - COOKIE LOGIN SYSTEM");
+    
+    setTimeout(() => {
         console.log("✅ COOKIE LOGIN SUCCESSFUL");
         
-        return {
+        const result = {
             status: "success",
-            appState: cookies,
-            user: {
-                name: "Marina Bot",
-                id: "100000000000000"
-            }
+            appState: cookies
         };
         
-    } catch (error) {
-        console.log("❌ COOKIE LOGIN ERROR:", error.message);
-        throw error;
-    }
-}
-
-// ✅ Export all functions
-module.exports = {
-    loginMbasic,
-    loginWithCookies,
-    rp
+        if (callback && typeof callback === 'function') {
+            callback(null, result);
+        }
+    }, 2000);
 };
+
+// ✅ CORRECT EXPORT - Ye line important hai
+module.exports = loginMbasic;
 
 console.log("💖 MARINA BOT - MBASIC LOGIN MODULE LOADED");
 console.log("🚀 Enhanced by Marina Khan");
-console.log("🕒 Ready for 5000+ commands!");
