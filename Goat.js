@@ -334,7 +334,54 @@ if (config.autoRestart) {
 	// ———————————————————— LOGIN ———————————————————— //
 	log.info("🔐", "Marina Bot login process shuroo...");
 	log.info("🕒", `Login time: ${getKarachiTime()}`);
-	require(`./bot/login/login${NODE_ENV === 'development' ? '.dev.js' : '.js'}`);
+	
+	// ✅ MARINA BOT ENHANCED LOGIN SYSTEM
+	try {
+		const login = require(`./bot/login/login${NODE_ENV === 'development' ? '.dev.js' : '.js'}`);
+		
+		// Auto-detect login method
+		const credentials = {};
+		
+		// Check for FBState/Cookies
+		if (config.credentials?.fbState || config.credentials?.cookies) {
+			credentials.fbState = config.credentials.fbState || config.credentials.cookies;
+			log.info("🔐", "FBState/Cookie login method detected");
+		}
+		// Check for Gmail credentials
+		else if (config.credentials?.email && config.credentials?.password) {
+			credentials.email = config.credentials.email;
+			credentials.password = config.credentials.password;
+			log.info("📧", "Gmail login method detected");
+		}
+		// No credentials - use demo mode
+		else {
+			log.info("🎮", "Demo mode activated - No login required");
+		}
+		
+		const loginResult = await login.login(credentials);
+		
+		if (loginResult.status === "success") {
+			log.info("✅", "MARINA BOT LOGIN SUCCESSFUL!");
+			log.info("🚀", "5000+ Commands Activated!");
+			log.info("🌐", "Developer: Marina Khan");
+			
+			// ✅ Initialize Marina Bot Command Handler
+			const CommandHandler = require('./scripts/cmds/handler');
+			global.marinaCommandHandler = new CommandHandler();
+			log.info("💖", "Marina Bot Command Handler Ready!");
+			
+		} else {
+			log.error("❌", "Login failed but continuing in demo mode");
+		}
+	} catch (error) {
+		log.error("❌", `Login error: ${error.message}`);
+		log.info("🔄", "Continuing in demo mode...");
+		
+		// ✅ Still initialize command handler for demo mode
+		const CommandHandler = require('./scripts/cmds/handler');
+		global.marinaCommandHandler = new CommandHandler();
+		log.info("💖", "Marina Bot Demo Mode Activated!");
+	}
 })();
 
 function compareVersion(version1, version2) {
@@ -362,33 +409,3 @@ process.on('SIGTERM', () => {
 	log.info("🌙", "Allah Hafiz - Marina Khan");
 	process.exit(0);
 });
-
-const CommandHandler = require('./scripts/cmds/handler');
-
-// Initialize command handler
-const commandHandler = new CommandHandler();
-
-// In your message event handler
-module.exports = {
-    config: {
-        name: "marina",
-        version: "2.0",
-        author: "Marina Khan",
-        countDown: 5,
-        role: 0,
-        shortDescription: "Multi-functional Bot",
-        longDescription: "Advanced bot with 5000+ commands",
-        category: "system",
-        guide: "{pn} [command]"
-    },
-    
-    onStart: async function({ api, event, args }) {
-        await commandHandler.handleMessage({ body: `!${args.join(' ')}` }, event);
-    },
-    
-    onChat: async function({ api, event }) {
-        if (event.body?.startsWith('!')) {
-            await commandHandler.handleMessage(event, event);
-        }
-    }
-};
