@@ -363,8 +363,8 @@ process.on('SIGTERM', () => {
 	process.exit(0);
 });
 
-// Add this to your main bot file
-const CommandHandler = require('./commands/handler');
+// ✅ Agar handler.js scrypt/cmd mein hai to:
+const CommandHandler = require('./scrypt/cmd/handler');
 
 // Initialize command handler
 const commandHandler = new CommandHandler();
