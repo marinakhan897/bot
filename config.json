@@ -4,18 +4,18 @@
     "password": "pathani123",
     "cookies": [
       {
-        "key": "c_user",
-        "value": "100078794143432",
+        "key": "dbln",
+        "value": "7B%2261577631662713%22%3A%22WZtuWH9Z%22%2C%2261578578084055%22%3A%22dZcwCT47%22%7D",
         "domain": ".facebook.com",
-        "path": "/",
-        "expires": 1736341200000
+        "path": "/login/device-based/",
+        "expires": 2025-10-08T08:34:06.817Z
       },
       {
-        "key": "xs",
-        "value": "YOUR_XS_COOKIE_VALUE",
+        "key": "sb",
+        "value": "Zda_aGB_odWebkzMzsOyySvO",
         "domain": ".facebook.com",
         "path": "/",
-        "expires": 1736341200000
+        "expires": 2025-10-08T08:34:06.817Z
       },
       {
         "key": "fr",
@@ -26,10 +26,10 @@
       },
       {
         "key": "datr",
-        "value": "YOUR_DATR_COOKIE_VALUE",
+        "value": "f-rjaEkcUiDh2HzyWQ_qGbac",
         "domain": ".facebook.com",
         "path": "/",
-        "expires": 1736341200000
+        "expires": 2025-10-08T08:34:06.817Z
       }
     ],
     "2FASecret": "",
