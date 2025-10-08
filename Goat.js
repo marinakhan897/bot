@@ -362,3 +362,34 @@ process.on('SIGTERM', () => {
 	log.info("🌙", "Allah Hafiz - Marina Khan");
 	process.exit(0);
 });
+
+// Add this to your main bot file
+const CommandHandler = require('./commands/handler');
+
+// Initialize command handler
+const commandHandler = new CommandHandler();
+
+// In your message event handler
+module.exports = {
+    config: {
+        name: "marina",
+        version: "2.0",
+        author: "Marina Khan",
+        countDown: 5,
+        role: 0,
+        shortDescription: "Multi-functional Bot",
+        longDescription: "Advanced bot with 5000+ commands",
+        category: "system",
+        guide: "{pn} [command]"
+    },
+    
+    onStart: async function({ api, event, args }) {
+        await commandHandler.handleMessage({ body: `!${args.join(' ')}` }, event);
+    },
+    
+    onChat: async function({ api, event }) {
+        if (event.body?.startsWith('!')) {
+            await commandHandler.handleMessage(event, event);
+        }
+    }
+};
