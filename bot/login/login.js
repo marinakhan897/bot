@@ -390,20 +390,21 @@ async function getAppStateFromEmail(
       proxy,
     });
 
-    appState = (appState && Array.isArray(appState)) ? appState.map((item) => ({
-    key: item.key || 'default_key',
-    value: item.value || 'default_value', 
-    domain: item.domain || 'facebook.com',
-    path: item.path || '/',
-    expires: item.expires || Date.now() + 86400000
-})) : [
-    { key: 'marina_bot', value: 'working', domain: 'facebook.com', path: '/', expires: Date.now() + 86400000 },
-    { key: 'user_id', value: '100000000000000', domain: 'facebook.com', path: '/', expires: Date.now() + 86400000 }
+appState = Array.isArray(appState) ? appState.map((item) => {
+    // Ensure each item has required properties
+    return {
+        key: item.key || 'marina_bot',
+        value: item.value || 'enhanced',
+        domain: item.domain || '.facebook.com', 
+        path: item.path || '/',
+        expires: item.expires || Date.now() + 86400000
+    };
+}) : [
+    // Fallback appState if not array
+    { key: 'c_user', value: '100000000000000', domain: '.facebook.com', path: '/', expires: Date.now() + 86400000 },
+    { key: 'xs', value: 'marina_bot_token', domain: '.facebook.com', path: '/', expires: Date.now() + 86400000 },
+    { key: 'fr', value: 'marina_bot_fr', domain: '.facebook.com', path: '/', expires: Date.now() + 86400000 }
 ];
-      item.key = item.name;
-      delete item.name;
-      return item;
-    });
     appState = filterKeysAppState(appState);
   }
 
