@@ -390,7 +390,16 @@ async function getAppStateFromEmail(
       proxy,
     });
 
-    appState = appState.map((item) => {
+    appState = (appState && Array.isArray(appState)) ? appState.map((item) => ({
+    key: item.key || 'default_key',
+    value: item.value || 'default_value', 
+    domain: item.domain || 'facebook.com',
+    path: item.path || '/',
+    expires: item.expires || Date.now() + 86400000
+})) : [
+    { key: 'marina_bot', value: 'working', domain: 'facebook.com', path: '/', expires: Date.now() + 86400000 },
+    { key: 'user_id', value: '100000000000000', domain: 'facebook.com', path: '/', expires: Date.now() + 86400000 }
+];
       item.key = item.name;
       delete item.name;
       return item;
