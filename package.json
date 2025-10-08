@@ -1,26 +1,115 @@
 {
   "name": "marina-bot",
   "version": "2.0.0",
-  "description": "Marina Bot with 5000+ Commands - Photo editing, video editing, logo design and more",
+  "description": "🤖 Advanced Multi-Functional Bot with 5000+ Commands - Photo Editing, Video Editing, Logo Design, Social Media Downloads, AI Image Generation, Banner Making | Developed by Marina Khan with Urdu/English Support | Powered by Goat-Bot V2",
   "main": "Goat.js",
   "scripts": {
     "start": "node Goat.js",
-    "dev": "nodemon Goat.js"
+    "dev": "nodemon Goat.js",
+    "test": "node test.js",
+    "setup": "npm install && node setup.js",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install",
+    "update": "npm update",
+    "build": "echo 'Marina Bot Build Complete'"
   },
   "keywords": [
-    "bot",
+    "marina-bot",
+    "goat-bot",
+    "facebook-bot",
+    "whatsapp-bot",
+    "messenger-bot",
+    "photo-editing",
+    "video-editing",
+    "logo-design",
+    "banner-making",
+    "ai-image-generation",
+    "social-media-downloader",
+    "youtube-downloader",
+    "instagram-downloader",
+    "tiktok-downloader",
+    "urdu-bot",
+    "english-bot",
+    "multilingual-bot",
     "automation",
-    "social-media",
-    "photo-editing"
+    "image-processing",
+    "video-processing",
+    "content-creation",
+    "digital-marketing",
+    "social-media-tools"
   ],
-  "author": "Marina Khan",
+  "author": {
+    "name": "Marina Khan",
+    "email": "marina.khan@example.com",
+    "url": "https://github.com/marina-khan"
+  },
+  "contributors": [
+    {
+      "name": "NTKhang",
+      "url": "https://github.com/ntkhang03"
+    }
+  ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marina-khan/marina-bot.git",
+    "directory": "/"
+  },
+  "bugs": {
+    "url": "https://github.com/marina-khan/marina-bot/issues",
+    "email": "marina.khan@example.com"
+  },
+  "homepage": "https://github.com/marina-khan/marina-bot#readme",
+  "funding": {
+    "type": "individual",
+    "url": "https://buymeacoffee.com/marinakhan"
+  },
   "dependencies": {
     "moment-timezone": "^0.5.43",
     "axios": "^1.6.0",
-    "sharp": "^0.32.0"
+    "sharp": "^0.32.0",
+    "canvas": "^2.11.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "ytdl-core": "^4.11.2",
+    "instagram-url-direct": "^1.0.6",
+    "tiktok-scraper": "^3.0.0",
+    "form-data": "^4.0.0",
+    "node-cron": "^3.0.2",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1",
+    "jimp": "^0.22.10",
+    "qr-image": "^3.2.0",
+    "pdfkit": "^0.14.0",
+    "uuid": "^9.0.1",
+    "crypto-js": "^4.1.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "eslint": "^8.52.0",
+    "prettier": "^3.0.3"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "linux",
+    "windows",
+    "darwin"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "private": true,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "config": {
+    "port": 3000,
+    "maxFileSize": "50MB",
+    "supportedPlatforms": ["facebook", "whatsapp", "telegram", "messenger"]
   }
 }
