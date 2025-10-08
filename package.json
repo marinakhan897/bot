@@ -1,40 +1,94 @@
 {
   "name": "marina-bot",
   "version": "2.0.0",
-  "description": "Advanced multi-functional bot with 5000+ commands by Marina Khan",
+  "description": "Advanced multi-functional bot with 5000+ commands - Photo editing, video editing, logo design, social media downloads, AI image generation and more. Developed by Marina Khan with Urdu/English support.",
   "main": "Goat.js",
   "scripts": {
     "start": "node Goat.js",
     "dev": "nodemon Goat.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npm install && node setup.js",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install"
   },
   "keywords": [
     "bot",
     "automation",
-    "social",
-    "media",
-    "editing",
-    "download"
+    "social-media",
+    "photo-editing",
+    "video-editing",
+    "logo-design",
+    "download",
+    "ai",
+    "image-generation",
+    "facebook-bot",
+    "whatsapp-bot",
+    "messenger-bot",
+    "urdu",
+    "english",
+    "multilingual",
+    "marina-bot",
+    "goat-bot"
   ],
-  "author": "Marina Khan",
+  "author": {
+    "name": "Marina Khan",
+    "email": "marina.khan@example.com",
+    "url": "https://github.com/marina-khan"
+  },
+  "contributors": [
+    {
+      "name": "NTKhang",
+      "url": "https://github.com/ntkhang03"
+    }
+  ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marina-khan/marina-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marina-khan/marina-bot/issues"
+  },
+  "homepage": "https://github.com/marina-khan/marina-bot#readme",
   "dependencies": {
     "axios": "^1.6.0",
-    "canvas": "^2.11.2",
-    "child_process": "^1.0.2",
-    "fluent-ffmpeg": "^2.1.2",
-    "fs": "0.0.1-security",
-    "instagram-url-direct": "^1.0.6",
     "moment-timezone": "^0.5.43",
-    "path": "^0.12.7",
     "sharp": "^0.32.0",
+    "canvas": "^2.11.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "ytdl-core": "^4.11.2",
+    "instagram-url-direct": "^1.0.6",
     "tiktok-scraper": "^3.0.0",
-    "ytdl-core": "^4.11.2"
+    "form-data": "^4.0.0",
+    "node-cron": "^3.0.2",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1",
+    "path": "^0.12.7",
+    "url": "^0.11.3",
+    "util": "^0.12.4",
+    "stream": "^0.0.2",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "linux",
+    "windows",
+    "darwin"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "private": true,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
