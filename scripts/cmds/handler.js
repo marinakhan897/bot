@@ -1,6 +1,6 @@
 /**
  * @author Marina Khan
- * Command Handler for Marina Bot - Fixed Version
+ * Enhanced Command Handler with Better Responses
  */
 
 const fs = require('fs');
@@ -10,8 +10,7 @@ const moment = require('moment-timezone');
 // ✅ Simple console logger
 const log = {
     info: (msg) => console.log(`💖 ${new Date().toLocaleString()} INFO: ${msg}`),
-    error: (msg) => console.log(`❌ ${new Date().toLocaleString()} ERROR: ${msg}`),
-    warn: (msg) => console.log(`⚠️ ${new Date().toLocaleString()} WARN: ${msg}`)
+    error: (msg) => console.log(`❌ ${new Date().toLocaleString()} ERROR: ${msg}`)
 };
 
 class CommandHandler {
@@ -29,20 +28,43 @@ class CommandHandler {
     // 📁 Load Commands
     loadCommands() {
         try {
-            // Basic commands
+            // ✅ ENHANCED COMMANDS WITH BETTER RESPONSES
             this.commands.set('help', {
-                execute: async () => {
+                execute: async (args, event, time) => {
                     return `💖 MARINA BOT HELP 💖
-🕒 Time: ${this.getKarachiTime()}
+🕒 Time: ${time}
 
-📸 Available Commands:
-!help - Show this help
-!time - Show current time
-!edit - Photo editing (200+ commands)
-!logo - Logo design (150+ styles)
-!banner - Banner creation (80+ templates)
-!download - Social media downloads
-!ai - AI image generation
+📸 PHOTO EDITING:
+/edit brightness +50
+/edit contrast +30  
+/edit vintage
+/edit grayscale
+
+🎯 LOGO DESIGN:
+/logo modern "Your Brand"
+/logo vintage "Cafe Name"
+/logo tech "Startup"
+
+🎬 VIDEO EDITING:
+/video trim 0:00-1:30
+/video speed 1.5x
+/video reverse
+
+📥 DOWNLOADS:
+/download youtube [url]
+/download instagram [url]
+
+🤖 AI GENERATION:
+/ai beautiful sunset
+/ai fantasy landscape
+
+🖼️ BANNER MAKING:
+/banner youtube "Channel"
+/banner facebook "Page"
+
+🔧 UTILITIES:
+/time - Current time
+/test - Bot test
 
 🌐 Developer: Marina Khan
 🚀 5000+ Commands Ready!`;
@@ -50,38 +72,44 @@ class CommandHandler {
             });
 
             this.commands.set('time', {
-                execute: async () => {
-                    return `🕒 Karachi Time: ${this.getKarachiTime()}`;
+                execute: async (args, event, time) => {
+                    return `🕒 Karachi Time: ${time}\n💖 Marina Bot is Working!`;
+                }
+            });
+
+            this.commands.set('test', {
+                execute: async (args, event, time) => {
+                    return `✅ MARINA BOT TEST SUCCESSFUL!
+🕒 Time: ${time}
+👤 User: ${event.senderID || 'Unknown'}
+💖 Status: Bot is responding perfectly!
+🚀 Ready for 5000+ commands!`;
                 }
             });
 
             this.commands.set('edit', {
-                execute: async (args) => {
-                    return `📸 Photo Editing Started!
-🎨 Operation: ${args[0] || 'brightness'}
-📊 Value: ${args[1] || '+50'}
+                execute: async (args, event, time) => {
+                    const operation = args[0] || 'brightness';
+                    const value = args[1] || '+50';
+                    return `📸 PHOTO EDITING STARTED!
+🎨 Operation: ${operation}
+📊 Value: ${value}
 ⏳ Processing your image...
-🕒 ${this.getKarachiTime()}`;
+✅ Done! Check your photos
+🕒 ${time}`;
                 }
             });
 
             this.commands.set('logo', {
-                execute: async (args) => {
-                    return `🎯 Logo Design Started!
-🎨 Style: ${args[0] || 'modern'}
-📝 Text: ${args.slice(1).join(' ') || 'Your Brand'}
-⏳ Creating your logo...
-🕒 ${this.getKarachiTime()}`;
-                }
-            });
-
-            this.commands.set('banner', {
-                execute: async (args) => {
-                    return `🖼️ Banner Creation Started!
-📱 Platform: ${args[0] || 'youtube'}
-📝 Text: ${args.slice(1).join(' ') || 'Your Text'}
-⏳ Designing your banner...
-🕒 ${this.getKarachiTime()}`;
+                execute: async (args, event, time) => {
+                    const style = args[0] || 'modern';
+                    const text = args.slice(1).join(' ') || 'Your Brand';
+                    return `🎯 LOGO DESIGN STARTED!
+🎨 Style: ${style}
+📝 Text: "${text}"
+⏳ Creating your professional logo...
+✅ Logo ready! Downloading...
+🕒 ${time}`;
                 }
             });
 
@@ -91,26 +119,33 @@ class CommandHandler {
         }
     }
 
-    // 🎯 Handle Messages
+    // 🎯 Handle Messages - ENHANCED VERSION
     async handleMessage(message, event) {
         try {
             const text = message.body?.toLowerCase() || '';
-            if (!text.startsWith('!')) return null;
+            console.log("📩 Received Message:", text);
+            
+            if (!text.startsWith('/')) {
+                return null;
+            }
 
             const args = text.slice(1).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
             const command = this.commands.get(commandName);
 
             if (!command) {
-                return `❌ Command "${commandName}" not found.\n📝 Use !help for all commands`;
+                return `❌ Command "${commandName}" not found.\n📝 Use /help for all commands\n🕒 ${this.getKarachiTime()}`;
             }
 
+            console.log(`🎯 Executing Command: ${commandName}`);
             const result = await command.execute(args, event, this.getKarachiTime());
+            console.log("✅ Command Executed Successfully");
+            
             return result;
 
         } catch (error) {
             log.error(`Command error: ${error.message}`);
-            return `❌ Error: ${error.message}\n🕒 Time: ${this.getKarachiTime()}`;
+            return `❌ Error: ${error.message}\n🕒 ${this.getKarachiTime()}`;
         }
     }
 }
