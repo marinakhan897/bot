@@ -94,5 +94,15 @@
 		"prettier": "^2.7.1",
 		"prompt-checkbox": "^2.2.0",
 		"terser": "^5.15.0"
+{	
+  "dependencies": {
+    "sharp": "^0.32.0",
+    "canvas": "^2.11.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "ytdl-core": "^4.11.2",
+    "instagram-url-direct": "^1.0.6",
+    "tiktok-scraper": "^3.0.0",
+    "axios": "^1.4.0",
+    "moment-timezone": "^0.5.43"
+  }
 	}
-}
