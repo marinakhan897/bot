@@ -409,3 +409,46 @@ process.on('SIGTERM', () => {
 	log.info("🌙", "Allah Hafiz - Marina Khan");
 	process.exit(0);
 });
+// ==================================================
+// 🚀 MARINA BOT MESSAGE HANDLER INTEGRATION
+// ==================================================
+
+const CommandHandler = require('./scripts/cmds/handler');
+
+// Initialize command handler
+const commandHandler = new CommandHandler();
+
+// ✅ FIXED MESSAGE HANDLER INTEGRATION
+async function handleMarinaBotMessage(api, event) {
+    try {
+        if (event.body && event.body.startsWith('/')) {
+            console.log("💬 Marina Bot Command Received:", event.body);
+            
+            const result = await commandHandler.handleMessage(event, event);
+            
+            if (result) {
+                await api.sendMessage(result, event.threadID, event.messageID);
+                console.log("✅ Response Sent Successfully");
+            }
+        }
+    } catch (error) {
+        console.error("❌ Message Handler Error:", error.message);
+    }
+}
+
+// ✅ INTEGRATE WITH EXISTING MESSAGE HANDLER
+// Existing onChat function mein Marina Bot integrate karo
+const originalOnChat = global.GoatBot.onChat;
+
+global.GoatBot.onChat = async function({ api, event }) {
+    // Pehle original function call karo
+    if (originalOnChat) {
+        await originalOnChat({ api, event });
+    }
+    
+    // Phir Marina Bot handler call karo
+    await handleMarinaBotMessage(api, event);
+};
+
+console.log("💖 MARINA BOT MESSAGE HANDLER INTEGRATED");
+console.log("🚀 Commands: /help, /time, /edit, /logo, /banner");
