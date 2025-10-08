@@ -1,37 +1,8 @@
 {
   "facebookAccount": {
+    "cookies": "./cookies.json",
     "email": "husnain.tonali.bhaiee@gmail.com",
     "password": "pathani123",
-    "cookies": [
-      {
-        "key": "dbln",
-        "value": "7B%2261577631662713%22%3A%22WZtuWH9Z%22%2C%2261578578084055%22%3A%22dZcwCT47%22%7D",
-        "domain": ".facebook.com",
-        "path": "/login/device-based/",
-        "expires": 2025-10-08T08:34:06.817Z
-      },
-      {
-        "key": "sb",
-        "value": "Zda_aGB_odWebkzMzsOyySvO",
-        "domain": ".facebook.com",
-        "path": "/",
-        "expires": 2025-10-08T08:34:06.817Z
-      },
-      {
-        "key": "fr",
-        "value": "YOUR_FR_COOKIE_VALUE",
-        "domain": ".facebook.com",
-        "path": "/",
-        "expires": 1736341200000
-      },
-      {
-        "key": "datr",
-        "value": "f-rjaEkcUiDh2HzyWQ_qGbac",
-        "domain": ".facebook.com",
-        "path": "/",
-        "expires": 2025-10-08T08:34:06.817Z
-      }
-    ],
     "2FASecret": "",
     "i_user": "",
     "proxy": null,
