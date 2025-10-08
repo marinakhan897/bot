@@ -1,7 +1,7 @@
 {
 	"name": "goat-bot-v2",
-	"version": "2.0.0",
-	"description": "🤖 Advanced Bot with 5000+ Commands - Photo Editing, Video Editing, Logo Design | Original by NTKhang | Enhanced by Marina Khan",
+	"version": "1.5.35",
+	"description": "A simple Bot chat messenger using personal account. Made by NTKhang.",
 	"main": "index.js",
 	"engines": {
 		"node": "16.x",
@@ -52,26 +52,15 @@
 	"scripts": {
 		"start": "set NODE_ENV=&& node index.js",
 		"dev": "set NODE_ENV=development&& node index.js",
-		"prod": "set NODE_ENV=production&& node index.js",
-		"marina": "node Goat.js"
+		"prod": "set NODE_ENV=production&& node index.js"
 	},
 	"author": "NTKhang",
-	"contributors": [
-		"Marina Khan"
-	],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ntkhang03/Goat-Bot-V2.git"
 	},
-	"keywords": [
-		"goat-bot",
-		"marina-bot",
-		"facebook-bot",
-		"photo-editing",
-		"video-editing",
-		"logo-design"
-	],
+	"keywords": [],
 	"bugs": {
 		"url": "https://github.com/ntkhang03/Goat-Bot-V2/issues"
 	},
