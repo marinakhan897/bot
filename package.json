@@ -1,115 +1,134 @@
 {
-  "name": "marina-bot",
-  "version": "2.0.0",
-  "description": "🤖 Advanced Multi-Functional Bot with 5000+ Commands - Photo Editing, Video Editing, Logo Design, Social Media Downloads, AI Image Generation, Banner Making | Developed by Marina Khan with Urdu/English Support | Powered by Goat-Bot V2",
-  "main": "Goat.js",
-  "scripts": {
-    "start": "node Goat.js",
-    "dev": "nodemon Goat.js",
-    "test": "node test.js",
-    "setup": "npm install && node setup.js",
-    "clean": "rm -rf node_modules package-lock.json",
-    "reinstall": "npm run clean && npm install",
-    "update": "npm update",
-    "build": "echo 'Marina Bot Build Complete'"
-  },
-  "keywords": [
-    "marina-bot",
-    "goat-bot",
-    "facebook-bot",
-    "whatsapp-bot",
-    "messenger-bot",
-    "photo-editing",
-    "video-editing",
-    "logo-design",
-    "banner-making",
-    "ai-image-generation",
-    "social-media-downloader",
-    "youtube-downloader",
-    "instagram-downloader",
-    "tiktok-downloader",
-    "urdu-bot",
-    "english-bot",
-    "multilingual-bot",
-    "automation",
-    "image-processing",
-    "video-processing",
-    "content-creation",
-    "digital-marketing",
-    "social-media-tools"
-  ],
-  "author": {
-    "name": "Marina Khan",
-    "email": "marina.khan@example.com",
-    "url": "https://github.com/marina-khan"
-  },
-  "contributors": [
-    {
-      "name": "NTKhang",
-      "url": "https://github.com/ntkhang03"
-    }
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/marina-khan/marina-bot.git",
-    "directory": "/"
-  },
-  "bugs": {
-    "url": "https://github.com/marina-khan/marina-bot/issues",
-    "email": "marina.khan@example.com"
-  },
-  "homepage": "https://github.com/marina-khan/marina-bot#readme",
-  "funding": {
-    "type": "individual",
-    "url": "https://buymeacoffee.com/marinakhan"
-  },
-  "dependencies": {
-    "moment-timezone": "^0.5.43",
-    "axios": "^1.6.0",
-    "sharp": "^0.32.0",
-    "canvas": "^2.11.2",
-    "fluent-ffmpeg": "^2.1.2",
-    "ytdl-core": "^4.11.2",
-    "instagram-url-direct": "^1.0.6",
-    "tiktok-scraper": "^3.0.0",
-    "form-data": "^4.0.0",
-    "node-cron": "^3.0.2",
-    "chalk": "^4.1.2",
-    "fs-extra": "^11.1.1",
-    "jimp": "^0.22.10",
-    "qr-image": "^3.2.0",
-    "pdfkit": "^0.14.0",
-    "uuid": "^9.0.1",
-    "crypto-js": "^4.1.1",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.6"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1",
-    "eslint": "^8.52.0",
-    "prettier": "^3.0.3"
-  },
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
-  },
-  "os": [
-    "linux",
-    "windows",
-    "darwin"
-  ],
-  "cpu": [
-    "x64",
-    "arm64"
-  ],
-  "private": true,
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
-  "config": {
-    "port": 3000,
-    "maxFileSize": "50MB",
-    "supportedPlatforms": ["facebook", "whatsapp", "telegram", "messenger"]
-  }
+	"name": "goat-bot-v2",
+	"version": "2.0.0",
+	"description": "🤖 Advanced Multi-Functional Bot with 5000+ Commands - Photo Editing, Video Editing, Logo Design, Social Media Downloads, AI Image Generation | Original by NTKhang | Enhanced by Marina Khan with Urdu/English Support",
+	"main": "index.js",
+	"engines": {
+		"node": "16.x",
+		"npm": ">=7.0.0"
+	},
+	"dependencies": {
+		"@distube/ytdl-core": "^4.13.3",
+		"axios": "^1.4.0",
+		"bcrypt": "^5.0.1",
+		"canvas": "^2.9.1",
+		"cheerio": "^1.0.0-rc.12",
+		"child_process": "^1.0.2",
+		"connect-flash": "^0.1.1",
+		"cookie-parser": "^1.4.6",
+		"eta": "^1.12.3",
+		"express": "^4.18.1",
+		"express-fileupload": "^1.4.0",
+		"express-rate-limit": "^6.5.2",
+		"express-session": "^1.17.3",
+		"form-data": "^4.0.0",
+		"fs-extra": "^11.1.0",
+		"googleapis": "^100.0.0",
+		"gradient-string": "^2.0.2",
+		"graphql-query-to-json": "^2.0.1",
+		"https": "^1.0.0",
+		"jsonlint-mod": "^1.7.6",
+		"moment-timezone": "^0.5.43",
+		"mongoose": "^6.3.1",
+		"mqtt": "^4.3.7",
+		"node-cron": "^3.0.2",
+		"nodemailer": "^6.7.5",
+		"npmlog": "^7.0.1",
+		"ora": "^5.4.1",
+		"passport": "^0.6.0",
+		"passport-local": "^1.0.0",
+		"path": "^0.12.7",
+		"qrcode-reader": "^1.0.4",
+		"qs": "^6.11.0",
+		"request": "^2.88.2",
+		"searchitunes": "^2.5.4",
+		"sequelize": "^6.19.0",
+		"socket.io": "^4.5.1",
+		"sqlite3": "^5.0.5",
+		"tinyurl": "^1.1.7",
+		"totp-generator": "^0.0.13",
+		"websocket-stream": "^5.5.2",
+		"sharp": "^0.32.0",
+		"fluent-ffmpeg": "^2.1.2",
+		"instagram-url-direct": "^2.0.0",
+		"tiktok-scraper": "^3.0.0",
+		"jimp": "^0.22.10",
+		"qr-image": "^3.2.0",
+		"pdfkit": "^0.14.0",
+		"uuid": "^9.0.1",
+		"crypto-js": "^4.1.1"
+	},
+	"scripts": {
+		"start": "set NODE_ENV=&& node index.js",
+		"dev": "set NODE_ENV=development&& node index.js",
+		"prod": "set NODE_ENV=production&& node index.js",
+		"marina": "node Goat.js",
+		"setup": "npm install && node setup.js",
+		"clean": "rm -rf node_modules package-lock.json",
+		"reinstall": "npm run clean && npm install"
+	},
+	"author": "NTKhang",
+	"contributors": [
+		{
+			"name": "Marina Khan",
+			"email": "marina.khan@example.com"
+		}
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ntkhang03/Goat-Bot-V2.git"
+	},
+	"keywords": [
+		"goat-bot",
+		"marina-bot",
+		"facebook-bot",
+		"photo-editing",
+		"video-editing",
+		"logo-design",
+		"ai-generation",
+		"social-downloader",
+		"urdu-bot",
+		"english-bot",
+		"multilingual-bot"
+	],
+	"bugs": {
+		"url": "https://github.com/ntkhang03/Goat-Bot-V2/issues"
+	},
+	"homepage": "https://github.com/ntkhang03/Goat-Bot-V2#readme",
+	"devDependencies": {
+		"eslint": "^8.2.0",
+		"eslint-config-airbnb": "^19.0.4",
+		"eslint-config-node": "^4.1.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-import": "^2.25.3",
+		"eslint-plugin-jsx-a11y": "^6.5.1",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-prettier": "^4.0.0",
+		"eslint-plugin-react": "^7.28.0",
+		"eslint-plugin-react-hooks": "^4.3.0",
+		"javascript-obfuscator": "^4.0.1",
+		"npm-size": "^1.3.0",
+		"os": "^0.1.2",
+		"pm2": "^5.3.0",
+		"prettier": "^2.7.1",
+		"prompt-checkbox": "^2.2.0",
+		"terser": "^5.15.0"
+	},
+	"config": {
+		"marinaBot": {
+			"version": "2.0.0",
+			"features": [
+				"photo-editing",
+				"video-editing", 
+				"logo-design",
+				"banner-making",
+				"ai-generation",
+				"social-downloads",
+				"urdu-support",
+				"english-support"
+			],
+			"commands": 5000
+		}
+	}
 }
