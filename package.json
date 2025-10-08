@@ -1,7 +1,7 @@
 {
 	"name": "goat-bot-v2",
-	"version": "2.0.0",
-	"description": "🤖 Advanced Multi-Functional Bot with 5000+ Commands - Photo Editing, Video Editing, Logo Design, Social Media Downloads, AI Image Generation | Original by NTKhang | Enhanced by Marina Khan with Urdu/English Support",
+	"version": "1.5.35",
+	"description": "A simple Bot chat messenger using personal account. Made by NTKhang.",
 	"main": "index.js",
 	"engines": {
 		"node": "16.x",
@@ -28,7 +28,7 @@
 		"graphql-query-to-json": "^2.0.1",
 		"https": "^1.0.0",
 		"jsonlint-mod": "^1.7.6",
-		"moment-timezone": "^0.5.43",
+		"moment-timezone": "^0.5.34",
 		"mongoose": "^6.3.1",
 		"mqtt": "^4.3.7",
 		"node-cron": "^3.0.2",
@@ -47,51 +47,20 @@
 		"sqlite3": "^5.0.5",
 		"tinyurl": "^1.1.7",
 		"totp-generator": "^0.0.13",
-		"websocket-stream": "^5.5.2",
-		"sharp": "^0.32.0",
-		"fluent-ffmpeg": "^2.1.2",
-		"instagram-url-direct": "^2.0.0",
-		"tiktok-scraper": "^3.0.0",
-		"jimp": "^0.22.10",
-		"qr-image": "^3.2.0",
-		"pdfkit": "^0.14.0",
-		"uuid": "^9.0.1",
-		"crypto-js": "^4.1.1"
+		"websocket-stream": "^5.5.2"
 	},
 	"scripts": {
 		"start": "set NODE_ENV=&& node index.js",
 		"dev": "set NODE_ENV=development&& node index.js",
-		"prod": "set NODE_ENV=production&& node index.js",
-		"marina": "node Goat.js",
-		"setup": "npm install && node setup.js",
-		"clean": "rm -rf node_modules package-lock.json",
-		"reinstall": "npm run clean && npm install"
+		"prod": "set NODE_ENV=production&& node index.js"
 	},
 	"author": "NTKhang",
-	"contributors": [
-		{
-			"name": "Marina Khan",
-			"email": "marina.khan@example.com"
-		}
-	],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ntkhang03/Goat-Bot-V2.git"
 	},
-	"keywords": [
-		"goat-bot",
-		"marina-bot",
-		"facebook-bot",
-		"photo-editing",
-		"video-editing",
-		"logo-design",
-		"ai-generation",
-		"social-downloader",
-		"urdu-bot",
-		"english-bot",
-		"multilingual-bot"
-	],
+	"keywords": [],
 	"bugs": {
 		"url": "https://github.com/ntkhang03/Goat-Bot-V2/issues"
 	},
@@ -114,21 +83,5 @@
 		"prettier": "^2.7.1",
 		"prompt-checkbox": "^2.2.0",
 		"terser": "^5.15.0"
-	},
-	"config": {
-		"marinaBot": {
-			"version": "2.0.0",
-			"features": [
-				"photo-editing",
-				"video-editing", 
-				"logo-design",
-				"banner-making",
-				"ai-generation",
-				"social-downloads",
-				"urdu-support",
-				"english-support"
-			],
-			"commands": 5000
-		}
 	}
 }
