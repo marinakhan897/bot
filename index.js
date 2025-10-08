@@ -1,83 +1,38 @@
 /**
- * @author NTKhang + Marina Khan
- * Enhanced by Marina Khan with Urdu/English support
+ * @author NTKhang
+ * ! The source code is written by NTKhang, please don't change the author's name everywhere. Thank you for using
+ * ! Official source code: https://github.com/ntkhang03/Goat-Bot-V2
+ * ! If you do not download the source code from the above address, you are using an unknown version and at risk of having your account hacked
+ *
+ * English:
+ * ! Please do not change the below code, it is very important for the project.
+ * It is my motivation to maintain and develop the project for free.
+ * ! If you change it, you will be banned forever
+ * Thank you for using
+ *
+ * Vietnamese:
+ * ! Vui lòng không thay đổi mã bên dưới, nó rất quan trọng đối với dự án.
+ * Nó là động lực để tôi duy trì và phát triển dự án miễn phí.
+ * ! Nếu thay đổi nó, bạn sẽ bị cấm vĩnh viễn
+ * Cảm ơn bạn đã sử dụng
  */
 
 const { spawn } = require("child_process");
 const log = require("./logger/log.js");
-const moment = require("moment-timezone");
 
-// 🕒 Improved Karachi Time Function
-function getKarachiTime() {
-    try {
-        return moment().tz("Asia/Karachi").format("HH:mm:ss DD-MM-YYYY");
-    } catch (error) {
-        log.error("Timezone error: " + error.message);
-        return moment().format("HH:mm:ss DD-MM-YYYY");
-    }
-}
-
-// 💫 Fixed Banner Function
-function showMarinaBanner() {
-    const time = getKarachiTime();
-    const banner = `
-╔══════════════════════════════════════╗
-║            💖 MARINA BOT 💖          ║
-║         Powered by Goat-Bot V2       ║
-║                                      ║
-║     👤 Developer: Marina Khan       ║
-║     🕒 Karachi Time: ${time}   ║
-║     🌐 Language: Urdu/English        ║
-║                                      ║
-║     📞 Contact: Marina Khan         ║
-╚══════════════════════════════════════╝
-    `;
-    console.log(banner);
-}
-
-// 🚀 Enhanced Project Starter with Error Handling
 function startProject() {
-    try {
-        showMarinaBanner();
-        
-        log.info("🚀 Bot shuroo ho raha hai... (Starting bot...)");
-        log.info("💖 By Marina Khan | Karachi Time: " + getKarachiTime());
+	const child = spawn("node", ["Goat.js"], {
+		cwd: __dirname,
+		stdio: "inherit",
+		shell: true
+	});
 
-        const child = spawn("node", ["Goat.js"], {
-            cwd: __dirname,
-            stdio: "inherit",
-            shell: true
-        });
-
-        child.on("close", (code) => {
-            if (code === 2) {
-                log.info("🔄 Bot dobara start ho raha hai... (Restarting...)");
-                startProject();
-            } else if (code !== 0) {
-                log.warn("⚠️ Bot band hua with code: " + code);
-            }
-        });
-
-        child.on("error", (err) => {
-            log.error("❌ Masla aya hai: " + err.message);
-            setTimeout(startProject, 5000);
-        });
-
-    } catch (error) {
-        log.error("Startup error: " + error.message);
-        setTimeout(startProject, 5000);
-    }
+	child.on("close", (code) => {
+		if (code == 2) {
+			log.info("Restarting Project...");
+			startProject();
+		}
+	});
 }
 
-// 🛡️ Better Process Handling
-process.on('SIGINT', () => {
-    log.info("🛑 Bot band kiya ja raha hai... (Shutting down...)");
-    process.exit(0);
-});
-
-process.on('uncaughtException', (error) => {
-    log.error("❌ Unexpected error: " + error.message);
-});
-
-// 🚀 Start the Bot
 startProject();
